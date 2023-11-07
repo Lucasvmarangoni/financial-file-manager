@@ -43,7 +43,7 @@ Sou desenvolvedor de uma instituição financeira que lida com uma grande quanti
 
     **Integração com Cloud Storage:**
 
-    Após o upload, o arquivo local no servidor será **transferido** para o serviço de armazenamento em nuvem, Google Cloud Storage. Isso é feito para garantir a persistência e a disponibilidade dos arquivos, mesmo em casos de falhas no servidor.
+    Após o upload, o arquivo local no servidor será **transferido** para o serviço de armazenamento em nuvem. Isso é feito para garantir a persistência e a disponibilidade dos arquivos, mesmo em casos de falhas no servidor.
 
     - Armazenar os arquivos em um serviço em nuvem oferece maior possibilidade e facilidade de escalabilidade, segurança e redundância (disponibilidade).
 
