@@ -20,7 +20,7 @@
 
 ## Contexto
 
-Sou desenvolvedor de uma instituição financeira que lida com uma grande quantidade de documentos financeiros, incluindo contratos, extratos bancários, faturas, relatórios fiscais e outros. O objetivo é criar uma aplicação em Go que simplifique o gerenciamento desses documentos, permitindo a manipulação de arquivos e, ao mesmo tempo, atendendo às necessidades financeiras da empresa.
+Sou desenvolvedor de uma instituição financeira que lida com uma grande quantidade de documentos financeiros, incluindo contratos, extratos bancários, faturas, relatórios fiscais e outros. Sou designado a criar uma aplicação em Go que simplifique o gerenciamento desses documentos, permitindo a manipulação de arquivos e, ao mesmo tempo, atendendo às necessidades financeiras da empresa.
 
 ## Projeto
 
