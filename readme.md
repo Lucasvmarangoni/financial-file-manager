@@ -26,17 +26,33 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 ## Tecnologias
 
 **Linguagem**: Go (Golang); <br>
-**Banco de dados**: CockroachDB;<br>
+**Banco de dados**: CockroachDB; <br>
+**Driver de banco de dados**: Pgx<br>
 **Armazenamento**: Google Cloud Storage;<br>
 **Design de API**: GraphQL; <br>
 **Arquitetura**: Clean Architecture;<br>
 
-**Outras**:
 
-- Pgx
+**Integridade**
+
+- RabbitMQ
+
+**Observabilidade**
+
+- Zerolog
+- Prometheus
+
+**Segurança**
+
 - JWT
 - Bcrypt
+- Crypto/aes
+- Crypto/cipher
+
+**Infraestrutura**
+
 - Docker
 - Github Actions
+
 
 
