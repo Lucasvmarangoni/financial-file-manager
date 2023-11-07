@@ -11,10 +11,7 @@
       </a>  
        <a href="#requisitos-não-funcionais">
      <img align="center" src="https://img.shields.io/badge/-RNF-05122A?style=flat&logo=Tecnologias" alt=""/>  
-      </a>  
-     <a href="#arquitetura">
-     <img align="center" src="https://img.shields.io/badge/-Arquitetura-05122A?style=flat&logo=Tecnologias" alt=""/>
-     </a>
+      </a>       
 </div>
 
 <br><br>
@@ -114,59 +111,4 @@ Sou desenvolvedor de uma instituição financeira que lida com uma grande quanti
 7. **Auditoria**: A aplicação deve ser capaz de rastrear e registrar atividades de usuários, permitindo auditoria para fins de conformidade e segurança.
 
 8. **Exclusão de Dados**: Usuários com acesso "clientes" não podem realizar nem uma operação de deletar dados, apenas usuários administradores com autorização devem poder deletar dados.
-
-
-## Arquitetura
-
-O projeto será desenvolvido seguindo DDD e Clean Architecture. 
-
-⇝ Ainda estou aprendendo DDD, clean architecture e hexagonal architecture a fundo. Vou detalhar melhor minhas escolhas assim tiver maior domínio sobre essas arquiteturas.
-
-Os diretórios devem ficar assim:
-
-      myapp/
-      ├── cmd/
-      │    └── myapp/
-      │         └── main.go
-      ├── pkg/
-      │    ├── application/
-      │    │    ├── usecases/
-      │    │    │    └── usecase.go
-      │    │    ├── services/
-      │    │    │    └── service.go
-      │    │    ├── application.go
-      │    └── domain/
-      │         ├── entities/
-      │         │    └── entity.go
-      │         ├── repositories/
-      │         │    └── repository.go
-      │         ├── valueobjects/
-      │         │    └── valueobject.go
-      │         └── domain.go
-      ├── interfaces/
-      │    ├── api/
-      │    │    ├── http/
-      │    │    │    └── handler.go
-      │    │    └── grpc/
-      │    │         └── handler.go
-      │    ├── persistence/
-      │    │    └── repository.go
-      │    └── messaging/
-      │         └── eventbus.go
-      ├── infrastructure/
-      │    ├── database/
-      │    │    ├── migrations/
-      │    │    │    └── migration.sql
-      │    │    └── database.go
-      │    ├── logging/
-      │    │    └── logger.go
-      │    ├── messaging/
-      │    │    └── messagequeue.go
-      │    └── persistence/
-      │         ├── repository.go
-      ├── config/
-      │    ├── config.go
-      ├── main.go
-
-
 

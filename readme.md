@@ -8,7 +8,6 @@
 
 Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamento e controle de documentos financeiros. Ele oferece aos clientes e administradores de instituições financeiras a capacidade de fazer upload, gerenciar e recuperar documentos financeiros de forma eficiente.
 
-
 ### Principais recursos
 
 - **Armazenamento Eficiente:** Os documentos são inicialmente armazenados localmente no servidor e, posteriormente transferidos para um serviço de armazenamento em nuvem.
@@ -21,11 +20,23 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 -  **Conformidade Regulatória**: A aplicação atende as normas estabelecidas na LGPD.
 
-*<a href="./docs/doc-f.md"> ⇝ <u>Documentação detalhada.</u> </a>*
+*<a href="./docs/doc-funcional.md"> ⇝ <u>Documentação detalhada.</u> </a>*
 
 
 ## Tecnologias
 
-[em planejamento...]
+**Linguagem**: Go (Golang); <br>
+**Banco de dados**: CockroachDB;<br>
+**Armazenamento**: Google Cloud Storage;<br>
+**Design de API**: GraphQL; <br>
+**Arquitetura**: Clean Architecture;<br>
 
-*<a href="./docs/doc-t.md"> ⇝ <u>Documentação detalhada.</u> </a>*
+**Outras**:
+
+- Pgx
+- JWT
+- Bcrypt
+- Docker
+- Github Actions
+
+
