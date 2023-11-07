@@ -1,7 +1,7 @@
 # Sistema de Armazenamento e Controle de Documentos Financeiros
 
 
-## EM PLANEJAMENTO
+## ⇝ EM PLANEJAMENTO
 
 
 ## Projeto
