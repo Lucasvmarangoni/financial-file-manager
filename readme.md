@@ -43,7 +43,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 ## TECNOLOGIAS
 
 <div align="center">
-<a href="#ersistência-de-dados" target="_blank">
+<a href="#persistência-de-dados" target="_blank">
     <img align="center" src="https://img.shields.io/badge/-Persistência de dados-05122A?style=flat&logo=" alt=""/>
   </a> 
  <a href="#http">
