@@ -1,7 +1,11 @@
-<h1 style="text-align:center">Financial file manager</h1>
-<h2 style="text-align:center">Sistema de Armazenamento e Controle de Documentos Financeiros</h2>
+<div style="text-align:center">
 
-<h1 style="text-align:center"><u>EM PLANEJAMENTO</u></h2>
+# Financial file manager
+## Sistema de Armazenamento e Controle de Documentos Financeiros
+
+## <u>EM PLANEJAMENTO</u>
+
+</div>
 
 <br>
 
