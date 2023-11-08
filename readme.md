@@ -42,26 +42,6 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ## TECNOLOGIAS
 
-<div align="center">
-<a href="#persistência-de-dados" target="_blank">
-    <img align="center" src="https://img.shields.io/badge/-Persistência de dados-05122A?style=flat&logo=" alt=""/>
-  </a> 
- <a href="#http">
-     <img align="center" src="https://img.shields.io/badge/-HTTP-05122A?style=flat&logo=Tecnologias" alt=""/>  
-</a>   
- <a href="#observabilidade">
-     <img align="center" src="https://img.shields.io/badge/-Observabilidade-05122A?style=flat&logo=Tecnologias" alt=""/>  
-</a>      
- <a href="#segurança">
-     <img align="center" src="https://img.shields.io/badge/-Segurança-05122A?style=flat&logo=Tecnologias" alt=""/>  
-</a>     
- <a href="#infraestrutura">
-     <img align="center" src="https://img.shields.io/badge/-Infraestrutura-05122A?style=flat&logo=Tecnologias" alt=""/>  
-</a>       
-</div>
-
-<br>
-
 **Linguagem**: Go (Golang) <br>
 **Arquitetura**: Clean Architecture <br>
 
