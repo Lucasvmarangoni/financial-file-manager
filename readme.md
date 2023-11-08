@@ -1,10 +1,11 @@
-# Sistema de Armazenamento e Controle de Documentos Financeiros
+<h1 style="text-align:center">Financial file manager</h1>
+<h2 style="text-align:center">Sistema de Armazenamento e Controle de Documentos Financeiros</h2>
 
+<h1 style="text-align:center"><u>EM PLANEJAMENTO</u></h2>
 
-## ⇝ EM PLANEJAMENTO
+<br>
 
-
-## Projeto
+## PROJETO
 
 Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamento e controle de documentos financeiros. Ele oferece aos clientes e administradores de instituições financeiras a capacidade de fazer upload, gerenciar e recuperar documentos financeiros de forma eficiente.
 
@@ -23,36 +24,35 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 *<a href="./docs/doc-funcional.md"> ⇝ <u>Documentação detalhada.</u> </a>*
 
 
-## Tecnologias
+## TECNOLOGIAS
 
-**Linguagem**: Go (Golang); <br>
-**Banco de dados**: CockroachDB; <br>
-**Driver de banco de dados**: Pgx<br>
-**Armazenamento**: Google Cloud Storage;<br>
-**Design de API**: GraphQL; <br>
-**Arquitetura**: Clean Architecture;<br>
+**Linguagem**: Go (Golang) <br>
+**Design de API**: GraphQL <br>
+**Arquitetura**: Clean Architecture <br>
 
+### Persistência de dados
 
-**Integridade**
+- **Banco de dados**: CockroachDB 
+- **Driver de banco de dados**: Pgx 
+- **Armazenamento**: Google Cloud Storage
+- **Queue**: RabbitMQ 
 
-- RabbitMQ
+### Observabilidade
 
-**Observabilidade**
+- **Logs**: Zerolog 
+- **Métricas**: Prometheus 
 
-- Zerolog
-- Prometheus
+### Segurança
 
-**Segurança**
+- **Autenticação e Autorização**: JSON Web Token (JWT)
+- **Criptografia (password)**: Bcrypt
+- **Criptografia (Dados sensíveis)**: Crypto/aes
+- **Criptografia (Dados sensíveis)**: Crypto/cipher
 
-- JWT
-- Bcrypt
-- Crypto/aes
-- Crypto/cipher
+### Infraestrutura
 
-**Infraestrutura**
-
-- Docker
-- Github Actions
+- **Contêineres**: Docker
+- **CI/CD**: Github Actions
 
 
 
