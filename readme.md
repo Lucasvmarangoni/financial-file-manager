@@ -1,4 +1,15 @@
-<div style="text-align:center">
+<div align="center">
+<a href="#projeto" target="_blank">
+    <img align="center" src="https://img.shields.io/badge/-Projeto-05122A?style=flat&logo=" alt=""/>
+  </a> 
+ <a href="#tecnologias">
+     <img align="center" src="https://img.shields.io/badge/-Tecnologias-05122A?style=flat&logo=Tecnologias" alt=""/>  
+</a>       
+</div>
+
+<br>
+
+<div align="center">
 
 # Financial file manager
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
