@@ -38,11 +38,11 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 *<a href="./docs/doc-funcional.md"> ⇝ <u>Documentação detalhada.</u> </a>*
 
+<br>
 
 ## TECNOLOGIAS
 
 **Linguagem**: Go (Golang) <br>
-**Design de API**: GraphQL <br>
 **Arquitetura**: Clean Architecture <br>
 
 ### Persistência de dados
@@ -50,7 +50,15 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 - **Banco de dados**: CockroachDB 
 - **Driver de banco de dados**: Pgx 
 - **Armazenamento**: Google Cloud Storage
-- **Queue**: RabbitMQ 
+- **Cache**: Memchached
+- **Transporte**: 
+  - **Filas**: RabbitMQ 
+  - **Comunicação de Serviço**: gRPC
+
+### HTTP
+
+- **API**: GraphQL e gRPC 
+- **Framework GraphQL**: 99designs/gqlgen
 
 ### Observabilidade
 
@@ -61,8 +69,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Autenticação e Autorização**: JSON Web Token (JWT)
 - **Criptografia (password)**: Bcrypt
-- **Criptografia (Dados sensíveis)**: Crypto/aes
-- **Criptografia (Dados sensíveis)**: Crypto/cipher
+- **Criptografia (Dados sensíveis)**: AES
 
 ### Infraestrutura
 
