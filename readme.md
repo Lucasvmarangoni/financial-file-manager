@@ -43,7 +43,8 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 ## TECNOLOGIAS
 
 **Linguagem**: Go (Golang) <br>
-**Arquitetura**: Clean Architecture <br>
+**Arquitetura**: Microservices  <br>
+**Design**: Domain-Driven Design (DDD) com Clean architecture
 
 ### Persistência de dados
 
