@@ -95,7 +95,7 @@ Sou desenvolvedor de uma instituição financeira que lida com uma grande quanti
 
 ## Requisitos não funcionais
 
-1. **Segurança**: A aplicação deve ser altamente segura, garantindo a proteção dos dados financeiros dos clientes. Isso inclui criptografia de dados, autenticação de usuários e autorização rigorosa.
+1. **Segurança e privacidade**: A aplicação deve ser altamente segura, garantindo a proteção dos dados financeiros dos clientes. Isso inclui criptografia de dados, autenticação de usuários e autorização rigorosa.
 
 2. **Tempo de Resposta**: Buscar ter o melhor tempo de resposta posível, para garantir que as ações dos usuários sejam concluídas com eficiência.
    - Cache, indexação de bancos de dados e otimização de consultas.
@@ -112,3 +112,4 @@ Sou desenvolvedor de uma instituição financeira que lida com uma grande quanti
 
 8. **Exclusão de Dados**: Usuários com acesso "clientes" não podem realizar nem uma operação de deletar dados, apenas usuários administradores com autorização devem poder deletar dados.
 
+9. **Resiliencia**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
