@@ -32,12 +32,12 @@ func (f *File) Validate() error {
 	return nil
 }
 
-func NewFile(typ string, createdAt time.Time, customer string) (*File, error) {
+func NewFile(typ string, customer string) (*File, error) {
 
 	file := File{
 		ID:        uuid.NewV4().String(),
 		Type:      typ,
-		CreatedAt: createdAt,
+		CreatedAt: time.Now(),
 		Customer:  customer,		
 	}
 
