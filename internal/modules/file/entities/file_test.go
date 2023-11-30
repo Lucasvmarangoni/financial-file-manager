@@ -50,15 +50,16 @@ func TestValidate(t *testing.T) {
 func TestNewFile(t *testing.T) {
 	t.Run("should return a new file with the provided parameters", func(t *testing.T) {
 		typ := "contract"
-		createdAt := time.Now()
+		
 		customer := "test-customer"
+		now := time.Now()
 
-		file, err := entities.NewFile(typ, createdAt, customer)
+		file, err := entities.NewFile(typ, customer)
 
 		require.NotNil(t, file)
 		require.Nil(t, err)
 		assert.Equal(t, typ, file.Type)
-		assert.Equal(t, createdAt, file.CreatedAt)
+		assert.True(t, file.CreatedAt.After(now) || file.CreatedAt.Equal(now))
 		assert.Equal(t, customer, file.Customer)
 		assert.NotEmpty(t, file.ID)
 	})
