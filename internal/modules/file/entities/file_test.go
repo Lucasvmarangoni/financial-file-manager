@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidate(t *testing.T) {
@@ -40,7 +41,7 @@ func TestValidate(t *testing.T) {
 			CreatedAt: time.Now(),
 			Customer:  "test-customer",
 		}
-	
+
 		err := file.Validate()
 		assert.NoError(t, err)
 	})
@@ -52,8 +53,10 @@ func TestNewFile(t *testing.T) {
 		createdAt := time.Now()
 		customer := "test-customer"
 
-		file := entities.NewFile(typ, createdAt, customer)
+		file, err := entities.NewFile(typ, createdAt, customer)
 
+		require.NotNil(t, file)
+		require.Nil(t, err)
 		assert.Equal(t, typ, file.Type)
 		assert.Equal(t, createdAt, file.CreatedAt)
 		assert.Equal(t, customer, file.Customer)

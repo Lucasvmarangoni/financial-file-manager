@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestContractValidate(t *testing.T) {
@@ -43,8 +44,10 @@ func TestNewContract(t *testing.T) {
 	extract := []string{"Extract 1", "Extract 2"}
 	invoice := []string{"Invoice 1", "Invoice 2"}
 
-	contract := entities.NewContract(file, title, parties, object, extract, invoice)
+	contract, err := entities.NewContract(file, title, parties, object, extract, invoice)
 
+	require.NotNil(t, contract)
+	require.Nil(t, err)
 	assert.Equal(t, file, contract.File)
 	assert.Equal(t, title, contract.Title)
 	assert.Equal(t, parties, contract.Parties)
