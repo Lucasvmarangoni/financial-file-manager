@@ -15,7 +15,7 @@ type Contract struct {
 	Invoice []string `json:"invoice"`
 }
 
-func (c *Contract) validate() error {	
+func (c *Contract) Validate() error {	
 
 	switch {
 	case c.Title == "":

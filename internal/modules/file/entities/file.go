@@ -16,7 +16,7 @@ type File struct {
 	Customer  string    `json:"customer" valid:"notnull"`	
 }
 
-func (f *File) validate() error {
+func (f *File) Validate() error {
 
 	typ := strings.ToLower(f.Type)
 

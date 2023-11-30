@@ -15,7 +15,7 @@ type Invoice struct {
 	Contract *string   `json:"contract,omitempty"`
 }
 
-func (i *Invoice) validate() error {
+func (i *Invoice) Validate() error {
 	switch {
 	case i.Value <= 0:
 		return errors.New("Value needs to be greater than 0")

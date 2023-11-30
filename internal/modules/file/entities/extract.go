@@ -16,7 +16,7 @@ type Extract struct {
 	Contract *string `json:"contract,omitempty"`
 }
 
-func (e *Extract) validate() error {	
+func (e *Extract) Validate() error {	
 
 	switch {
 	case e.Account == 0:
