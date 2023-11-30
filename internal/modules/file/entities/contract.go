@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"errors"	
+	"errors"
 
 	"github.com/asaskevich/govalidator"
 )
@@ -15,15 +15,15 @@ type Contract struct {
 	Invoice []string `json:"invoice"`
 }
 
-func (c *Contract) Validate() error {	
+func (c *Contract) Validate() error {
 
 	switch {
 	case c.Title == "":
 		return errors.New("Need a title")
 	case len(c.Parties) < 2:
-		return errors.New("Insufficient number of parties")	
+		return errors.New("Insufficient number of parties")
 	case c.Object == "":
-		return errors.New("Need a object")	
+		return errors.New("Need a object")
 	}
 
 	_, err := govalidator.ValidateStruct(c)
@@ -34,13 +34,27 @@ func (c *Contract) Validate() error {
 	return nil
 }
 
-func NewContract(file File, title string, parties []string, object string, extract []string, invoice []string) *Contract {
-	return &Contract{
-		File: file,
-		Title: title,
+func NewContract(
+	file File,
+	title string,
+	parties []string,
+	object string,
+	extract []string,
+	invoice []string,
+) (*Contract, error) {
+
+	contract := Contract{
+		File:    file,
+		Title:   title,
 		Parties: parties,
-		Object: object,
+		Object:  object,
 		Extract: extract,
-		Invoice: invoice,	
+		Invoice: invoice,
 	}
+
+	err := contract.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return &contract, nil
 }

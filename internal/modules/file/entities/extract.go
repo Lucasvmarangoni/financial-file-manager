@@ -2,8 +2,11 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
+	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -18,20 +21,21 @@ type Extract struct {
 }
 
 func (e *Extract) Validate() error {
-	
-	ctg := strings.ToLower(e.Category)
+
+	method := consts.Method()
+	payment := consts.Payment()
 
 	switch {
 	case e.Account == 0:
 		return errors.New("Account needs to be greater than 0")
 	case e.Value == 0:
 		return errors.New("Value needs to be greater than 0")
-	case ctg != "payment" && ctg != "deposit" && ctg != "withdrawal" && ctg != "transfer":
-		return errors.New("Need a valid category: payment, deposit, withdrawal or transfer")	
-	case e.Method == "":
-		return errors.New("Need a method")	
+	case !lib.MapVerifyString(payment[:], strings.ToLower(e.Category)):
+		return errors.New(fmt.Sprintf("Need a valid category: %v", payment))
+	case !lib.MapVerifyString(method[:], strings.ToLower(e.Method)):
+		return errors.New(fmt.Sprintf("Need a valid method: %v", method))
 	case e.Location == "":
-		return errors.New("Need a location")	
+		return errors.New("Need a location")
 	}
 
 	_, err := govalidator.ValidateStruct(e)
@@ -42,17 +46,31 @@ func (e *Extract) Validate() error {
 	return nil
 }
 
-func NewExtract(file File, account int, value float64, category string, method string, location string, contract *string) *Extract {
-    e := &Extract{
-        File: file,
-        Account: account,
-        Value: value,
-        Category: category,
-        Method: method,
-        Location: location,
-    }
-    if contract != nil {
-        e.Contract = contract
-    }
-    return e
+func NewExtract(
+	file File,
+	account int,
+	value float64,
+	category string,
+	method string,
+	location string,
+	contract *string,
+) (*Extract, error) {
+
+	extract := Extract{
+		File:     file,
+		Account:  account,
+		Value:    value,
+		Category: category,
+		Method:   method,
+		Location: location,
+	}
+	if contract != nil {
+		extract.Contract = contract
+	}
+
+	err := extract.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return &extract, nil
 }

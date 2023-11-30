@@ -32,11 +32,18 @@ func (f *File) Validate() error {
 	return nil
 }
 
-func NewFile(typ string, createdAt time.Time, customer string) *File {
-	return &File{
+func NewFile(typ string, createdAt time.Time, customer string) (*File, error) {
+
+	file := File{
 		ID:        uuid.NewV4().String(),
 		Type:      typ,
 		CreatedAt: createdAt,
 		Customer:  customer,		
 	}
+
+	err :=  file.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return &file, nil
 }

@@ -2,8 +2,11 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
+	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -16,13 +19,16 @@ type Invoice struct {
 }
 
 func (i *Invoice) Validate() error {
+
+	methods := consts.Method()
+
 	switch {
 	case i.Value <= 0:
 		return errors.New("Value needs to be greater than 0")
 	case i.DueDate == time.Time{}:
 		return errors.New("Need a due date")
-	case i.Method == "":
-		return errors.New("Need a method")
+	case !lib.MapVerifyString(methods[:], i.Method):
+		return errors.New(fmt.Sprintf("Need a valid method: %v", methods))
 	}
 
 	_, err := govalidator.ValidateStruct(i)
@@ -33,15 +39,25 @@ func (i *Invoice) Validate() error {
 	return nil
 }
 
-func NewInvoice(file File, dueDate time.Time, value float64, method string, contract *string) *Invoice {
-	i := &Invoice{
+func NewInvoice(
+	file File,
+	dueDate time.Time,
+	value float64,
+	method string,
+	contract *string,
+) (*Invoice, error) {
+	invoice := &Invoice{
 		File:    file,
 		DueDate: dueDate,
 		Value:   value,
 		Method:  method,
 	}
 	if contract != nil {
-		i.Contract = contract
+		invoice.Contract = contract
 	}
-	return i
+	err := invoice.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return invoice, nil
 }
