@@ -1,14 +1,11 @@
 package factories
 
 import (
-	"time"
-
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
 )
 
 func ContractFactory(
-	typ string, 
-	createdAt time.Time, 
+	typ string, 	
 	customer string, 
 	title string, 
 	parties []string, 
@@ -17,7 +14,7 @@ func ContractFactory(
 	invoice []string,
 	) (*entities.Contract, error) {
 
-	file, err := entities.NewFile(typ, createdAt, customer)
+	file, err := entities.NewFile(typ, customer)
 	if err != nil {
 		return nil, err
 	}

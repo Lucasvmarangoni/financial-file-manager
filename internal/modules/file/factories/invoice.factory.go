@@ -16,7 +16,7 @@ func InvoiceFactory(
 	contract *string,
 ) (*entities.Invoice, error) {
 
-	file, err := entities.NewFile(typ, createdAt, customer)
+	file, err := entities.NewFile(typ, customer)
 	if err != nil {
 		return nil, err
 	}

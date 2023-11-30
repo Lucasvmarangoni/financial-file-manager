@@ -18,7 +18,7 @@ func ExtractFactory(
 	contract *string,
 ) (*entities.Extract, error) {
 
-	file, err := entities.NewFile(typ, createdAt, customer)
+	file, err := entities.NewFile(typ, customer)
 	if err != nil {
 		return nil, err
 	}
