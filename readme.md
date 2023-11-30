@@ -14,7 +14,7 @@
 # Financial file manager
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
 
-## <u>EM PLANEJAMENTO</u>
+## <u>EM DESENVOLVIMENTO</u>
 
 </div>
 
