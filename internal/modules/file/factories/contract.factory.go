@@ -15,10 +15,15 @@ func ContractFactory(
 	object string, 
 	extract []string, 
 	invoice []string,
-	) *entities.Contract {
+	) (*entities.Contract, error) {
 
-	file := entities.NewFile(typ, createdAt, customer)
-	contract := entities.NewContract(*file, title, parties, object, extract, invoice)
-	
-	return contract
+	file, err := entities.NewFile(typ, createdAt, customer)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := entities.NewContract(*file, title, parties, object, extract, invoice)
+	if err != nil {
+		return nil, err
+	}	
+	return contract, nil
 }

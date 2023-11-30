@@ -7,17 +7,22 @@ import (
 )
 
 func InvoiceFactory(
-	typ string, 
-	createdAt time.Time, 
+	typ string,
+	createdAt time.Time,
 	customer string,
-	dueDate time.Time, 
-	value float64, 
-	method string, 
+	dueDate time.Time,
+	value float64,
+	method string,
 	contract *string,
-) *entities.Invoice {
+) (*entities.Invoice, error) {
 
-	file := entities.NewFile(typ, createdAt, customer)
-	invoice := entities.NewInvoice(*file, dueDate, value, method, contract)
-
-	return invoice
+	file, err := entities.NewFile(typ, createdAt, customer)
+	if err != nil {
+		return nil, err
+	}
+	invoice, err := entities.NewInvoice(*file, dueDate, value, method, contract)
+	if err != nil {
+		return nil, err
+	}
+	return invoice, nil
 }
