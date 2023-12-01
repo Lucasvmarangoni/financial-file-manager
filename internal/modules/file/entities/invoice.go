@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
 	"github.com/asaskevich/govalidator"
 )
