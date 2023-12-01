@@ -37,16 +37,20 @@ func (f *File) Validate() error {
 
 func NewFile(typ string, customer string) (*File, error) {
 
-	file := File{
-		ID:        uuid.NewV4().String(),
-		Type:      typ,
-		CreatedAt: time.Now(),
+	file := File{		
+		Type:      typ,		
 		Customer:  customer,
 	}
+	file.prepare()
 
 	err := file.Validate()
 	if err != nil {
 		return nil, err
 	}
 	return &file, nil
+}
+
+func (f *File) prepare(){
+	f.ID = uuid.NewV4().String()
+	f.CreatedAt = time.Now()
 }
