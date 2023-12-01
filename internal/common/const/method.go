@@ -1,5 +1,11 @@
 package consts
 
-func Method() [4]string {
-    return [4]string{"cash", "credit", "debit", "transfer"}
+import (
+	"os"
+	"strings"
+)
+
+func Method() []string {
+	methods := os.Getenv("METHODS")
+	return strings.Split(methods, ",")
 }
