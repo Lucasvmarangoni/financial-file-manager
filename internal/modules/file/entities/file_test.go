@@ -1,13 +1,24 @@
 package entities_test
 
 import (
+	"fmt"
+	"log"
 	"testing"
 	"time"
 
+	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func init() {
+	err := godotenv.Load("../../../common/config/.env.default")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func TestValidate(t *testing.T) {
 	t.Run("should return error when type is invalid", func(t *testing.T) {
@@ -20,7 +31,7 @@ func TestValidate(t *testing.T) {
 
 		err := file.Validate()
 		assert.Error(t, err)
-		assert.Equal(t, "invalid type", err.Error())
+		assert.Equal(t, fmt.Sprintf("invalid type, must be: %v", consts.FileTypes()), err.Error())
 	})
 
 	t.Run("should return error when struct is invalid", func(t *testing.T) {

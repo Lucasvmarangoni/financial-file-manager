@@ -2,13 +2,22 @@ package entities_test
 
 import (
 	"fmt"
+	"log"
 	"testing"
-
+	
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func init() {
+	err := godotenv.Load("../../../common/config/.env.default")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func TestExtractValidate(t *testing.T) {
 
