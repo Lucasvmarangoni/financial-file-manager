@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,7 +25,7 @@ func TestInvoiceValidate(t *testing.T) {
 		require.Nil(t, err)
 
 		invoice := entities.Invoice{
-			File: *file,
+			File:    *file,
 			DueDate: dueDate,
 			Value:   12.0,
 			Method:  "invalid",
@@ -59,6 +59,6 @@ func TextNewInvoice(t *testing.T) {
 		assert.Equal(t, file, invoice.File)
 		assert.Equal(t, dueDate, invoice.DueDate)
 		assert.Equal(t, value, invoice.Value)
-		assert.Equal(t, method, invoice.Method)		
+		assert.Equal(t, method, invoice.Method)
 	})
 }

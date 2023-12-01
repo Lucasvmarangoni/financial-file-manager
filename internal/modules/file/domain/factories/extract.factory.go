@@ -2,7 +2,7 @@ package factories
 
 import (	
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 )
 
 func ExtractFactory(

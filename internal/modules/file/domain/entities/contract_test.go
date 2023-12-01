@@ -2,8 +2,8 @@ package entities_test
 
 import (
 	"testing"
-	
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,7 +19,7 @@ func TestContractValidate(t *testing.T) {
 		require.Nil(t, err)
 
 		contract := entities.Contract{
-			File: *file,
+			File:    *file,
 			Title:   "",
 			Parties: []string{"Party 1", "Party 2"},
 			Object:  "Test Object",
@@ -28,7 +28,7 @@ func TestContractValidate(t *testing.T) {
 		err = contract.Validate()
 		assert.Error(t, err)
 		assert.Equal(t, "Need a title", err.Error())
-	})	
+	})
 }
 
 func TestNewContract(t *testing.T) {

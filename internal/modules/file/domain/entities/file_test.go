@@ -6,15 +6,15 @@ import (
 	"testing"
 	"time"
 
-	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func init() {
-	err := godotenv.Load("../../../common/config/.env.default")
+	err := godotenv.Load("../../../../common/config/.env.default")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -61,7 +61,7 @@ func TestValidate(t *testing.T) {
 func TestNewFile(t *testing.T) {
 	t.Run("should return a new file with the provided parameters", func(t *testing.T) {
 		typ := "contract"
-		
+
 		customer := "test-customer"
 		now := time.Now()
 

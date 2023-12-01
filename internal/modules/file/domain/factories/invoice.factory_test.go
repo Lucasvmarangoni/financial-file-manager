@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/factories"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
