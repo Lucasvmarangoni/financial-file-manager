@@ -1,14 +1,12 @@
 package factories
 
-import (
-	"time"
+import (	
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/entities"
 )
 
 func ExtractFactory(
-	typ string,
-	createdAt time.Time,
+	typ string,	
 	customer string,
 	account int,
 	value float64,
