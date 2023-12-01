@@ -7,8 +7,7 @@ import (
 )
 
 func InvoiceFactory(
-	typ string,
-	createdAt time.Time,
+	typ string,	
 	customer string,
 	dueDate time.Time,
 	value float64,
