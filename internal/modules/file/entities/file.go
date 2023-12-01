@@ -2,9 +2,12 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
 	"github.com/asaskevich/govalidator"
 	uuid "github.com/satori/go.uuid"
 )
@@ -13,15 +16,15 @@ type File struct {
 	ID        string    `json:"document_id" valid:"uuid"`
 	Type      string    `json:"type" valid:"notnull"`
 	CreatedAt time.Time `json:"created_at" valid:"-"`
-	Customer  string    `json:"customer" valid:"notnull"`	
+	Customer  string    `json:"customer" valid:"notnull"`
 }
 
 func (f *File) Validate() error {
+	
+	fileTypes := consts.FileTypes()
 
-	typ := strings.ToLower(f.Type)
-
-	if typ != "contract" && typ != "extract" && typ != "invoice" {
-		return errors.New("invalid type")
+	if !lib.MapVerifyString(fileTypes[:], strings.ToLower(f.Type)) {
+		return errors.New(fmt.Sprintf("invalid type, must be: %v", fileTypes))
 	}
 
 	_, err := govalidator.ValidateStruct(f)
@@ -38,10 +41,10 @@ func NewFile(typ string, customer string) (*File, error) {
 		ID:        uuid.NewV4().String(),
 		Type:      typ,
 		CreatedAt: time.Now(),
-		Customer:  customer,		
+		Customer:  customer,
 	}
 
-	err :=  file.Validate()
+	err := file.Validate()
 	if err != nil {
 		return nil, err
 	}
