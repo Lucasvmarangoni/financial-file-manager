@@ -20,7 +20,7 @@
 
 <br>
 
-    Projeto de portfólio, portanto, tem como objetivo prática, aprendizado e demonstração das habilidades do desenvolvedor.
+    Projeto de portfólio, tem como objetivo aprendizadom, prática e demonstração das habilidades do desenvolvedor. Portando, as escolhas no projeto são com esse objetivo. 
 
 ## PROJETO
 
