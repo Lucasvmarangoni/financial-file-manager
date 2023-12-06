@@ -16,11 +16,15 @@
 
 ## <u>EM DESENVOLVIMENTO</u>
 
+<br>
+
+**Projeto de portfólio, tem como objetivo aprendizadom, prática e demonstração das habilidades do desenvolvedor. Portando, as escolhas no projeto são com esse objetivo.**
+
 </div>
 
 <br>
 
-    Projeto de portfólio, tem como objetivo aprendizadom, prática e demonstração das habilidades do desenvolvedor. Portando, as escolhas no projeto são com esse objetivo. 
+
 
 ## PROJETO
 
