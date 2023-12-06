@@ -20,6 +20,8 @@
 
 <br>
 
+    Projeto de portfólio, portanto, tem como objetivo prática, aprendizado e demonstração das habilidades do desenvolvedor.
+
 ## PROJETO
 
 Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamento e controle de documentos financeiros. Ele oferece aos clientes e administradores de instituições financeiras a capacidade de fazer upload, gerenciar e recuperar documentos financeiros de forma eficiente.
