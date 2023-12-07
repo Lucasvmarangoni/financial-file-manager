@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+option go_package = "/pb";
+
+message FileData {
+  string id = 1;   
+  string type = 2;
+  string createdAt = 3;
+  string customer = 4;
+}
+
+message ContractData {
+  FileData fileData = 1;
+  string title = 2; 
+  repeated string parties = 3;
+  string object = 4;
+  repeated string extract = 5;
+  repeated string invoice = 6;
+}
+
+message ExtractData {
+  FileData fileData = 1;
+  int32 account = 2;
+  double value = 3;
+  string category = 4;
+  string method  = 5;
+  string location = 6;
+  string contract = 7;  
+}
+
+message InvoiceData {
+  FileData fileData = 1;
+  string dueDate  = 2;
+  double value = 3;   
+  string method  = 4; 
+  string contract = 5;
+}
+
+message Contract {
+  bytes file = 1;
+  ContractData metadata = 2;
+}
+
+message Extract {
+  bytes file = 1;
+  ExtractData metadata = 2;
+}
+
+message Invoice {
+  bytes file = 1;
+  InvoiceData metadata = 2;
+}
+
+message Response {
+  bool success = 1;
+  string message = 2;
+}
+
+service ContractRequest {
+  rpc ContractRequest (Contract) returns (Response){}
+}
+
+service ExtractRequest {
+  rpc ExtractRequest (Extract) returns (Response){}
+}
+
+service InvoiceRequest {
+  rpc InvoiceRequest (Invoice) returns (Response){}
+}
