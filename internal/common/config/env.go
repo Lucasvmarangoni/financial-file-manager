@@ -12,7 +12,7 @@ type RabbitMQ struct {
 	User                     string
 	Password                 string
 	Host                     string
-	Port                     int
+	Port                     string
 	Vhost                    string
 	Consumer_name            string
 	Consumer_queue_name      string

@@ -34,7 +34,7 @@ func (env *Env) Config() {
 	verifyString(rabbitMQ.User, "RABBITMQ_DEFAULT_USER")
 	verifyString(rabbitMQ.Password, "RABBITMQ_DEFAULT_PASS")
 	verifyString(rabbitMQ.Host, "RABBITMQ_DEFAULT_HOST")
-	verifyInt(rabbitMQ.Port, "RABBITMQ_DEFAULT_PORT")
+	verifyString(rabbitMQ.Port, "RABBITMQ_DEFAULT_PORT")
 	verifyString(rabbitMQ.Vhost, "RABBITMQ_DEFAULT_VHOST")
 	verifyString(rabbitMQ.Consumer_name, "RABBITMQ_CONSUMER_NAME")
 	verifyString(rabbitMQ.Consumer_queue_name, "RABBITMQ_CONSUMER_QUEUE_NAME")
