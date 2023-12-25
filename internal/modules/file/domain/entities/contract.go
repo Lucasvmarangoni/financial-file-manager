@@ -9,18 +9,16 @@ import (
 
 type Contract struct {
 	File    `json:"file" valid:"required"` 
-	Title   string   `json:"title" valid:"notnull"`
+	Title   string   `json:"title" valid:"length(3|30)"`
 	Parties []string `json:"parties" valid:"notnull"`
-	Object  string   `json:"object" valid:"notnull"`
+	Object  string   `json:"object" valid:"length(3|30)"`
 	Extract []entities.ID `json:"extract" valid:"-"`
 	Invoice []entities.ID `json:"invoice" valid:"-"`
 }
 
 func (c *Contract) Validate() error {
 
-	switch {
-	case c.Title == "":
-		return errors.New("Need a title")
+	switch {	
 	case len(c.Parties) < 2:
 		return errors.New("Insufficient number of parties")
 	case c.Object == "":
