@@ -16,7 +16,7 @@ type File struct {
 	ID        entities.ID `json:"document_id" valid:"-"`
 	Type      string      `json:"type" valid:"notnull"`
 	CreatedAt time.Time   `json:"created_at" valid:"-"`
-	Customer  string      `json:"customer" valid:"notnull"`
+	Customer  entities.ID      `json:"customer" valid:"notnull"`
 }
 
 func (f *File) Validate() error {
@@ -34,7 +34,7 @@ func (f *File) Validate() error {
 	return nil
 }
 
-func NewFile(typ string, customer string) (*File, error) {
+func NewFile(typ string, customer entities.ID) (*File, error) {
 
 	file := File{
 		Type:     typ,
