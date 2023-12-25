@@ -9,7 +9,7 @@ import (
 
 func InvoiceFactory(
 	typ string,
-	customer string,
+	customer pkg_entities.ID,
 	dueDate time.Time,
 	value float64,
 	method string,

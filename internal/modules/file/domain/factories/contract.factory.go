@@ -7,7 +7,7 @@ import (
 
 func ContractFactory(
 	typ string,
-	customer string,
+	customer pkg_entities.ID,
 	title string,
 	parties []string,
 	object string,

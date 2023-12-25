@@ -7,7 +7,7 @@ import (
 
 func ExtractFactory(
 	typ string,
-	customer string,
+	customer pkg_entities.ID,
 	account int,
 	value float64,
 	category string,
