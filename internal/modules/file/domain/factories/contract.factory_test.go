@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
+	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -12,7 +13,7 @@ func TextContractFactory(t *testing.T) {
 	
 	typ := "invoice"
 	
-	customer := "test-customer"
+	customer := pkg_entities.NewID()
 	title := "Test Title"
 	parties := []string{"Party 1", "Party 2"}
 	object := "Test Object"

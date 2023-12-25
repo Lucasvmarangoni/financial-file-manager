@@ -7,15 +7,16 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
+	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/google/uuid"
 )
 
 func TextInvoiceFactory(t *testing.T) {
 
 	typ := "invoice"
-	customer := "test-customer"
+	customer := pkg_entities.NewID()
 	dueDate, _ := time.Parse(time.RFC3339, "2022-03-14T09:26:22.123456789-07:00")
 	value := 12.0
 	method := "invalid"

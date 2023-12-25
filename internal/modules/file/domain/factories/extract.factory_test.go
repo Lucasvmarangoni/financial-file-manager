@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
+	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/google/uuid"
 )
 
 func TextExtractFactory(t *testing.T) {
 
 	typ := "invoice"
-	customer := "test-customer"
+	customer := pkg_entities.NewID()
 	account := 0
 	value := 20.0
 	category := "deposit"
