@@ -6,6 +6,7 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/google/uuid"
 )
 
 func TextExtractFactory(t *testing.T) {
@@ -28,7 +29,7 @@ func TextExtractFactory(t *testing.T) {
 			category,
 			method,
 			location,
-			nil,
+			uuid.Nil,
 		)
 		require.NotNil(t, extract)
 		require.Nil(t, err)
@@ -46,7 +47,7 @@ func TextExtractFactory(t *testing.T) {
 			category,
 			method,
 			location,
-			nil,
+			uuid.Nil,
 		)
 		require.Nil(t, extract)
 		require.NotNil(t, err)

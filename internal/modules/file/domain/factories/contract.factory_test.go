@@ -19,7 +19,7 @@ func TextContractFactory(t *testing.T) {
 
 	t.Run("should return a new contract", func(t *testing.T) {
 
-		contract, err := factories.ContractFactory(			
+		contract, err := factories.ContractFactory(		
 			typ,			
 			customer,
 			title,

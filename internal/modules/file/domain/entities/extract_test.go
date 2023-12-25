@@ -1,90 +1,38 @@
 package entities_test
 
 import (
-	"fmt"
 	"log"
 	"testing"
 
-	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
+	entities_pkg "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func init() {
-	err := godotenv.Load("../../../../common/config/.env.default")
+	err := godotenv.Load("../../../../..//config/.env.default")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 }
+func TestNewExtract(t *testing.T) {
+	typ := "contract"
+	customer := entities_pkg.NewID()
 
-func TestExtractValidate(t *testing.T) {
+	file, err := entities.NewFile(typ, customer)
 
-	t.Run("should return error when account is lass than or equal 0", func(t *testing.T) {
-		typ := "contract"
-		customer := "test-customer"
+	require.NotNil(t, file)
+	require.Nil(t, err)
 
-		file, err := entities.NewFile(typ, customer)
-
-		require.NotNil(t, file)
-		require.Nil(t, err)
-
-		extract := entities.Extract{
-			File:     *file,
-			Account:  0,
-			Value:    20.0,
-			Category: "deposit",
-			Method:   "debit",
-			Location: "test-location",
-		}
-
-		err = extract.Validate()
-		assert.Error(t, err)
-		assert.Equal(t, "Account needs to be greater than 0", err.Error())
-	})
-
-	t.Run("should return error when invalid method is provided", func(t *testing.T) {
-		typ := "contract"
-		customer := "test-customer"
-
-		file, err := entities.NewFile(typ, customer)
-
-		require.NotNil(t, file)
-		require.Nil(t, err)
-
-		extract := entities.Extract{
-			File:     *file,
-			Account:  1,
-			Value:    20.0,
-			Category: "deposit",
-			Method:   "invalid",
-			Location: "test-location",
-		}
-
-		err = extract.Validate()
-		assert.Error(t, err)
-		assert.Equal(t, fmt.Sprintf("Need a valid method: %v", consts.Method()), err.Error())
-	})
-}
-
-func TextNewExtract(t *testing.T) {
-
-	t.Run("should return a new extract", func(t *testing.T) {
-
-		typ := "contract"
-		customer := "test-customer"
-
-		file, err := entities.NewFile(typ, customer)
-
-		require.NotNil(t, file)
-		require.Nil(t, err)
-
-		account := 0
-		value := 20.20
-		category := "deposit"
-		method := "debit"
-		location := "test-location"
+	account := 1
+	value := 20.20
+	category := "deposit"
+	method := "debit"
+	location := "test-location"
+	t.Run("should return a new extract when valid params are provided", func(t *testing.T) {
 
 		extract, err := entities.NewExtract(
 			*file,
@@ -93,7 +41,7 @@ func TextNewExtract(t *testing.T) {
 			category,
 			method,
 			location,
-			nil,
+			uuid.Nil,
 		)
 
 		require.NotNil(t, extract)
@@ -104,5 +52,95 @@ func TextNewExtract(t *testing.T) {
 		assert.Equal(t, category, extract.Category)
 		assert.Equal(t, method, extract.Method)
 		assert.Equal(t, location, extract.Location)
+	})
+
+	t.Run("should return error when invalid param account is provided", func(t *testing.T) {
+
+		account = 0
+
+		extract, err := entities.NewExtract(
+			*file,
+			account,
+			value,
+			category,
+			method,
+			location,
+			uuid.Nil,
+		)
+
+		require.NotNil(t, err)
+		require.Nil(t, extract)
+	})
+
+	t.Run("should return error when invalid param value is provided", func(t *testing.T) {
+
+		value = 0
+
+		extract, err := entities.NewExtract(
+			*file,
+			account,
+			value,
+			category,
+			method,
+			location,
+			uuid.Nil,
+		)
+
+		require.NotNil(t, err)
+		require.Nil(t, extract)
+	})
+
+	t.Run("should return error when invalid param category is provided", func(t *testing.T) {
+
+		category = "-"
+
+		extract, err := entities.NewExtract(
+			*file,
+			account,
+			value,
+			category,
+			method,
+			location,
+			uuid.Nil,
+		)
+
+		require.NotNil(t, err)
+		require.Nil(t, extract)
+	})
+
+	t.Run("should return error when invalid param method is provided", func(t *testing.T) {
+
+		method = "-"
+
+		extract, err := entities.NewExtract(
+			*file,
+			account,
+			value,
+			category,
+			method,
+			location,
+			uuid.Nil,
+		)
+
+		require.NotNil(t, err)
+		require.Nil(t, extract)
+	})
+
+	t.Run("should return error when invalid param location is provided", func(t *testing.T) {
+
+		location = ""
+
+		extract, err := entities.NewExtract(
+			*file,
+			account,
+			value,
+			category,
+			method,
+			location,
+			uuid.Nil,
+		)
+
+		require.NotNil(t, err)
+		require.Nil(t, extract)
 	})
 }

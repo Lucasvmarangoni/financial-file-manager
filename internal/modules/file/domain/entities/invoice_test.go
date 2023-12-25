@@ -1,58 +1,32 @@
 package entities_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
-	consts "github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
+	entities_pkg "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestInvoiceValidate(t *testing.T) {
+func TestNewInvoice(t *testing.T) {
 
-	t.Run("should return error when invalid method is provided", func(t *testing.T) {
-		dueDate, _ := time.Parse(time.RFC3339, "2022-03-14T09:26:22.123456789-07:00")
-		methods := consts.Method()
-		typ := "contract"
-		customer := "test-customer"
+	typ := "contract"
+	customer := entities_pkg.NewID()
 
-		file, err := entities.NewFile(typ, customer)
+	file, err := entities.NewFile(typ, customer)
 
-		require.NotNil(t, file)
-		require.Nil(t, err)
+	require.NotNil(t, file)
+	require.Nil(t, err)
+	dueDate, _ := time.Parse(time.RFC3339, "2022-03-14T09:26:22.123456789-07:00")
+	value := 29.0
+	method := "debit"
 
-		invoice := entities.Invoice{
-			File:    *file,
-			DueDate: dueDate,
-			Value:   12.0,
-			Method:  "invalid",
-		}
+	t.Run("should return a new invoice when valid params are provided", func(t *testing.T) {
 
-		err = invoice.Validate()
-		assert.Error(t, err)
-		assert.Equal(t, fmt.Sprintf("Need a valid method: %v", methods), err.Error())
-	})
-}
-
-func TextNewInvoice(t *testing.T) {
-
-	t.Run("should return a new invoice", func(t *testing.T) {
-
-		typ := "contract"
-		customer := "test-customer"
-
-		file, err := entities.NewFile(typ, customer)
-
-		require.NotNil(t, file)
-		require.Nil(t, err)
-		dueDate, _ := time.Parse(time.RFC3339, "2022-03-14T09:26:22.123456789-07:00")
-		value := 29.0
-		method := "debit"
-
-		invoice, err := entities.NewInvoice(*file, dueDate, value, method, nil)
+		invoice, err := entities.NewInvoice(*file, dueDate, value, method, uuid.Nil)
 
 		require.NotNil(t, invoice)
 		require.Nil(t, err)
@@ -60,5 +34,35 @@ func TextNewInvoice(t *testing.T) {
 		assert.Equal(t, dueDate, invoice.DueDate)
 		assert.Equal(t, value, invoice.Value)
 		assert.Equal(t, method, invoice.Method)
+	})
+
+	t.Run("should return error when invalid params dueDate is provided", func(t *testing.T) {
+
+		var dueDate time.Time
+
+		invoice, err := entities.NewInvoice(*file, dueDate, value, method, uuid.Nil)
+
+		require.NotNil(t, err)
+		require.Nil(t, invoice)
+	})
+
+	t.Run("should return error when invalid params value is provided", func(t *testing.T) {
+
+		value = 0
+
+		invoice, err := entities.NewInvoice(*file, dueDate, value, method, uuid.Nil)
+
+		require.NotNil(t, err)
+		require.Nil(t, invoice)
+	})
+
+	t.Run("should return error when invalid params method is provided", func(t *testing.T) {
+
+		method = "-"
+
+		invoice, err := entities.NewInvoice(*file, dueDate, value, method, uuid.Nil)
+
+		require.NotNil(t, err)
+		require.Nil(t, invoice)
 	})
 }

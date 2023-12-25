@@ -9,6 +9,7 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/google/uuid"
 )
 
 func TextInvoiceFactory(t *testing.T) {
@@ -27,7 +28,7 @@ func TextInvoiceFactory(t *testing.T) {
 			dueDate,
 			value,
 			method,
-			nil,
+			uuid.Nil,
 		)
 		require.NotNil(t, invoice)
 		require.Nil(t, err)
@@ -43,7 +44,7 @@ func TextInvoiceFactory(t *testing.T) {
 			dueDate,
 			value,
 			method,
-			nil,
+			uuid.Nil,
 		)
 		require.Nil(t, invoice)
 		require.NotNil(t, err)
