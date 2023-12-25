@@ -7,17 +7,18 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/asaskevich/govalidator"
 )
 
 type Extract struct {
-	File
-	Account  int     `json:"account" valid:"notnull"`
-	Value    float64 `json:"value" valid:"notnull"`
-	Category string  `json:"category" valid:"notnull"`
-	Method   string  `json:"method" valid:"notnull"`
-	Location string  `json:"location" valid:"notnull"`
-	Contract *string `json:"contract,omitempty"`
+	File     `json:"file" valid:"required"`
+	Account  int           `json:"account" valid:"notnull"`
+	Value    float64       `json:"value" valid:"notnull"`
+	Category string        `json:"category" valid:"notnull"`
+	Method   string        `json:"method" valid:"notnull"`
+	Location string        `json:"location" valid:"notnull"`
+	Contract []entities.ID `json:"contract" valid:"-"`
 }
 
 func (e *Extract) Validate() error {
@@ -53,7 +54,7 @@ func NewExtract(
 	category string,
 	method string,
 	location string,
-	contract *string,
+	contract entities.ID,
 ) (*Extract, error) {
 
 	extract := Extract{
@@ -63,9 +64,6 @@ func NewExtract(
 		Category: category,
 		Method:   method,
 		Location: location,
-	}
-	if contract != nil {
-		extract.Contract = contract
 	}
 
 	err := extract.Validate()

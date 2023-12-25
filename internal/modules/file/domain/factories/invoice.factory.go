@@ -4,15 +4,16 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
+	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 )
 
 func InvoiceFactory(
-	typ string,	
+	typ string,
 	customer string,
 	dueDate time.Time,
 	value float64,
 	method string,
-	contract *string,
+	contract pkg_entities.ID,
 ) (*entities.Invoice, error) {
 
 	file, err := entities.NewFile(typ, customer)

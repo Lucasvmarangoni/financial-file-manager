@@ -3,16 +3,17 @@ package entities
 import (
 	"errors"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/asaskevich/govalidator"
 )
 
 type Contract struct {
-	File
+	File    `json:"file" valid:"required"` 
 	Title   string   `json:"title" valid:"notnull"`
 	Parties []string `json:"parties" valid:"notnull"`
 	Object  string   `json:"object" valid:"notnull"`
-	Extract []string `json:"extract"`
-	Invoice []string `json:"invoice"`
+	Extract []entities.ID `json:"extract" valid:"-"`
+	Invoice []entities.ID `json:"invoice" valid:"-"`
 }
 
 func (c *Contract) Validate() error {
@@ -27,7 +28,6 @@ func (c *Contract) Validate() error {
 	}
 
 	_, err := govalidator.ValidateStruct(c)
-
 	if err != nil {
 		return err
 	}
@@ -35,16 +35,16 @@ func (c *Contract) Validate() error {
 }
 
 func NewContract(
-	file File,
+	file *File,
 	title string,
 	parties []string,
 	object string,
-	extract []string,
-	invoice []string,
+	extract []entities.ID,
+	invoice []entities.ID,
 ) (*Contract, error) {
 
-	contract := Contract{
-		File:    file,
+	contract := &Contract{
+		File:    *file,
 		Title:   title,
 		Parties: parties,
 		Object:  object,
@@ -56,5 +56,5 @@ func NewContract(
 	if err != nil {
 		return nil, err
 	}
-	return &contract, nil
+	return contract, nil
 }

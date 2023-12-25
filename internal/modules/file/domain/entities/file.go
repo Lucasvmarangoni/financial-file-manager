@@ -8,19 +8,19 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/asaskevich/govalidator"
-	uuid "github.com/satori/go.uuid"
 )
 
 type File struct {
-	ID        string    `json:"document_id" valid:"uuid"`
-	Type      string    `json:"type" valid:"notnull"`
-	CreatedAt time.Time `json:"created_at" valid:"-"`
-	Customer  string    `json:"customer" valid:"notnull"`
+	ID        entities.ID `json:"document_id" valid:"-"`
+	Type      string      `json:"type" valid:"notnull"`
+	CreatedAt time.Time   `json:"created_at" valid:"-"`
+	Customer  string      `json:"customer" valid:"notnull"`
 }
 
 func (f *File) Validate() error {
-	
+
 	fileTypes := consts.FileTypes()
 
 	if !lib.MapVerifyString(fileTypes[:], strings.ToLower(f.Type)) {
@@ -28,7 +28,6 @@ func (f *File) Validate() error {
 	}
 
 	_, err := govalidator.ValidateStruct(f)
-
 	if err != nil {
 		return err
 	}
@@ -37,9 +36,9 @@ func (f *File) Validate() error {
 
 func NewFile(typ string, customer string) (*File, error) {
 
-	file := File{		
-		Type:      typ,		
-		Customer:  customer,
+	file := File{
+		Type:     typ,
+		Customer: customer,
 	}
 	file.prepare()
 
@@ -50,7 +49,7 @@ func NewFile(typ string, customer string) (*File, error) {
 	return &file, nil
 }
 
-func (f *File) prepare(){
-	f.ID = uuid.NewV4().String()
+func (f *File) prepare() {
+	f.ID = entities.NewID()
 	f.CreatedAt = time.Now()
 }
