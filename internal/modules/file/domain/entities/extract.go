@@ -1,13 +1,13 @@
 package entities
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -15,9 +15,9 @@ type Extract struct {
 	File     `json:"file" valid:"required"`
 	Account  int           `json:"account" valid:"notnull"`
 	Value    float64       `json:"value" valid:"notnull"`
-	Category string        `json:"category" valid:"notnull"`
-	Method   string        `json:"method" valid:"notnull"`
-	Location string        `json:"location" valid:"notnull"`
+	Category string        `json:"category" valid:"notnull,required"`
+	Method   string        `json:"method" valid:"notnull,required"`
+	Location string        `json:"location" valid:"required"`
 	Contract []entities.ID `json:"contract" valid:"-"`
 }
 
@@ -26,17 +26,17 @@ func (e *Extract) Validate() error {
 	method := consts.Method()
 	payment := consts.Payment()
 
-	switch {
-	case e.Account == 0:
-		return errors.New("Account needs to be greater than 0")
-	case e.Value == 0:
-		return errors.New("Value needs to be greater than 0")
-	case !lib.MapVerifyString(payment[:], strings.ToLower(e.Category)):
-		return errors.New(fmt.Sprintf("Need a valid category: %v", payment))
-	case !lib.MapVerifyString(method[:], strings.ToLower(e.Method)):
-		return errors.New(fmt.Sprintf("Need a valid method: %v", method))
-	case e.Location == "":
-		return errors.New("Need a location")
+	if e.Account == 0 {
+		return pkg_errors.IsInvalidError("Account", "Needs to be greater than 0")
+	}
+	if e.Value == 0 {
+		return pkg_errors.IsInvalidError("Value", "Needs to be greater than 0")
+	}
+	if !lib.MapVerifyString(payment[:], strings.ToLower(e.Category)) {
+		return pkg_errors.IsInvalidError("Category", fmt.Sprintf("It need to be a one of those: %v", payment))
+	}
+	if !lib.MapVerifyString(method[:], strings.ToLower(e.Method)) {
+		return pkg_errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
 	}
 
 	_, err := govalidator.ValidateStruct(e)

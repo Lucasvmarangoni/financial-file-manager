@@ -1,13 +1,13 @@
 package entities
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -15,21 +15,22 @@ type Invoice struct {
 	File     `json:"file" valid:"required"`
 	DueDate  time.Time   `json:"maturity" valid:"notnull"`
 	Value    float64     `json:"value" valid:"notnull"`
-	Method   string      `json:"method" valid:"notnull"`
+	Method   string      `json:"method" valid:"notnull,required"`
 	Contract entities.ID `json:"contract" valid:"-"`
 }
 
 func (i *Invoice) Validate() error {
 
-	methods := consts.Method()
+	method := consts.Method()
 
-	switch {
-	case i.Value <= 0:
-		return errors.New("Value needs to be greater than 0")
-	case i.DueDate == time.Time{}:
-		return errors.New("Need a due date")
-	case !lib.MapVerifyString(methods[:], i.Method):
-		return errors.New(fmt.Sprintf("Need a valid method: %v", methods))
+	if i.Value <= 0 {
+		return pkg_errors.IsRequiredError("Value", "It needs to be greater than 0")
+	}
+	if i.DueDate.IsZero() {
+		return pkg_errors.IsRequiredError("DueDate", "")
+	}
+	if !lib.MapVerifyString(method[:], i.Method) {
+		return pkg_errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
 	}
 
 	_, err := govalidator.ValidateStruct(i)

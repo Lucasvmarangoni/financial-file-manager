@@ -1,30 +1,38 @@
 package entities
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/lib"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
 	"github.com/asaskevich/govalidator"
 )
 
 type File struct {
-	ID        entities.ID `json:"document_id" valid:"-"`
-	Type      string      `json:"type" valid:"notnull"`
+	ID        entities.ID `json:"document_id" valid:"notnull,required"`
+	Type      string      `json:"type" valid:"notnull, required"`
 	CreatedAt time.Time   `json:"created_at" valid:"-"`
-	Customer  entities.ID      `json:"customer" valid:"notnull"`
+	Customer  entities.ID `json:"customer" valid:"notnull,required"`
 }
 
 func (f *File) Validate() error {
 
 	fileTypes := consts.FileTypes()
 
+	if _, err := entities.ParseID(f.ID.String()); err != nil {
+		pkg_errors.IsInvalidError("ID", "Must be google uuid")
+	}
+
+	if _, err := entities.ParseID(f.Customer.String()); err != nil {
+		pkg_errors.IsInvalidError("Customer", "Must be google uuid")
+	}
+
 	if !lib.MapVerifyString(fileTypes[:], strings.ToLower(f.Type)) {
-		return errors.New(fmt.Sprintf("invalid type, must be: %v", fileTypes))
+		return pkg_errors.IsInvalidError("Type", fmt.Sprintf("Must be: %v", fileTypes))
 	}
 
 	_, err := govalidator.ValidateStruct(f)
