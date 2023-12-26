@@ -18,7 +18,7 @@
 
 <br>
 
-**Projeto de portfólio, tem como objetivo aprendizadom, prática e demonstração das habilidades do desenvolvedor. Portando, as escolhas no projeto são com esse objetivo.**
+**Projeto de portfólio, tem como objetivo aprendizadom, prática e demonstração das minhas habilidades como desenvolvedor. Portando, as escolhas no projeto são com esse objetivo.**
 
 </div>
 
@@ -63,7 +63,8 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ### HTTP
 
-- **API**: GraphQL e gRPC 
+- **API**: Rest, GraphQL e gRPC 
+- **Roteador**: go-chi
 - **Framework GraphQL**: 99designs/gqlgen
 
 ### Observabilidade
