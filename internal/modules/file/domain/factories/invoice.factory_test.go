@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/const"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/google/uuid"
