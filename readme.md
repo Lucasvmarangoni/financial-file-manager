@@ -18,7 +18,7 @@
 
 <br>
 
-**Projeto de portfólio, tem como objetivo aprendizado, prática e demonstração das minhas habilidades como desenvolvedor. Portando, as escolhas no projeto são com esse objetivo.**
+**Projeto de portfólio tem como objetivos aprendizado, prática e demonstração das minhas habilidades como desenvolvedor. Portanto, as escolhas no projeto são com esses objetivos.**
 
 </div>
 
