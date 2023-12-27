@@ -32,15 +32,13 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ### Principais recursos
 
-- **Armazenamento Eficiente:** Os documentos são inicialmente armazenados localmente no servidor e, posteriormente transferidos para um serviço de armazenamento em nuvem.
+- **Documentos**: Os documentos são inicialmente armazenados localmente no servidor e, posteriormente transferidos para um serviço de armazenamento em nuvem. Sendo requisito manter versões do documento para visualizar seu histórico.
 
-- **Metadados Inteligentes:** Cada documento é acompanhado de metadados, incluindo nome, data, tipo de documento e informações relacionadas a transações financeiras.
+- **Consultas**: Cada documento é acompanhado de metadados, incluindo nome, data, tipo de documento e informações relacionadas a transações financeiras.
 
-- **Recuperação Personalizada:** Os usuários podem buscar documentos com base em critérios como tipo de documento, período de datas e outras informações relevantes.
+- **Segurança**: O sistema mantém nível de segurança e controle de acesso rigoroso, além de observabilidade e registro de atividades para fins de auditoria.
 
-- **Segurança e Controle:** O sistema mantém nível de segurança e controle de acesso rigoroso, garantindo que as informações sejam protegidas e apenas os documentos autorizados sejam acessados.
-
--  **Conformidade Regulatória**: A aplicação atende as normas estabelecidas na LGPD.
+- **Resiliência**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
 
 *<a href="./docs/doc-funcional.md"> ⇝ <u>Documentação detalhada.</u> </a>*
 
