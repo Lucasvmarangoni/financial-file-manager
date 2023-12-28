@@ -22,7 +22,7 @@ func TestNewExtract(t *testing.T) {
 	typ := "contract"
 	customer := entities_pkg.NewID()
 
-	file, err := entities.NewFile(typ, customer)
+	file, err := entities.NewFile(typ, customer, nil)
 
 	require.NotNil(t, file)
 	require.Nil(t, err)

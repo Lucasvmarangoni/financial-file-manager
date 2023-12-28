@@ -26,6 +26,7 @@ func TextInvoiceFactory(t *testing.T) {
 		invoice, err := factories.InvoiceFactory(
 			typ,
 			customer,
+			nil,
 			dueDate,
 			value,
 			method,
@@ -42,6 +43,7 @@ func TextInvoiceFactory(t *testing.T) {
 		invoice, err := factories.InvoiceFactory(
 			typ,
 			customer,
+			nil,
 			dueDate,
 			value,
 			method,

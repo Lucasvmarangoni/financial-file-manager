@@ -23,6 +23,7 @@ func TextContractFactory(t *testing.T) {
 		contract, err := factories.ContractFactory(		
 			typ,			
 			customer,
+			nil,
 			title,
 			parties,
 			object,	
@@ -40,6 +41,7 @@ func TextContractFactory(t *testing.T) {
 		contract, err := factories.ContractFactory(			
 			typ,			
 			customer,
+			nil,
 			title,
 			parties,
 			object,	

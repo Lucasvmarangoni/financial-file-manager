@@ -27,7 +27,7 @@ func TestNewFile(t *testing.T) {
 	now := time.Now()
 	t.Run("should return a new file when provided valid params", func(t *testing.T) {
 
-		file, err := entities.NewFile(typ, customer)
+		file, err := entities.NewFile(typ, customer, nil)
 
 		require.NotNil(t, file)
 		require.Nil(t, err)
@@ -41,7 +41,7 @@ func TestNewFile(t *testing.T) {
 
 		typ = "-"
 
-		file, err := entities.NewFile(typ, customer)
+		file, err := entities.NewFile(typ, customer, nil)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)
@@ -51,7 +51,7 @@ func TestNewFile(t *testing.T) {
 
 		customer = uuid.Nil
 
-		file, err := entities.NewFile(typ, customer)
+		file, err := entities.NewFile(typ, customer, nil)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)

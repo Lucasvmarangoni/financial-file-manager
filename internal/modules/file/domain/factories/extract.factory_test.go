@@ -25,6 +25,7 @@ func TextExtractFactory(t *testing.T) {
 		extract, err := factories.ExtractFactory(
 			typ,
 			customer,
+			nil,
 			account,
 			value,
 			category,
@@ -43,6 +44,7 @@ func TextExtractFactory(t *testing.T) {
 		extract, err := factories.ExtractFactory(
 			typ,
 			customer,
+			nil,
 			account,
 			value,
 			category,
