@@ -8,6 +8,7 @@ import (
 func ContractFactory(
 	typ string,
 	customer pkg_entities.ID,
+	versions []pkg_entities.ID,
 	title string,
 	parties []string,
 	object string,
@@ -15,7 +16,7 @@ func ContractFactory(
 	invoice []pkg_entities.ID,
 ) (*entities.Contract, error) {
 
-	file, err := entities.NewFile(typ, customer)
+	file, err := entities.NewFile(typ, customer, versions)
 	if err != nil {
 		return nil, err
 	}

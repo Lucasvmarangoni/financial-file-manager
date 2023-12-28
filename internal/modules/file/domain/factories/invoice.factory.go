@@ -10,13 +10,14 @@ import (
 func InvoiceFactory(
 	typ string,
 	customer pkg_entities.ID,
+	versions []pkg_entities.ID,
 	dueDate time.Time,
 	value float64,
 	method string,
 	contract pkg_entities.ID,
 ) (*entities.Invoice, error) {
 
-	file, err := entities.NewFile(typ, customer)
+	file, err := entities.NewFile(typ, customer, versions)
 	if err != nil {
 		return nil, err
 	}
