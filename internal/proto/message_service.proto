@@ -7,6 +7,7 @@ message FileData {
   string type = 2;
   string createdAt = 3;
   string customer = 4;
+  repeated string versions = 5;
 }
 
 message ContractData {
