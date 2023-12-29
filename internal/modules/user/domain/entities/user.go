@@ -17,8 +17,9 @@ type User struct {
 	CPF       string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string      `json:"email" valid:"email"`
 	Password  string      `json:"password"`
+	Admin     bool        `json:"admin" valid:"boolean"`
 	CreatedAt time.Time   `json:"created_at" valid:"-"`
-	UpdatedAt []time.Time `json:"updated_at" valid:"-"`
+	UpdatedAt []time.Time `json:"updated_at" valid:"-"`	
 }
 
 func (u *User) Validate() error {
@@ -58,7 +59,7 @@ func validatePassword(password string) error {
 	return nil
 }
 
-func NewUser(name, lastName, cpf, email, password string) (*User, error) {
+func NewUser(name, lastName, cpf, email, password string, admin bool) (*User, error) {
 
 	err := validatePassword(password)
 	if err != nil {
@@ -68,7 +69,7 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
-	}
+	}	
 
 	user := User{
 		Name:     name,
@@ -76,6 +77,7 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 		CPF:      cpf,
 		Email:    email,
 		Password: string(hash),
+		Admin:    admin,
 	}
 	user.prepare()
 
