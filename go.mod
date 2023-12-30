@@ -5,7 +5,9 @@ go 1.21.1
 require (
 	github.com/Lucasvmarangoni/video-encoder v0.0.0-20231016153646-27129944f425
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/go-chi/chi v1.5.1
 	github.com/go-chi/jwtauth v1.2.0
+	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jackc/pgx/v5 v5.5.0
