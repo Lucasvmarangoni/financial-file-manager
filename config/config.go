@@ -7,15 +7,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-
-
 type conf struct {
 	database
 	rabbitMQ
 	grpc
 	storage
-	tokenAuth *jwtauth.JWTAuth
-	jWTSecret string
+	jwt
 }
 
 func GetEnv(key string) interface{} {
@@ -42,5 +39,5 @@ func init() {
 		panic(err)
 	}
 
-	cfg.tokenAuth = jwtauth.New("HS256", []byte(cfg.jWTSecret), nil)
+	cfg.tokenAuth = jwtauth.New("HS256", []byte(cfg.jwt.secret), nil)
 }
