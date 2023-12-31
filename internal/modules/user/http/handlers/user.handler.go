@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
 	"github.com/go-chi/jwtauth"
@@ -12,19 +13,26 @@ import (
 
 type UserHandler struct {
 	Repository    *repositories.UserRepositoryDb
+	createService services.CreateService
 	Jwt           *jwtauth.JWTAuth
 	JwtExpiriesIn int
 }
 
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
+	var err error
 
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	u.createService.Repository = u.Repository
+	err = u.createService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -34,14 +42,13 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
+// 	var user dto.AuthenticationInput
+// }
 
-func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
-	var user dto.AuthenticationInput
-}
+// func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+// }
 
-func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
-}
-
-func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	var user dto.AuthenticationInput
-}
+// func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
+// 	var user dto.AuthenticationInput
+// }
