@@ -6,16 +6,22 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
 	"github.com/go-chi/jwtauth"
 	// "github.com/go-chi/chi"
 )
 
 type UserHandler struct {
-	Repository    *repositories.UserRepositoryDb
-	createService services.CreateService
+	createService *services.CreateService
 	Jwt           *jwtauth.JWTAuth
 	JwtExpiriesIn int
+}
+
+func NewUserHandler(createService *services.CreateService, jwt *jwtauth.JWTAuth, expiry int) *UserHandler {
+	return &UserHandler{
+		createService: createService,
+		Jwt:           jwt,
+		JwtExpiriesIn: expiry,
+	}
 }
 
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +33,6 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	u.createService.Repository = u.Repository
 	err = u.createService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

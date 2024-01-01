@@ -11,6 +11,13 @@ type CreateService struct {
 	Repository *repositories.UserRepositoryDb
 }
 
+func NewCreateService(repo *repositories.UserRepositoryDb) *CreateService {
+	createService := &CreateService{
+		Repository: repo,
+	}
+	return createService
+}
+
 func (c *CreateService) Create(name, lastName, cpf, email, password string, admin bool) error {
 	newUser, err := entities.NewUser(name, lastName, cpf, email, password, admin)
 	if err != nil {

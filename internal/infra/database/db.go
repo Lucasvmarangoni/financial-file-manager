@@ -39,8 +39,8 @@ func NewDbTest(ctx context.Context) *pgx.Conn {
 
 func (cfg *Config) Connect(ctx context.Context) (*pgx.Conn, error) {
 	var err error
-	url := "postgresql://" + cfg.User + cfg.Password + "@frilly-mollusk-1610.g8x.cockroachlabs.cloud:" + cfg.Port + cfg.DbName + "?sslmode=" + cfg.SSLMode
-
+	url := "postgresql://" + cfg.User + ":" + cfg.Password + "@" + "frilly-mollusk-1610.g8x.cockroachlabs.cloud:" + cfg.Port + "/" + cfg.DbName + "?sslmode=" + cfg.SSLMode
+	
 	cfg.Db, err = pgx.ParseConfig(url)	
 	if err != nil {
 		cfg.Password = "****"
