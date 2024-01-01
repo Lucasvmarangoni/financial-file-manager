@@ -1,5 +1,5 @@
 // FIZ ESSA LIB ANTES DE APRENDER A UTILIZAR A VIPER / ESTOU MANTENDO NO CÓDIGO APENAS PARA REGISTRO
-// package config
+package config
 
 // import (
 // 	"fmt"

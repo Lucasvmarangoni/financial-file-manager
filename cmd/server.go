@@ -7,19 +7,17 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
+	// "github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
+	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
-	"github.com/streadway/amqp"
+	// "github.com/streadway/amqp"
 )
 
 var db database.Config
@@ -28,11 +26,11 @@ func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	db.DbName = config.GetEnv("database.name").(string)
-	db.Port = config.GetEnv("database.port").(string)
-	db.User = config.GetEnv("database.user").(string)
-	db.Password = config.GetEnv("database.password").(string)
-	db.SSLMode = config.GetEnv("database.ssl_mode").(string)
+	db.DbName = config.GetEnv("database_name").(string)
+	db.Port = config.GetEnv("database_port").(string)
+	db.User = config.GetEnv("database_user").(string)
+	db.Password = config.GetEnv("database_password").(string)
+	db.SSLMode = config.GetEnv("database_ssl_mode").(string)
 }
 
 func main() {
@@ -45,14 +43,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	rpc.Connect()
+	// rpc.Connect()
 
-	messageChannel := make(chan amqp.Delivery)
+	// messageChannel := make(chan amqp.Delivery)
 
-	rabbitMQ := queue.NewRabbitMQ()
-	ch := rabbitMQ.Connect()
-	defer ch.Close()
-	rabbitMQ.Consume(messageChannel)
+	// rabbitMQ := queue.NewRabbitMQ()
+	// ch := rabbitMQ.Connect()
+	// defer ch.Close()
+	// rabbitMQ.Consume(messageChannel)
 
 	r := chi.NewRouter()
 	Web(r, tx)
@@ -78,14 +76,17 @@ func Database(ctx context.Context) (pgx.Tx, error) {
 }
 
 func Web(r *chi.Mux, tx pgx.Tx) {
-	tokenAuth := config.GetEnv("jwt.tokenAuth").(*jwtauth.JWTAuth)
+	tokenAuth := config.GetTokenAuth()
 
 	userRouter := routers.NewUserRouter(tx, r)
-
-	r.Use(middleware.Logger)
-	userRouter.InitializeUserRoutes()	
 	
-	r.Use(jwtauth.Verifier(tokenAuth))
-	r.Use(jwtauth.Authenticator)
-	userRouter.UserRoutes()
+	r.Use(middleware.Logger)
+
+	userRouter.InitializeUserRoutes()	
+
+	r.Route("/api", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(jwtauth.Authenticator)
+		userRouter.UserRoutes(r)
+	})
 }

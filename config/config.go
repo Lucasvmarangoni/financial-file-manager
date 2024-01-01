@@ -22,12 +22,18 @@ func GetEnv(key string) interface{} {
 	return viper.Get(key)
 }
 
+func GetTokenAuth() *jwtauth.JWTAuth {
+	tokenAuth := jwtauth.New("HS256", []byte(GetEnv("jwt_secret").(string)), nil)
+	return tokenAuth
+}
+
 func init() {
-	var cfg *conf
+	cfg := &conf{}
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("../")
 	viper.SetConfigFile(".env")
+	// viper.SetConfigFile("../config/.env.default")
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -39,5 +45,5 @@ func init() {
 		panic(err)
 	}
 
-	cfg.tokenAuth = jwtauth.New("HS256", []byte(cfg.jwt.secret), nil)
+	
 }

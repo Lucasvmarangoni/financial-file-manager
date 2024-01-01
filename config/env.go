@@ -1,7 +1,5 @@
 package config
 
-import "github.com/go-chi/jwtauth"
-
 type database struct {
 	name     string `mapstructure:"DATABASE_NAME"`
 	user     string `mapstructure:"DATABASE_USER"`
@@ -12,8 +10,7 @@ type database struct {
 
 type jwt struct {
 	secret     string `mapstructure:"JWT_SECRET"`
-	expired_in int    `mapstructure:"JWT_EXPIREDIN"`
-	tokenAuth *jwtauth.JWTAuth	
+	expired_in string    `mapstructure:"JWT_EXPIREDIN"`
 }
 
 type rabbitMQ struct {
