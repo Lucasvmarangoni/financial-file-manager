@@ -2,10 +2,11 @@ package database
 
 import (
 	"context"
-	"os"	
+	"os"
 
+	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
 	"github.com/jackc/pgx/v5"
-	zerolog "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
@@ -27,12 +28,11 @@ func NewDbTest(ctx context.Context) *pgx.Conn {
 	dbInstance.Port = os.Getenv("DATABASE_PORT")
 	dbInstance.User = os.Getenv("DATABASE_USER")
 	dbInstance.Password = os.Getenv("DATABASE_PASSWORD")
-	dbInstance.SSLMode = os.Getenv("DATABASE_SSL_MODE")	
+	dbInstance.SSLMode = os.Getenv("DATABASE_SSL_MODE")
 
 	connection, err := dbInstance.Connect(ctx)
 	if err != nil {
-		zerolog.Fatal().Err(err).Stack().Str("file", "db.go").Str("func", "NewDbTest").Msg("Error in the configuration of the database testing")
-		os.Exit(1)
+		log.Fatal().Err(err).Str("file", "db.go").Str("Method", "NewDbTest").Str("Operation", "dbInstance.Connect").Msg("Error in the configuration of the database testing")
 	}
 	return connection
 }
@@ -40,18 +40,16 @@ func NewDbTest(ctx context.Context) *pgx.Conn {
 func (cfg *Config) Connect(ctx context.Context) (*pgx.Conn, error) {
 	var err error
 	url := "postgresql://" + cfg.User + ":" + cfg.Password + "@" + "frilly-mollusk-1610.g8x.cockroachlabs.cloud:" + cfg.Port + "/" + cfg.DbName + "?sslmode=" + cfg.SSLMode
-	
-	cfg.Db, err = pgx.ParseConfig(url)	
+
+	cfg.Db, err = pgx.ParseConfig(url)
 	if err != nil {
-		cfg.Password = "****"
-		zerolog.Error().Err(err).Str("file", "db.go").Str("func", "Connect").Str("operation", "ParseConfig").Msgf("Error connecting to database at %s", url)
-		return nil, err
+		return nil, logger.NewError(err, "pgx.ParseConfig(url)")
 	}
 
 	cfg.Db.RuntimeParams["application_name"] = "financial_file_manager"
 	conn, err := pgx.ConnectConfig(ctx, cfg.Db)
 	if err != nil {
-		return nil, err
+		return nil, logger.NewError(err, "pgx.ConnectConfig")
 	}
 	return conn, nil
 }

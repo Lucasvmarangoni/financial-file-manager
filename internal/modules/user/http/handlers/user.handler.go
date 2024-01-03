@@ -7,6 +7,7 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/go-chi/jwtauth"
+	"github.com/rs/zerolog/log"
 	// "github.com/go-chi/chi"
 )
 
@@ -30,14 +31,17 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
+		log.Error().Err(err).Str("File", "user.handler.go").Str("Method", "Create").Str("Operation", "json.NewDecoder(r.Body).Decode(&user)").Msg("Error to decode request")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = u.createService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
 	if err != nil {
+		log.Error().Err(err).Str("Operation", "u.createService.Create").Msg("Error to create user")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	log.Info().Msg("User created successfully")
 	w.WriteHeader(http.StatusOK)
 }
 

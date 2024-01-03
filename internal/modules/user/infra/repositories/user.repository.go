@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"log"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
@@ -10,7 +9,6 @@ import (
 )
 
 type UserRepository interface {
-	InitTable() error
 	Insert(user *entities.User) (*entities.User, error)
 	Find(id string) (*entities.User, error)
 }
@@ -44,23 +42,4 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) (*en
 		return nil, err
 	}
 	return user, nil
-}
-
-func (r *UserRepositoryDb) InitTable(ctx context.Context) error {
-	log.Println("Creating users table.")
-	_, err := r.tx.Exec(ctx, `CREATE TABLE IF NOT EXISTS users (
-			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-			name TEXT,
-			last_name TEXT,
-			email TEXT UNIQUE,
-			cpf TEXT,
-			password TEXT,
-			admin BOOLEAN,
-			created_at TIMESTAMP,
-			updated_at TIMESTAMP[]
-		)`)
-	if err != nil {
-		return err
-	}
-	return nil
 }
