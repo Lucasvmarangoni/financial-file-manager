@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -25,13 +24,13 @@ func NewError(err error, value ...string) error {
 			err: err,
 		}
 	}
-	return fmt.Errorf("%s: %s - %w", key, value, e.err)
+	return fmt.Errorf("%w %s: %s", e.err, key, value)
 }
 
 func IsRequiredError(fieldName, msg string) error {
-	return errors.New(fmt.Sprintf("%s is required. %s", fieldName, msg))
+	return fmt.Errorf("%s is required. %s", fieldName, msg)
 }
 
 func IsInvalidError(fieldName, msg string) error {
-	return errors.New(fmt.Sprintf("%s is invalid. %s", fieldName, msg))
+	return fmt.Errorf("%s is invalid. %s", fieldName, msg)
 }
