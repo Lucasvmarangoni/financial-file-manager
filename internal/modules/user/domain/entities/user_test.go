@@ -19,7 +19,7 @@ func TestNewUser(t *testing.T) {
 	t.Run("should return a user when provided valid values", func(t *testing.T) {
 		//
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 		assert.Nil(t, err)
 		assert.NotNil(t, user)
 		assert.NotEmpty(t, user.ID)
@@ -31,7 +31,7 @@ func TestNewUser(t *testing.T) {
 	t.Run("should not return a user when provided invalid name", func(t *testing.T) {
 		name := "Jo"
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
 
@@ -46,7 +46,7 @@ func TestNewUser(t *testing.T) {
 
 		lastName := "Do"
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
 
@@ -61,7 +61,7 @@ func TestNewUser(t *testing.T) {
 
 		cpf := "990.001.8sss8802"
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
 
@@ -78,7 +78,7 @@ func TestNewUser(t *testing.T) {
 
 		password := "invalid"
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
 
@@ -95,7 +95,7 @@ func TestUser_ValidatePassword(t *testing.T) {
 
 	t.Run("", func(t *testing.T) {
 
-		user, err := entities.NewUser(name, lastName, cpf, email, password)
+		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 
 		assert.Nil(t, err)
 		assert.True(t, user.ValidateHashPassword(password))
