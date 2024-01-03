@@ -2,6 +2,8 @@ package errors
 
 import (
 	"fmt"
+
+	"github.com/pkg/errors"
 )
 
 type CustomError struct {
@@ -11,17 +13,17 @@ type CustomError struct {
 
 var e *CustomError
 
-func NewError(err error, value ...string) error {
+func NewError(err error, value string) error {
 	key := "Operation"
 
 	if e == nil || !e.added {
 		e = &CustomError{
-			err:   fmt.Errorf("%s: %w", "Error", err),
+			err:    errors.Wrap(err, "Error"),
 			added: true,
 		}
 	} else {
 		e = &CustomError{
-			err: err,
+			err: errors.WithStack(err),
 		}
 	}
 	return fmt.Errorf("%w %s: %s", e.err, key, value)

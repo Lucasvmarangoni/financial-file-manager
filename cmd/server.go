@@ -27,7 +27,6 @@ import (
 var db database.Config
 
 func init() {
-
 	logger.Config()
 
 	db.DbName = config.GetEnv("database_name").(string)
@@ -38,13 +37,12 @@ func init() {
 }
 
 func main() {
-
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	tx, err := Database(ctx)
 	if err != nil {
-		log.Fatal().Err(err).Str("File", "server.go").Str("Method", "Database").Msg("Failed to exec Database")
+		log.Fatal().Stack().Err(err).Msg("Failed to exec Database")
 	}
 
 	// rpc.Connect()
@@ -59,7 +57,10 @@ func main() {
 	r := chi.NewRouter()
 	Web(r, tx)
 
-	http.ListenAndServe(":8000", r)
+	err = http.ListenAndServe(":8000", r)
+	if err != nil {
+		log.Fatal().Stack().Err(err).Msg("Failed to server listen")
+	}
 }
 
 func Database(ctx context.Context) (pgx.Tx, error) {
@@ -84,7 +85,6 @@ func Database(ctx context.Context) (pgx.Tx, error) {
 
 func Web(r *chi.Mux, tx pgx.Tx) {
 	tokenAuth := config.GetTokenAuth()
-
 	userRouter := routers.NewUserRouter(tx, r)
 
 	r.Use(middleware.Logger)

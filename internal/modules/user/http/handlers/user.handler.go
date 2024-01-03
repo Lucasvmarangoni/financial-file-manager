@@ -12,14 +12,14 @@ import (
 )
 
 type UserHandler struct {
-	createService *services.CreateService
+	userService   *services.UserService
 	Jwt           *jwtauth.JWTAuth
 	JwtExpiriesIn int
 }
 
-func NewUserHandler(createService *services.CreateService, jwt *jwtauth.JWTAuth, expiry int) *UserHandler {
+func NewUserHandler(userService *services.UserService, jwt *jwtauth.JWTAuth, expiry int) *UserHandler {
 	return &UserHandler{
-		createService: createService,
+		userService:   userService,
 		Jwt:           jwt,
 		JwtExpiriesIn: expiry,
 	}
@@ -31,18 +31,18 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Error().Err(err).Str("File", "user.handler.go").Str("Method", "Create").Str("Operation", "json.NewDecoder(r.Body).Decode(&user)").Msg("Error to decode request")
 		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Stack().Err(err).Msg("Error to decode request")
 		return
 	}
-	err = u.createService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
+	id, err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
 	if err != nil {
-		log.Error().Err(err).Str("Operation", "u.createService.Create").Msg("Error to create user")
 		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Stack().Err(err).Msg("Error to create user ")
 		return
 	}
-	log.Info().Msg("User created successfully")
 	w.WriteHeader(http.StatusOK)
+	log.Info().Msgf("User created successfully (%s)", id)
 }
 
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
