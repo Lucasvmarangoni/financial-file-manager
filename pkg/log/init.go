@@ -14,17 +14,11 @@ import (
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, NoColor: false, TimeFormat: time.RFC3339,
 		FormatMessage: func(i interface{}) string {
-			value, ok := i.(string)
-			if !ok {
-				return "unknown"
-			}
+			value := failOnError(i)
 			return Format(c.magenta, strings.ToUpper(value))
 		},
 		FormatLevel: func(i interface{}) string {
-			level, ok := i.(string)
-			if !ok {
-				return "unknown"
-			}
+			level := failOnError(i)
 			switch level {
 			case "info":
 				return Format(c.green, strings.ToUpper(level)+" ⇝")
@@ -37,10 +31,7 @@ func init() {
 			}
 		},
 		FormatErrFieldValue: func(i interface{}) string {
-			value, ok := i.(string)
-			if !ok {
-				return "unknown"
-			}
+			value := failOnError(i)
 			formattedOperation := Format(c.blue, "Operation")
 			formattedError := Format(c.red, "Error")
 			Str := strings.ReplaceAll(value, "Operation", formattedOperation)
@@ -48,14 +39,20 @@ func init() {
 			return Str
 		},
 		FormatErrFieldName: func(i interface{}) string {
-			_, ok := i.(string)
-			if !ok {
-				return "unknown"
-			}
-			return " "
+			value := failOnError(i)
+			value = " "
+			return value
 		},
 	})
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+}
+
+func failOnError(i interface{}) string {
+	value, ok := i.(string)
+	if !ok {
+		return "unknown"
+	}
+	return value
 }
