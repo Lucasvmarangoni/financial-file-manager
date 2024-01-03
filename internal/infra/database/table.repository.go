@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 
-	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog/log"
 )
@@ -44,7 +44,7 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 func (r *TableRepositoryDb) InitTables(ctx context.Context) error {
 	err := r.initUserTable(ctx)
 	if err != nil {
-		return logger.NewError(err, "InitTables")
+		return errors.NewError(err, "InitTables")
 	}
 	return nil
 }

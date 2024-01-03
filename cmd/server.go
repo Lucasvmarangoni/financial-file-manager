@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
+
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
@@ -63,19 +65,19 @@ func main() {
 func Database(ctx context.Context) (pgx.Tx, error) {
 	dbConnection, err := db.Connect(ctx)
 	if err != nil {
-		return nil, logger.NewError(err, "db.Connect")
+		return nil, errors.NewError(err, "db.Connect")
 	}
 
 	tx, err := dbConnection.Begin(ctx)
 	if err != nil {
 		dbConnection.Close(ctx)
-		return nil, logger.NewError(err, "dbConnection.Begin")
+		return nil, errors.NewError(err, "dbConnection.Begin")
 	}
 
 	repo := database.NewTableRepository(tx)
 	err = repo.InitTables(ctx)
 	if err != nil {
-		return nil, logger.NewError(err, "repo.InitTables")
+		return nil, errors.NewError(err, "repo.InitTables")
 	}
 	return tx, nil
 }
