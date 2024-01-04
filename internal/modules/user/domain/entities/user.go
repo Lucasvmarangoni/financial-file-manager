@@ -19,7 +19,7 @@ type User struct {
 	Password  string      `json:"password"`
 	Admin     bool        `json:"admin" valid:"boolean"`
 	CreatedAt time.Time   `json:"created_at" valid:"-"`
-	UpdatedAt []time.Time `json:"updated_at" valid:"-"`	
+	UpdatedAt []time.Time `json:"updated_at" valid:"-"`
 }
 
 func (u *User) Validate() error {
@@ -30,9 +30,9 @@ func (u *User) Validate() error {
 	return nil
 }
 
-func (u *User) ValidateHashPassword(password string) bool {
+func (u *User) ValidateHashPassword(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	return err == nil
+	return err
 }
 
 func validatePassword(password string) error {
@@ -69,7 +69,7 @@ func NewUser(name, lastName, cpf, email, password string, admin bool) (*User, er
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
-	}	
+	}
 
 	user := User{
 		Name:     name,

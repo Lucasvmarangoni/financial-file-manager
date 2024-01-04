@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"time"
 
@@ -42,7 +43,7 @@ func main() {
 
 	tx, err := Database(ctx)
 	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("Failed to exec Database")
+		log.Fatal().Stack().Err(err).Msg("Failed exec Database")
 	}
 
 	// rpc.Connect()
@@ -59,7 +60,7 @@ func main() {
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("Failed to server listen")
+		log.Fatal().Stack().Err(err).Msg("Failed server listen")
 	}
 }
 
@@ -87,7 +88,16 @@ func Web(r *chi.Mux, tx pgx.Tx) {
 	tokenAuth := config.GetTokenAuth()
 	userRouter := routers.NewUserRouter(tx, r)
 
+	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
+	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
+	if err != nil {
+		errors.NewError(err, "strconv.Atoi")
+	}
+
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
+	r.Use(middleware.WithValue("JwtExperesIn", jwtExpiresIn))
 
 	userRouter.InitializeUserRoutes()
 

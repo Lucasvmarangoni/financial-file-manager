@@ -4,28 +4,18 @@ import (
 	"context"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
+	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 )
 
-type CreateService struct {
-	Repository *repositories.UserRepositoryDb
-}
-
-func NewCreateService(repo *repositories.UserRepositoryDb) *CreateService {
-	createService := &CreateService{
-		Repository: repo,
-	}
-	return createService
-}
-func (c *CreateService) Create(name, lastName, cpf, email, password string, admin bool) error {
+func (u *UserService) Create(name, lastName, cpf, email, password string, admin bool) (pkg_entities.ID, error) {
 	newUser, err := entities.NewUser(name, lastName, cpf, email, password, admin)
 	if err != nil {
-		return errors.NewError(err, "entities.NewUser")
+		return pkg_entities.Nil(), errors.NewError(err, "entities.NewUser")
 	}
-	newUser, err = c.Repository.Insert(newUser, context.Background())
+	newUser, err = u.Repository.Insert(newUser, context.Background())
 	if err != nil {
-		return errors.NewError(err, "Repository.Insert")
+		return pkg_entities.Nil(), errors.NewError(err, "Repository.Insert")
 	}
-	return nil
+	return newUser.ID, nil
 }

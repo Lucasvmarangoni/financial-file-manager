@@ -30,17 +30,18 @@ func Init(db pgx.Tx) *handlers.UserHandler {
 	if err != nil {
 		panic(err)
 	}
-	userRepository := repositories.NewUserRepository(db)	
-	createService := services.NewCreateService(userRepository)
-	userHandler := handlers.NewUserHandler(createService, tokenAuth, jwtExpiriesIn)
+	userRepository := repositories.NewUserRepository(db)
+	userService := services.NewUserService(userRepository)
+	userHandler := handlers.NewUserHandler(userService, tokenAuth, jwtExpiriesIn)
 	return userHandler
 }
 
 func (u *UserRouter) InitializeUserRoutes() {
 	u.userHandler = Init(u.Db)
+
 	u.Chi.Route("/user", func(r chi.Router) {
 		r.Post("/", u.userHandler.Create)
-		// r.Post("/authn", u.userHandler.Authentication)
+		r.Post("/authn", u.userHandler.Authentication)
 	})
 }
 

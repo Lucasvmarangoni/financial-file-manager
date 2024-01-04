@@ -4,13 +4,13 @@ type database struct {
 	name     string `mapstructure:"DATABASE_NAME"`
 	user     string `mapstructure:"DATABASE_USER"`
 	password string `mapstructure:"DATABASE_PASSWORD"`
-	ssl_mode string `mapstructure:"DATABASE_SSL_MODE"`
+	sslMode string `mapstructure:"DATABASE_SSL_MODE"`
 	port     string `mapstructure:"DATABASE_PORT"`
 }
 
 type jwt struct {
 	secret     string `mapstructure:"JWT_SECRET"`
-	expired_in string    `mapstructure:"JWT_EXPIREDIN"`
+	expiredIn string    `mapstructure:"JWT_EXPIREDIN"`
 }
 
 type rabbitMQ struct {
@@ -31,6 +31,6 @@ type grpc struct {
 }
 
 type storage struct {
-	local_path string `mapstructure:"LOCAL_STORAGE_PATH"`
-	local_file string `mapstructure:"LOCAL_FILE"`
+	localPath string `mapstructure:"LOCAL_STORAGE_PATH"`
+	localFile string `mapstructure:"LOCAL_FILE"`
 }

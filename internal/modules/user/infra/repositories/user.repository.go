@@ -10,7 +10,9 @@ import (
 
 type UserRepository interface {
 	Insert(user *entities.User) (*entities.User, error)
-	Find(id string) (*entities.User, error)
+	FindByEmail(email string) (*entities.User, error)
+	FindById(id pkg_entities.ID) (*entities.User, error)
+	FindByCpf(cpf string) (*entities.User, error)
 }
 
 type UserRepositoryDb struct {
@@ -25,7 +27,6 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) (*en
 	if user.ID.String() == "" {
 		user.ID = pkg_entities.NewID()
 	}
-
 	sql := `INSERT INTO users (id, name, last_name, email, cpf, password, admin, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 	_, err := r.tx.Exec(ctx, sql,
 		user.ID,
@@ -38,6 +39,40 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) (*en
 		user.CreatedAt,
 		user.UpdatedAt,
 	)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+
+func (r *UserRepositoryDb) FindByEmail(email string, ctx context.Context) (*entities.User, error) {
+	sql := `SELECT * FROM users WHERE email = $1`
+	row := r.tx.QueryRow(ctx, sql, email)
+	user := &entities.User{}
+	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserRepositoryDb) FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error) {
+	sql := `SELECT * FROM users WHERE id = $1`
+	row := r.tx.QueryRow(ctx, sql, id)
+	user := &entities.User{}
+	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserRepositoryDb) FindByCpf(cpf string, ctx context.Context) (*entities.User, error) {
+	sql := `SELECT * FROM users WHERE cpf = $1`
+	row := r.tx.QueryRow(ctx, sql, cpf)
+	user := &entities.User{}
+	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -15,6 +16,7 @@ type UserHandler struct {
 	userService   *services.UserService
 	Jwt           *jwtauth.JWTAuth
 	JwtExpiriesIn int
+	ctx           context.Context
 }
 
 func NewUserHandler(userService *services.UserService, jwt *jwtauth.JWTAuth, expiry int) *UserHandler {
@@ -32,13 +34,13 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Stack().Err(err).Msg("Error to decode request")
+		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
 	id, err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Stack().Err(err).Msg("Error to create user ")
+		log.Error().Stack().Err(err).Msg("Error create user ")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -51,13 +53,43 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
-// 	var user dto.AuthenticationInput
-// }
+func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
+	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
+	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
+	var user dto.AuthenticationInput
 
-// func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
-// }
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Err(err).Msg("Error decode request")
+		return
+	}
+	if user.Email != "" && user.CPF != "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	unique := user.Email + user.CPF
+	authUser, err := u.userService.Authn(unique, user.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		log.Error().Stack().Err(err).Msg("Error authenticate user")
+		return
+	}
+	tokenString, err := u.userService.GenerateJWT(authUser, jwt, jwtExpiresIn)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Stack().Err(err).Msg("Error generating JWT")
+		return
+	}
+	accessToken := dto.GetJWTOutput{AccessToken: tokenString}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(accessToken)
+}
 
-// func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
-// 	var user dto.AuthenticationInput
-// }
+func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+}
+
+func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	// var user dto.AuthenticationInput
+}
