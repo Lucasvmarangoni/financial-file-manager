@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,7 +24,11 @@ func init() {
 			case "info":
 				return Format(c.green, strings.ToUpper(level)+" ⇝")
 			case "error":
+				return Format(c.red, strings.ToUpper(level)+" ⇝")
+			case "warn":
 				return Format(c.yellow, strings.ToUpper(level)+" ⇝")
+			case "debug":
+				return Format(c.cyan, strings.ToUpper(level)+" ⇝")
 			case "fatal":
 				return Format(c.red, strings.ToUpper(level)+" ⇝")
 			default:
@@ -47,6 +52,9 @@ func init() {
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		return fmt.Sprintf("[\n%s:%d\n]", file, line)
+	}
 }
 
 func failOnError(i interface{}) string {
