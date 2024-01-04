@@ -69,18 +69,13 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	unique := user.Email + user.CPF
-	authUser, err := u.userService.Authn(unique, user.Password)
+	tokenString, err := u.userService.Authn(unique, user.Password, jwt, jwtExpiresIn)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		log.Error().Stack().Err(err).Msg("Error authenticate user")
 		return
 	}
-	tokenString, err := u.userService.GenerateJWT(authUser, jwt, jwtExpiresIn)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Error().Stack().Err(err).Msg("Error generating JWT")
-		return
-	}
+	
 	accessToken := dto.GetJWTOutput{AccessToken: tokenString}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

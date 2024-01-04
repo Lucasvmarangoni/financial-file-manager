@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
-func (u *UserService) Authn(unique, password string) (*entities.User, error) {
+func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtExpiresIn int) (string, error) {
 	var user *entities.User
 	var err error
 	var operation string
@@ -22,16 +22,21 @@ func (u *UserService) Authn(unique, password string) (*entities.User, error) {
 		user, err = u.FindByCpf(unique, nil)
 	}
 	if err != nil {
-		return nil, errors.NewError(err, operation)
+		return "", errors.NewError(err, operation)
 	}
 
 	err = user.ValidateHashPassword(password)
 	if err != nil {
-		return nil, errors.NewError(err, "user.ValidateHashPassword")
+		return "", errors.NewError(err, "user.ValidateHashPassword")
 	}
 
 	user.Password = ""
-	return user, nil
+
+	tokenString, err := u.GenerateJWT(user, jwt, jwtExpiresIn)
+	if err != nil {
+		return "", errors.NewError(err, "u.GenerateJWT")
+	}
+	return tokenString, nil
 }
 
 func (u *UserService) GenerateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwtExpiresIn int) (string, error) {
