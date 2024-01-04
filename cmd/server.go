@@ -56,7 +56,7 @@ func main() {
 	// rabbitMQ.Consume(messageChannel)
 
 	r := chi.NewRouter()
-	Web(r, tx)
+	Rest(tx, r)
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
@@ -84,15 +84,15 @@ func Database(ctx context.Context) (pgx.Tx, error) {
 	return tx, nil
 }
 
-func Web(r *chi.Mux, tx pgx.Tx) {
+func Rest(tx pgx.Tx, r *chi.Mux) {
 	tokenAuth := config.GetTokenAuth()
-	userRouter := routers.NewUserRouter(tx, r)
-
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
 	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
 	if err != nil {
-		errors.NewError(err, "strconv.Atoi")
+		jwtExpiresIn = 50
+		log.Warn().Err(errors.NewError(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
+	userRouter := routers.NewUserRouter(tx, r, jwtExpiresIn, tokenAuth)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
