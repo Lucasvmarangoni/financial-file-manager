@@ -98,8 +98,12 @@ func TestUser_ValidatePassword(t *testing.T) {
 		user, err := entities.NewUser(name, lastName, cpf, email, password, false)
 
 		assert.Nil(t, err)
-		assert.True(t, user.ValidateHashPassword(password))
-		assert.False(t, user.ValidateHashPassword(password+"i"))
+		err = user.ValidateHashPassword(password)
+		assert.Nil(t, err)
+
+		err = user.ValidateHashPassword(password + "i")
+		assert.NotNil(t, err)
+		
 		assert.NotEqual(t, password, user.Password)
 	})
 
