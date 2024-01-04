@@ -15,6 +15,7 @@ type UserRouter struct {
 	userHandler   *handlers.UserHandler
 	jwtExpiriesIn int
 	tokenAuth     *jwtauth.JWTAuth
+	method        string
 }
 
 func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtauth.JWTAuth) *UserRouter {
@@ -36,13 +37,13 @@ func (u *UserRouter) init() *handlers.UserHandler {
 }
 
 func (u *UserRouter) InitializeUserRoutes() {
-	u.Chi.Route("/user", func(r chi.Router) {
-		r.Post("/", u.userHandler.Create)
-		r.Post("/authn", u.userHandler.Authentication)
+	u.Chi.Route("/user", func(r chi.Router) {		
+		u.Method("POST").InitializeRoute(r, "/", u.userHandler.Create)
+		u.Method("POST").InitializeRoute(r, "/authn", u.userHandler.Authentication)
 	})
 }
 
 func (u *UserRouter) UserRoutes(r chi.Router) {
-	r.Get("/me", u.userHandler.Me)
+	u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
 	// r.Put("/update", u.userHandler.Update)
 }
