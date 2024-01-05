@@ -18,7 +18,7 @@ type Extract struct {
 	Category string        `json:"category" valid:"notnull,required"`
 	Method   string        `json:"method" valid:"notnull,required"`
 	Location string        `json:"location" valid:"required"`
-	Contract []entities.ID `json:"contract" valid:"-"`
+	Contract entities.ID `json:"contract" valid:"-"`
 }
 
 func (e *Extract) Validate() error {
