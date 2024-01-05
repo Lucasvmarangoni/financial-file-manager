@@ -2,7 +2,7 @@
 
 ## Entidades e agregadores
 
-![Alt text](<./img/file-agreggates.png>)
+![Alt text](<./img/file-aggregates.png>)
 
 **Legenda**
 
