@@ -14,9 +14,10 @@ func ContractFactory(
 	object string,
 	extract []pkg_entities.ID,
 	invoice []pkg_entities.ID,
+	archived bool,
 ) (*entities.Contract, error) {
 
-	file, err := entities.NewFile(typ, customer, versions)
+	file, err := entities.NewFile(typ, customer, versions, archived)
 	if err != nil {
 		return nil, err
 	}

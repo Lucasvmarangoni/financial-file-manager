@@ -26,8 +26,9 @@ type File struct {
 	ID        entities.ID   `json:"document_id" valid:"notnull,required"`
 	Type      string        `json:"type" valid:"notnull,required"`
 	CreatedAt time.Time     `json:"created_at" valid:"-"`
-	Customer  entities.ID   `json:"customer" valid:"-"`
+	User      entities.ID   `json:"user" valid:"-"`
 	Versions  []entities.ID `json:"versions" valid:"-"`
+	Archived  bool          `json:"archived" valid:"-"`
 }
 
 func (f *File) Validate() error {
@@ -38,7 +39,7 @@ func (f *File) Validate() error {
 		pkg_errors.IsInvalidError("ID", "Must be google uuid")
 	}
 
-	if _, err := entities.ParseID(f.Customer.String()); err != nil {
+	if _, err := entities.ParseID(f.User.String()); err != nil {
 		pkg_errors.IsInvalidError("Customer", "Must be google uuid")
 	}
 
@@ -53,11 +54,11 @@ func (f *File) Validate() error {
 	return nil
 }
 
-func NewFile(typ string, customer entities.ID, versions []entities.ID) (*File, error) {
+func NewFile(typ string, user entities.ID, versions []entities.ID, archived bool) (*File, error) {
 
 	file := File{
 		Type:     typ,
-		Customer: customer,
+		User: user,
 	}
 	file.prepare()
 

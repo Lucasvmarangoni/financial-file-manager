@@ -15,9 +15,10 @@ func InvoiceFactory(
 	value float64,
 	method string,
 	contract pkg_entities.ID,
+	archived bool,
 ) (*entities.Invoice, error) {
 
-	file, err := entities.NewFile(typ, customer, versions)
+	file, err := entities.NewFile(typ, customer, versions, archived)
 	if err != nil {
 		return nil, err
 	}

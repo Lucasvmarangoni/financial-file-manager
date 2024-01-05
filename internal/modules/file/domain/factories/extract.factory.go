@@ -15,9 +15,10 @@ func ExtractFactory(
 	method string,
 	location string,
 	contract pkg_entities.ID,
+	archived bool,
 ) (*entities.Extract, error) {
 
-	file, err := entities.NewFile(typ, customer, versions)
+	file, err := entities.NewFile(typ, customer, versions, archived)
 	if err != nil {
 		return nil, err
 	}
