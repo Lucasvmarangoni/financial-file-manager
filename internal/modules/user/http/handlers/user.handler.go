@@ -37,14 +37,14 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
-	id, err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
+	err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password, user.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Stack().Err(err).Msg("Error create user ")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	log.Info().Msgf("User created successfully (%s)", id)
+	
 }
 
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +75,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 		log.Error().Stack().Err(err).Msg("Error authenticate user")
 		return
 	}
-	
+
 	accessToken := dto.GetJWTOutput{AccessToken: tokenString}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
