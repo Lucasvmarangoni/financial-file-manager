@@ -32,6 +32,7 @@ func TextExtractFactory(t *testing.T) {
 			method,
 			location,
 			uuid.Nil,
+			false,
 		)
 		require.NotNil(t, extract)
 		require.Nil(t, err)
@@ -51,6 +52,7 @@ func TextExtractFactory(t *testing.T) {
 			method,
 			location,
 			uuid.Nil,
+			false,
 		)
 		require.Nil(t, extract)
 		require.NotNil(t, err)

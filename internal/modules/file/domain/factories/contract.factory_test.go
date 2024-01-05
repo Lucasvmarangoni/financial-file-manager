@@ -28,7 +28,8 @@ func TextContractFactory(t *testing.T) {
 			parties,
 			object,	
 			nil,
-			nil,		
+			nil,
+			false,		
 		)
 		require.NotNil(t, contract)
 		require.Nil(t, err)
@@ -46,7 +47,8 @@ func TextContractFactory(t *testing.T) {
 			parties,
 			object,	
 			nil,
-			nil,		
+			nil,
+			false,		
 		)
 		require.Nil(t, contract)
 		require.NotNil(t, err)

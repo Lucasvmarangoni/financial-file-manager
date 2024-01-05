@@ -23,17 +23,17 @@ func init() {
 func TestNewFile(t *testing.T) {
 
 	typ := "contract"
-	customer := entities_pkg.NewID()
+	user := entities_pkg.NewID()
 	now := time.Now()
 	t.Run("should return a new file when provided valid params", func(t *testing.T) {
 
-		file, err := entities.NewFile(typ, customer, nil)
+		file, err := entities.NewFile(typ, user, nil, false)
 
 		require.NotNil(t, file)
 		require.Nil(t, err)
 		assert.Equal(t, typ, file.Type)
 		assert.True(t, file.CreatedAt.After(now) || file.CreatedAt.Equal(now))
-		assert.Equal(t, customer, file.Customer)
+		assert.Equal(t, user, file.User)
 		assert.NotEmpty(t, file.ID)
 	})
 
@@ -41,17 +41,17 @@ func TestNewFile(t *testing.T) {
 
 		typ = "-"
 
-		file, err := entities.NewFile(typ, customer, nil)
+		file, err := entities.NewFile(typ, user, nil, false)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)
 	})
 
-	t.Run("should return error when invalid param Customer is provided", func(t *testing.T) {
+	t.Run("should return error when invalid param user is provided", func(t *testing.T) {
 
-		customer = uuid.Nil
+		user = uuid.Nil
 
-		file, err := entities.NewFile(typ, customer, nil)
+		file, err := entities.NewFile(typ, user, nil, false)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)

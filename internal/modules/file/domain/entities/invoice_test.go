@@ -16,7 +16,7 @@ func TestNewInvoice(t *testing.T) {
 	typ := "contract"
 	customer := entities_pkg.NewID()
 
-	file, err := entities.NewFile(typ, customer, nil)
+	file, err := entities.NewFile(typ, customer, nil, false)
 
 	require.NotNil(t, file)
 	require.Nil(t, err)
