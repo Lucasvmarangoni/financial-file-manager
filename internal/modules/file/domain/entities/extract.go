@@ -13,11 +13,11 @@ import (
 
 type Extract struct {
 	File     `json:"file" valid:"required"`
-	Account  int           `json:"account" valid:"notnull"`
-	Value    float64       `json:"value" valid:"notnull"`
-	Category string        `json:"category" valid:"notnull,required"`
-	Method   string        `json:"method" valid:"notnull,required"`
-	Location string        `json:"location" valid:"required"`
+	Account  int         `json:"account" valid:"notnull"`
+	Value    float64     `json:"value" valid:"notnull"`
+	Category string      `json:"category" valid:"notnull,required"`
+	Method   string      `json:"method" valid:"notnull,required"`
+	Location string      `json:"location" valid:"required"`
 	Contract entities.ID `json:"contract" valid:"-"`
 }
 
