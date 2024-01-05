@@ -21,7 +21,7 @@ func (u *UserRouter) InitializeRoute(path string, handler http.HandlerFunc)  {
 	case "DELETE":
 		router.Delete(path, handler)
 	}
-	log.Info().Str("context", "UserHandler").Msgf("Mapped - Initialized: (%s) /user%s ", method, path)
+	log.Info().Str("context", "UserRouter").Msgf("Mapped - Initialized: (%s) /user%s ", method, path)
 	
 }
 
