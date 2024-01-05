@@ -14,6 +14,7 @@ import (
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
+	
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
 	"github.com/go-chi/chi"
@@ -56,7 +57,7 @@ func main() {
 	// rabbitMQ.Consume(messageChannel)
 
 	r := chi.NewRouter()
-	Rest(tx, r)
+	Http(tx, r)
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
@@ -84,7 +85,7 @@ func Database(ctx context.Context) (pgx.Tx, error) {
 	return tx, nil
 }
 
-func Rest(tx pgx.Tx, r *chi.Mux) {
+func Http(tx pgx.Tx, r *chi.Mux) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
 	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
