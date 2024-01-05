@@ -56,7 +56,7 @@ Dessa forma, se o valor do campo "Archived" está como falso, significa que é o
 
 **Method** e **Contract** são da mesma forma que para o Extrato.
 
-### Versionamento
+## Versionamento
 
 O versionamento traz consigo uma dinâmica no que diz respeito à relação entre os agregadores.
 
