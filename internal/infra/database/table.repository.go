@@ -28,7 +28,7 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			name TEXT,
 			last_name TEXT,
 			email TEXT UNIQUE,
-			cpf TEXT,
+			cpf TEXT UNIQUE,
 			password TEXT,
 			admin BOOLEAN,
 			created_at TIMESTAMP,
@@ -37,14 +37,14 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Str("Context", "TableRepository").Msg("Created users table successfully.")
+	log.Info().Str("context", "TableRepository").Msg("Database: Created users table successfully.")
 	return nil
 }
 
 func (r *TableRepositoryDb) InitTables(ctx context.Context) error {
 	err := r.initUserTable(ctx)
 	if err != nil {
-		return errors.NewError(err, "InitTables")
+		return errors.NewError(err, "initUserTable")
 	}
 	return nil
 }
