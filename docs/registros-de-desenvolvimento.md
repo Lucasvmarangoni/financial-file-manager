@@ -67,3 +67,11 @@ O campo version deve ser enviado com o(s) ID(s) do arquivo(s); isso fará com qu
 O campo "CreatedAt", data de criação, é auto-suficiente para determinar qual a versão mais recente (vigente) e também qual a data de atualização, como já mencionado.
 
 Não sendo estritamente necessário o campo "Archived", que foi implementado afim de melhorar as consultas.
+
+**Caso um ID não registrado for recebido no campo "Versions"**: Nesse caso, a aplicação irá notificar o *client* sobre isso pela resposta, emitir o log para registro do sistema e armazenar o documento, mas removendo o ID do campo "Versions".
+
+**Caso mais de um ID no campo "Versions" for recebido na requisição**: Se todos os IDs existirem no banco de dados, a lógica de versionamento procederá normalmente, alterando as informações nos respectivos arquivos.
+
+- Com isso, um novo documento pode arquivar vários outros documentos.
+
+Caso algum dos IDs não for encontrado no banco de dados, será removido do campo "Versions", e o *client* receberá a notificação informando o ocorrido.
