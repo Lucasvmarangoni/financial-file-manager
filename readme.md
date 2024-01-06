@@ -15,6 +15,7 @@
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
 
 ## <u>EM DESENVOLVIMENTO</u>
+Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>
 
 <br>
 
