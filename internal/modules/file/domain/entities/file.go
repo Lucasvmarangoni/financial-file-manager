@@ -12,16 +12,6 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-/*
-
-Para o requisito de manter versões do documento, analisar a ideia de
-verificar se o ID foi passado na request, antes de atribuir.
-Assim antes de enviar um documento que já existe, deve-se fazer uma
-consulta por esse documento e enviar o novo com ID, para que o sistema identifique e
-armazene de alguma forma que o histórico seja possível.
-
-*/
-
 type File struct {
 	ID        entities.ID   `json:"document_id" valid:"notnull,required"`
 	Type      string        `json:"type" valid:"notnull,required"`
