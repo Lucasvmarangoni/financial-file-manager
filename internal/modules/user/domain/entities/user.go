@@ -11,14 +11,14 @@ import (
 )
 
 type User struct {
-	ID        entities.ID `json:"id"`
-	Name      string      `json:"name" valid:"length(3|10)"`
-	LastName  string      `json:"last_name" valid:"length(3|50)"`
+	ID        entities.ID `json:"id" valid:"required"`
+	Name      string      `json:"name" valid:"length(3|10),alpha"`
+	LastName  string      `json:"last_name" valid:"length(3|50),alpha"`
 	CPF       string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string      `json:"email" valid:"email"`
-	Password  string      `json:"password"`
-	Admin     bool        `json:"admin" valid:"boolean"`
-	CreatedAt time.Time   `json:"created_at" valid:"-"`
+	Password  string      `json:"password" valid:"required"`
+	Admin     bool        `json:"admin" valid:"-"`
+	CreatedAt time.Time   `json:"created_at" valid:"required"`
 	UpdatedAt []time.Time `json:"updated_at" valid:"-"`
 }
 
@@ -90,6 +90,14 @@ func NewUser(name, lastName, cpf, email, password string, admin bool) (*User, er
 }
 
 func (u *User) prepare() {
-	u.ID = entities.NewID()
-	u.CreatedAt = time.Now()
+	if len(u.UpdatedAt) == 0 && u.CreatedAt.IsZero() {
+		u.ID = entities.NewID()
+		u.CreatedAt = time.Now()
+	}
+}
+
+func (u *User) Update(id entities.ID, createdAt time.Time) {
+	u.UpdatedAt = append(u.UpdatedAt, time.Now())
+	u.CreatedAt = createdAt
+	u.ID = id
 }
