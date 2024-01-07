@@ -13,8 +13,7 @@ type UserRouter struct {
 	Db            pgx.Tx
 	Chi           *chi.Mux
 	userHandler   *handlers.UserHandler
-	jwtExpiriesIn int
-	tokenAuth     *jwtauth.JWTAuth	
+	jwtExpiriesIn int	
 }
 
 var (
@@ -26,8 +25,7 @@ func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtaut
 	u := &UserRouter{
 		Db:            db,
 		Chi:           chi,
-		jwtExpiriesIn: jwtExpiriesIn,
-		tokenAuth:     tokenAuth,
+		jwtExpiriesIn: jwtExpiriesIn,		
 	}
 	u.userHandler = u.init()
 	return u
@@ -36,7 +34,7 @@ func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtaut
 func (u *UserRouter) init() *handlers.UserHandler {
 	userRepository := repositories.NewUserRepository(u.Db)
 	userService := services.NewUserService(userRepository)
-	userHandler := handlers.NewUserHandler(userService, u.tokenAuth, u.jwtExpiriesIn)
+	userHandler := handlers.NewUserHandler(userService, u.jwtExpiriesIn)
 	return userHandler
 }
 

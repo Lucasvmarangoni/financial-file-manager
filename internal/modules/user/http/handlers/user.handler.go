@@ -13,16 +13,14 @@ import (
 )
 
 type UserHandler struct {
-	userService   *services.UserService
-	Jwt           *jwtauth.JWTAuth
+	userService *services.UserService
 	JwtExpiriesIn int
 	ctx           context.Context
 }
 
-func NewUserHandler(userService *services.UserService, jwt *jwtauth.JWTAuth, expiry int) *UserHandler {
+func NewUserHandler(userService *services.UserService, expiry int) *UserHandler {
 	return &UserHandler{
-		userService:   userService,
-		Jwt:           jwt,
+		userService: userService,
 		JwtExpiriesIn: expiry,
 	}
 }
@@ -44,13 +42,28 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	
+
 }
 
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 
-	// id := chi.URLParam(r, "x")
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		log.Error().Err(err).Msg("")
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid or missing token"})
+		return
+	}
+
+	sub, ok := claims["sub"].(string)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid token"})
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(sub)
 }
 
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
