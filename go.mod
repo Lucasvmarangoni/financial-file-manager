@@ -7,6 +7,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/fatih/color v1.14.1
 	github.com/go-chi/chi v1.5.1
+	github.com/go-chi/httprate v0.8.0
 	github.com/go-chi/jwtauth v1.2.0
 	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.4.0
@@ -14,6 +15,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pdfcpu/pdfcpu v0.5.0
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
 	github.com/saudshaddad/malicious-pdf-detector v0.1.0
 	github.com/spf13/viper v1.18.2
@@ -25,6 +27,7 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/goccy/go-json v0.3.5 // indirect
@@ -50,7 +53,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
