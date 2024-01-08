@@ -1,6 +1,11 @@
 package dto
 
-import "github.com/asaskevich/govalidator"
+import (
+	"time"
+
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/asaskevich/govalidator"
+)
 
 func init() {
 	govalidator.SetFieldsRequiredByDefault(true)
@@ -23,4 +28,15 @@ type AuthenticationInput struct {
 
 type GetJWTOutput struct {
 	AccessToken string `json:"access_token" valid:"-"`
+}
+
+type UserOutput struct {
+	ID        entities.ID `json:"id" valid:"-"`
+	Name      string      `json:"name" valid:"required,alpha,length(3|10)"`
+	LastName  string      `json:"last_name" valid:"required,alpha,length(3|50)"`
+	CPF       string      `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	Email     string      `json:"email" valid:"email"`
+	Admin     bool        `json:"admin" valid:"-"`
+	CreatedAt time.Time   `json:"created_at" valid:"-"`
+	UpdatedAt []time.Time   `json:"updated_at" valid:"-"`
 }
