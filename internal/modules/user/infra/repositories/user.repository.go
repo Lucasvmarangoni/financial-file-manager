@@ -45,7 +45,6 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) (*en
 	return user, nil
 }
 
-
 func (r *UserRepositoryDb) FindByEmail(email string, ctx context.Context) (*entities.User, error) {
 	sql := `SELECT * FROM users WHERE email = $1`
 	row := r.tx.QueryRow(ctx, sql, email)
@@ -73,6 +72,24 @@ func (r *UserRepositoryDb) FindByCpf(cpf string, ctx context.Context) (*entities
 	row := r.tx.QueryRow(ctx, sql, cpf)
 	user := &entities.User{}
 	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) (*entities.User, error) {
+	sql := `UPDATE users SET name = $2, last_name = $3, email = $4, cpf = $5, password = $6, admin = $7, updated_at = $8 WHERE id = $1`
+	_, err := r.tx.Exec(ctx, sql,
+		user.ID,
+		user.Name,
+		user.LastName,
+		user.Email,
+		user.CPF,
+		user.Password,
+		user.Admin,
+		user.UpdatedAt,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -26,9 +26,8 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
-	var err error
 
-	err = json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Err(err).Msg("Error decode request")
@@ -110,6 +109,34 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	var user dto.UserUpdateInput
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Err(err).Msg("Error decode request")
+		return
+	}
+
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Err(err).Msg("Failed to get JWT claims")
+		return
+	}
+	id, ok := claims["sub"].(string)
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Err(err).Msg("sub claim is missing or not a string")
+		return
+	}
+
+	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Stack().Err(err).Msg("Error update user ")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {

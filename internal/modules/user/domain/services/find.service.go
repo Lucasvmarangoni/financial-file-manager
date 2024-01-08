@@ -35,7 +35,6 @@ func (u *UserService) FindById(id string, ctx context.Context) (*entities.User, 
 	if err != nil {
 		return nil, errors.NewError(err, "Repository.FindById")
 	}
-	user.Password = ""
 	return user, nil
 }
 

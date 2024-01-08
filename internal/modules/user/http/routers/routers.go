@@ -43,7 +43,7 @@ func (u *UserRouter) InitializeUserRoutes() {
 
 func (u *UserRouter) UserRoutes(r chi.Router) {
 	u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
-	r.Route("/user", func(r chi.Router) {
-		u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Me)
-	})
+
+	u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Update)
+
 }

@@ -40,3 +40,10 @@ type UserOutput struct {
 	CreatedAt time.Time   `json:"created_at" valid:"-"`
 	UpdatedAt []time.Time   `json:"updated_at" valid:"-"`
 }
+
+type UserUpdateInput struct {
+	Name     string `json:"name" valid:"-"`
+	LastName string `json:"last_name" valid:"-"`	
+	Email    string `json:"email" valid:"-"`
+	Password string `json:"password" valid:"-"`	
+}
