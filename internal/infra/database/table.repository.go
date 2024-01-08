@@ -37,7 +37,7 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Str("context", "TableRepository").Msg("Database: Created users table successfully.")
+	log.Info().Str("context", "TableRepository").Msg("Database - Created users table successfully.")
 	return nil
 }
 
