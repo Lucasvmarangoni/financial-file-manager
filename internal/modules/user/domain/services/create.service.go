@@ -8,8 +8,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (u *UserService) Create(name, lastName, cpf, email, password string, admin bool) error {
-	newUser, err := entities.NewUser(name, lastName, cpf, email, password, admin)
+func (u *UserService) Create(name, lastName, cpf, email, password string) error {
+	newUser, err := entities.NewUser(name, lastName, cpf, email, password, false)
 	if err != nil {
 		return errors.NewError(err, "entities.NewUser")
 	}
