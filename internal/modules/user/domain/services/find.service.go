@@ -21,15 +21,21 @@ func (u *UserService) FindByEmail(email string, ctx context.Context) (*entities.
 	return user, nil
 }
 
-func (u *UserService) FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error) {
+func (u *UserService) FindById(id string, ctx context.Context) (*entities.User, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
-	user, err := u.Repository.FindById(id, ctx)
+	parsedId, err := pkg_entities.ParseID(id)
+	if err != nil {
+		return nil, errors.NewError(err, "pkg_entities.ParseID")
+	}
+
+	user, err := u.Repository.FindById(parsedId, ctx)
 	if err != nil {
 		return nil, errors.NewError(err, "Repository.FindById")
 	}
+	user.Password = ""
 	return user, nil
 }
 
