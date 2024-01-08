@@ -95,3 +95,12 @@ func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) (*en
 	}
 	return user, nil
 }
+
+func (r *UserRepositoryDb) Delete(id string, ctx context.Context) error {
+	sql := `DELETE FROM users WHERE id = $1`
+	_, err := r.tx.Exec(ctx, sql, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
