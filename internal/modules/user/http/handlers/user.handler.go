@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+
 	"encoding/json"
 	"net/http"
 
@@ -14,14 +15,12 @@ import (
 
 type UserHandler struct {
 	userService *services.UserService
-	JwtExpiriesIn int
-	ctx           context.Context
+	ctx         context.Context
 }
 
-func NewUserHandler(userService *services.UserService, expiry int) *UserHandler {
+func NewUserHandler(userService *services.UserService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
-		JwtExpiriesIn: expiry,
 	}
 }
 
@@ -46,29 +45,44 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
-
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		log.Error().Err(err).Msg("")
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid or missing token"})
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Err(err).Msg("Failed to get JWT claims")
 		return
 	}
-
 	sub, ok := claims["sub"].(string)
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid token"})
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Msg("sub claim is missing or not a string")
 		return
 	}
+	finduser, err := u.userService.FindById(sub, nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Err(err).Stack().Msg("User not found")
+		return
+	}
+	user := dto.UserOutput{
+		ID:        finduser.ID,
+		Name:      finduser.Name,
+		LastName:  finduser.LastName,
+		CPF:       finduser.CPF,
+		Email:     finduser.Email,
+		Admin:     finduser.Admin,
+		CreatedAt: finduser.CreatedAt,
+		UpdatedAt: finduser.UpdatedAt,
+	}
+	userJSON, err := json.MarshalIndent(user, "", "  ")
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(sub)
+	w.Write(userJSON)
 }
 
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
-	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
+	jwtExpiresIn := r.Context().Value("JwtExpiresIn").(int)
 	var user dto.AuthenticationInput
 
 	err := json.NewDecoder(r.Body).Decode(&user)

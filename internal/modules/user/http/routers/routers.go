@@ -12,20 +12,16 @@ import (
 type UserRouter struct {
 	Db            pgx.Tx
 	Chi           *chi.Mux
+	method        string
 	userHandler   *handlers.UserHandler
-	jwtExpiriesIn int	
+	jwtExpiriesIn int
 }
-
-var (
-	router chi.Router
-	method string
-)
 
 func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtauth.JWTAuth) *UserRouter {
 	u := &UserRouter{
 		Db:            db,
 		Chi:           chi,
-		jwtExpiriesIn: jwtExpiriesIn,		
+		jwtExpiriesIn: jwtExpiriesIn,
 	}
 	u.userHandler = u.init()
 	return u
@@ -34,19 +30,20 @@ func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtaut
 func (u *UserRouter) init() *handlers.UserHandler {
 	userRepository := repositories.NewUserRepository(u.Db)
 	userService := services.NewUserService(userRepository)
-	userHandler := handlers.NewUserHandler(userService, u.jwtExpiriesIn)
+	userHandler := handlers.NewUserHandler(userService)
 	return userHandler
 }
 
 func (u *UserRouter) InitializeUserRoutes() {
 	u.Chi.Route("/user", func(r chi.Router) {
-		router = r
-		u.Method("POST").InitializeRoute("/", u.userHandler.Create)
-		u.Method("POST").InitializeRoute("/authn", u.userHandler.Authentication)
+		u.Method("POST").InitializeRoute(r, "/", u.userHandler.Create)
+		u.Method("POST").InitializeRoute(r, "/authn", u.userHandler.Authentication)
 	})
 }
 
 func (u *UserRouter) UserRoutes(r chi.Router) {
-	u.Method("GET").InitializeRoute("/me", u.userHandler.Me)
-	// r.Put("/update", u.userHandler.Update)
+	u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
+	r.Route("/user", func(r chi.Router) {
+		u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Me)
+	})
 }

@@ -4,28 +4,28 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-chi/chi"
 	"github.com/rs/zerolog/log"
 )
 
-func (u *UserRouter) InitializeRoute(path string, handler http.HandlerFunc)  {
+func (u *UserRouter) InitializeRoute(r chi.Router, path string, handler http.HandlerFunc) {
 
-	switch strings.ToUpper(method) {
+	switch strings.ToUpper(u.method) {
 	case "POST":
-		router.Post(path, handler)
+		r.Post(path, handler)
 	case "GET":
-		router.Get(path, handler)
+		r.Get(path, handler)
 	case "PUT":
-		router.Put(path, handler)
+		r.Put(path, handler)
 	case "PATH":
-		router.Patch(path, handler)
+		r.Patch(path, handler)
 	case "DELETE":
-		router.Delete(path, handler)
+		r.Delete(path, handler)
 	}
-	log.Info().Str("context", "UserRouter").Msgf("Mapped - Initialized: (%s) /user%s ", method, path)
-	
+	log.Info().Str("context", "UserRouter").Msgf("Mapped - Initialized: (%s) /user%s ", u.method, path)
 }
 
 func (u *UserRouter) Method(m string) *UserRouter {
-	method = m
+	u.method = m
 	return u
 }
