@@ -14,7 +14,6 @@ import (
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
-	
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
 	"github.com/go-chi/chi"
@@ -98,8 +97,7 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
-	r.Use(middleware.WithValue("JwtExperesIn", jwtExpiresIn))
-
+	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
 	userRouter.InitializeUserRoutes()
 
 	r.Route("/api", func(r chi.Router) {
