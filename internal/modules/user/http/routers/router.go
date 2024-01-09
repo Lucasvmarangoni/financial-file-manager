@@ -17,12 +17,12 @@ func (u *UserRouter) InitializeRoute(r chi.Router, path string, handler http.Han
 		r.Get(path, handler)
 	case "PUT":
 		r.Put(path, handler)
-	case "PATH":
+	case "PATCH":
 		r.Patch(path, handler)
 	case "DELETE":
 		r.Delete(path, handler)
 	}
-	log.Info().Str("context", "UserRouter").Msgf("Mapped - Initialized: (%s) /user%s ", u.method, path)
+	log.Info().Str("context", "UserRouter").Msgf("Mapped - Initialized: (%s) %s ", u.method, path)
 }
 
 func (u *UserRouter) Method(m string) *UserRouter {

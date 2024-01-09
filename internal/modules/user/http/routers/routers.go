@@ -41,15 +41,17 @@ func (u *UserRouter) init() *handlers.UserHandler {
 func (u *UserRouter) InitializeUserRoutes() {
 	u.Chi.Route("/user", func(r chi.Router) {
 		u.Method("POST").InitializeRoute(r, "/", u.userHandler.Create)
-		r.Use(httprate.Limit(
-			10,
-			60*time.Minute,
-			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
-			httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
-				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
-			}),
-		))
-		u.Method("POST").InitializeRoute(r, "/authn", u.userHandler.Authentication)
+		r.Group(func(r chi.Router) {
+			r.Use(httprate.Limit(
+				5,
+				60*time.Minute,
+				httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+				}),
+			))
+			u.Method("POST").InitializeRoute(r, "/authn", u.userHandler.Authentication)
+		})
 	})
 }
 
@@ -78,5 +80,6 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 			}),
 		))
 		u.Method("DELETE").InitializeRoute(r, "/del", u.userHandler.Delete)
+		u.Method("PATCH").InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
 	})
 }
