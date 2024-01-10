@@ -15,16 +15,14 @@ import (
 
 type UserRouter struct {
 	Db            pgx.Tx
-	Chi           *chi.Mux
 	method        string
 	userHandler   *handlers.UserHandler
 	jwtExpiriesIn int
 }
 
-func NewUserRouter(db pgx.Tx, chi *chi.Mux, jwtExpiriesIn int, tokenAuth *jwtauth.JWTAuth) *UserRouter {
+func NewUserRouter(db pgx.Tx, jwtExpiriesIn int, tokenAuth *jwtauth.JWTAuth) *UserRouter {
 	u := &UserRouter{
 		Db:            db,
-		Chi:           chi,
 		jwtExpiriesIn: jwtExpiriesIn,
 	}
 	u.userHandler = u.init()
@@ -38,9 +36,9 @@ func (u *UserRouter) init() *handlers.UserHandler {
 	return userHandler
 }
 
-func (u *UserRouter) InitializeUserRoutes() {
-	u.Chi.Route("/user", func(r chi.Router) {
-		u.Method("POST").InitializeRoute(r, "/", u.userHandler.Create)
+func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
+	r.Route("/authn", func(r chi.Router) {
+		u.Method("POST").InitializeRoute(r, "/create", u.userHandler.Create)
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
 				5,
@@ -50,36 +48,37 @@ func (u *UserRouter) InitializeUserRoutes() {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				}),
 			))
-			u.Method("POST").InitializeRoute(r, "/authn", u.userHandler.Authentication)
+			u.Method("POST").InitializeRoute(r, "/", u.userHandler.Authentication)
 		})
 	})
 }
 
 func (u *UserRouter) UserRoutes(r chi.Router) {
+	r.Route("/user", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(httprate.Limit(
+				10,
+				60*time.Minute,
+				httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+				}),
+			))
+			u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
+			u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Update)
+		})
 
-	r.Group(func(r chi.Router) {
-		r.Use(httprate.Limit(
-			10,
-			60*time.Minute,
-			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
-			httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
-				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
-			}),
-		))
-		u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
-		u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Update)
-	})
-
-	r.Group(func(r chi.Router) {
-		r.Use(httprate.Limit(
-			3,
-			60*time.Minute,
-			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
-			httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
-				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
-			}),
-		))
-		u.Method("DELETE").InitializeRoute(r, "/del", u.userHandler.Delete)
-		u.Method("PATCH").InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
+		r.Group(func(r chi.Router) {
+			r.Use(httprate.Limit(
+				3,
+				60*time.Minute,
+				httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+				}),
+			))
+			u.Method("DELETE").InitializeRoute(r, "/del", u.userHandler.Delete)
+			u.Method("PATCH").InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
+		})
 	})
 }
