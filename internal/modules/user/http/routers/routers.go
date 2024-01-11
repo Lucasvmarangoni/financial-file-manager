@@ -7,23 +7,23 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httprate"
-	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5"
 )
 
 type UserRouter struct {
 	Db            pgx.Tx
-	method        string
 	userHandler   *handlers.UserHandler
 	jwtExpiriesIn int
+	Router        *router.Router
 }
 
-func NewUserRouter(db pgx.Tx, jwtExpiriesIn int, tokenAuth *jwtauth.JWTAuth) *UserRouter {
+func NewUserRouter(db pgx.Tx, router *router.Router) *UserRouter {
 	u := &UserRouter{
-		Db:            db,
-		jwtExpiriesIn: jwtExpiriesIn,
+		Db: db,
+		Router: router,
 	}
 	u.userHandler = u.init()
 	return u
@@ -38,7 +38,7 @@ func (u *UserRouter) init() *handlers.UserHandler {
 
 func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
 	r.Route("/authn", func(r chi.Router) {
-		u.Method("POST").InitializeRoute(r, "/create", u.userHandler.Create)
+		u.Router.Method("POST").Prefix("/authn").InitializeRoute(r, "/create", u.userHandler.Create)
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
 				5,
@@ -48,7 +48,7 @@ func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				}),
 			))
-			u.Method("POST").InitializeRoute(r, "/jwt", u.userHandler.Authentication)
+			u.Router.Method("POST").Prefix("/authn").InitializeRoute(r, "/jwt", u.userHandler.Authentication)
 		})
 	})
 }
@@ -64,8 +64,8 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				}),
 			))
-			u.Method("GET").InitializeRoute(r, "/me", u.userHandler.Me)
-			u.Method("PUT").InitializeRoute(r, "/update", u.userHandler.Update)
+			u.Router.Method("GET").Prefix("/user").InitializeRoute(r, "/me", u.userHandler.Me)
+			u.Router.Method("PUT").Prefix("/user").InitializeRoute(r, "/update", u.userHandler.Update)
 		})
 
 		r.Group(func(r chi.Router) {
@@ -77,8 +77,8 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				}),
 			))
-			u.Method("DELETE").InitializeRoute(r, "/del", u.userHandler.Delete)
-			u.Method("PATCH").InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
+			u.Router.Method("DELETE").Prefix("/user").InitializeRoute(r, "/del", u.userHandler.Delete)
+			u.Router.Method("PATCH").Prefix("/user").InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
 		})
 	})
 }
