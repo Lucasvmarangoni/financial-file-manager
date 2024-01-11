@@ -48,7 +48,7 @@ func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				}),
 			))
-			u.Method("POST").InitializeRoute(r, "/", u.userHandler.Authentication)
+			u.Method("POST").InitializeRoute(r, "/jwt", u.userHandler.Authentication)
 		})
 	})
 }
