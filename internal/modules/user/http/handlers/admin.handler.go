@@ -7,6 +7,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+
+// Authentication godoc
+// @Summary      Generate a user JWT
+// @Description  Generate a user JWT
+// @Tags         Authn
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  
+// @Failure      400  {object}  Error
+// @Router      /authz/{id} [post]
 func (u *UserHandler) AdminAuthz(w http.ResponseWriter, r *http.Request) {
 	adminID, err := u.GetSub(w, r)
 	userIDForAdminStatusToggle := chi.URLParam(r, "id")	

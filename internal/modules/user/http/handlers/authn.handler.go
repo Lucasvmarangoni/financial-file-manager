@@ -10,6 +10,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Authentication godoc
+// @Summary      Generate a user JWT
+// @Description  Generate a user JWT
+// @Tags         Authn
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dto.GetJWTOutput
+// @Failure      400  {object}  Error
+// @Failure      401  {object}  Error
+// @Router       /authn/jwt [post]
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExpiresIn").(int)
@@ -38,7 +48,6 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
 }
-
 
 func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, error) {
 	_, claims, err := jwtauth.FromContext(r.Context())

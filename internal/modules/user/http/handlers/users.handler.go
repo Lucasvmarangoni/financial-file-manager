@@ -9,6 +9,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Create user godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request     body      dto.UserInput  true  "user data"
+// @Success      200
+// @Failure      400         {object}  Error
+// @Router       /authn/create [post]
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
 
@@ -27,6 +37,15 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// Get user godoc
+// @Summary      Get me user data
+// @Description  Get me user data
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200 		 {object}  dto.UserOutput
+// @Failure      500         {object}  Error
+// @Router       /user/me [post]
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
@@ -63,6 +82,16 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	w.Write(userJSON)
 }
 
+// Update user godoc
+// @Summary      Update user
+// @Description  Update user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request     body      dto.UserInput  true  "user data update"
+// @Success      200
+// @Failure      400         {object}  Error
+// @Router       /user/update [post]
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserUpdateInput
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -86,6 +115,15 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// Delete user godoc
+// @Summary      Delete user
+// @Description  Delete user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Failure      400         {object}  Error
+// @Router       /user/del [post]
 func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := u.GetSub(w, r)
 	if err != nil {
@@ -99,4 +137,3 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
-

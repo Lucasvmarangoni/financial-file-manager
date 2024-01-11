@@ -11,7 +11,6 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
 
-	// "github.com/Lucasvmarangoni/financial-file-manager/internal/common/queue"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
 
@@ -22,7 +21,6 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/rs/zerolog/log"
-	// "github.com/streadway/amqp"
 )
 
 var db database.Config
@@ -37,6 +35,22 @@ func init() {
 	db.SSLMode = config.GetEnv("database_ssl_mode").(string)
 }
 
+// @title           Financial File Manager
+// @version         1.0
+// @description     
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Lucas V Marangoni
+// @contact.url    https://www.linkedin.com/in/lucasvmarangoni/
+// @contact.email  lucasvm.ti@gmail.com
+
+// @license.name   MIT
+
+// @host      localhost:8000
+// @BasePath  /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -46,14 +60,7 @@ func main() {
 		log.Fatal().Stack().Err(err).Msg("Failed exec Database")
 	}
 
-	// rpc.Connect()
-
-	// messageChannel := make(chan amqp.Delivery)
-
-	// rabbitMQ := queue.NewRabbitMQ()
-	// ch := rabbitMQ.Connect()
-	// defer ch.Close()
-	// rabbitMQ.Consume(messageChannel)
+	// rpc.Connect()	
 
 	r := chi.NewRouter()
 	Http(tx, r)
@@ -92,15 +99,15 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 		jwtExpiresIn = 50
 		log.Warn().Err(errors.NewError(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
-	userRouter := routers.NewUserRouter(tx, r, jwtExpiresIn, tokenAuth)
+	userRouter := routers.NewUserRouter(tx)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
-	userRouter.InitializeUserRoutes()
+	userRouter.InitializeUserRoutes(r)
 
-	r.Route("/api", func(r chi.Router) {
+	r.Route("/", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 		userRouter.UserRoutes(r)
