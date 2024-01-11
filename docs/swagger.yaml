@@ -1,0 +1,179 @@
+basePath: /
+definitions:
+  dto.GetJWTOutput:
+    properties:
+      access_token:
+        type: string
+    type: object
+  dto.UserInput:
+    properties:
+      admin:
+        type: boolean
+      cpf:
+        type: string
+      email:
+        type: string
+      last_name:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UserOutput:
+    properties:
+      admin:
+        type: boolean
+      cpf:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      name:
+        type: string
+      updated_at:
+        items:
+          type: string
+        type: array
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: lucasvm.ti@gmail.com
+    name: Lucas V Marangoni
+    url: https://www.linkedin.com/in/lucasvmarangoni/
+  license:
+    name: MIT
+  termsOfService: http://swagger.io/terms/
+  title: Financial File Manager
+  version: "1.0"
+paths:
+  /authn/create:
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create user
+      tags:
+      - users
+  /authn/jwt:
+    post:
+      consumes:
+      - application/json
+      description: Generate a user JWT
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetJWTOutput'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Generate a user JWT
+      tags:
+      - Authn
+  /authz/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Authorization user to admin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - ApiKeyAuth: []
+      summary: Authorization user to admin
+      tags:
+      - Authz
+  /user/del:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - users
+  /user/me:
+    get:
+      consumes:
+      - application/json
+      description: Get me user data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserOutput'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Get me user data
+      tags:
+      - users
+  /user/update:
+    put:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: user data update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - ApiKeyAuth: []
+      summary: Update user
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

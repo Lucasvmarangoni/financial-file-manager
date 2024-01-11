@@ -8,15 +8,16 @@ import (
 )
 
 
-// Authentication godoc
-// @Summary      Generate a user JWT
-// @Description  Generate a user JWT
-// @Tags         Authn
+// Admin authorization godoc
+// @Summary      Authorization user to admin 
+// @Description  Authorization user to admin 
+// @Tags         Authz
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  
-// @Failure      400  {object}  Error
-// @Router      /authz/{id} [post]
+// @Success      200  
+// @Failure      400  
+// @Router      /authz/{id} [patch]
+// @Security ApiKeyAuth
 func (u *UserHandler) AdminAuthz(w http.ResponseWriter, r *http.Request) {
 	adminID, err := u.GetSub(w, r)
 	userIDForAdminStatusToggle := chi.URLParam(r, "id")	

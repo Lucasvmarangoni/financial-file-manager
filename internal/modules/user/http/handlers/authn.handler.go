@@ -17,8 +17,8 @@ import (
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  dto.GetJWTOutput
-// @Failure      400  {object}  Error
-// @Failure      401  {object}  Error
+// @Failure      400  
+// @Failure      401  
 // @Router       /authn/jwt [post]
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)

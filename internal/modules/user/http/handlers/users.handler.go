@@ -17,7 +17,7 @@ import (
 // @Produce      json
 // @Param        request     body      dto.UserInput  true  "user data"
 // @Success      200
-// @Failure      400         {object}  Error
+// @Failure      400 
 // @Router       /authn/create [post]
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
@@ -44,8 +44,9 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Success      200 		 {object}  dto.UserOutput
-// @Failure      500         {object}  Error
-// @Router       /user/me [post]
+// @Failure      500  
+// @Router       /user/me [get]
+// @Security ApiKeyAuth
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
@@ -90,8 +91,9 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request     body      dto.UserInput  true  "user data update"
 // @Success      200
-// @Failure      400         {object}  Error
-// @Router       /user/update [post]
+// @Failure      400  
+// @Router       /user/update [put]
+// @Security ApiKeyAuth
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserUpdateInput
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -122,8 +124,9 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Success      200
-// @Failure      400         {object}  Error
-// @Router       /user/del [post]
+// @Failure      400 
+// @Router       /user/del [delete]
+// @Security ApiKeyAuth
 func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := u.GetSub(w, r)
 	if err != nil {

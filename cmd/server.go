@@ -10,6 +10,8 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
+	_ "github.com/Lucasvmarangoni/financial-file-manager/docs"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
@@ -19,7 +21,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5"
-
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/rs/zerolog/log"
 )
 
@@ -41,7 +43,7 @@ func init() {
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   Lucas V Marangoni
-// @contact.url    https://www.linkedin.com/in/lucasvmarangoni/
+// @contact.url    https://lucasvmarangoni.vercel.app/
 // @contact.email  lucasvm.ti@gmail.com
 
 // @license.name   MIT
@@ -99,7 +101,8 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 		jwtExpiresIn = 50
 		log.Warn().Err(errors.NewError(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
-	userRouter := routers.NewUserRouter(tx)
+	router := router.NewRouter()
+	userRouter := routers.NewUserRouter(tx, router)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -111,5 +114,6 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 		userRouter.UserRoutes(r)
-	})
+	})	
+	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 }
