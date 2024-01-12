@@ -7,7 +7,8 @@ import (
 
 func ExtractFactory(
 	typ string,
-	customer pkg_entities.ID,
+	user pkg_entities.ID,
+	authorized []pkg_entities.ID,
 	versions []pkg_entities.ID,
 	account int,
 	value float64,
@@ -18,7 +19,7 @@ func ExtractFactory(
 	archived bool,
 ) (*entities.Extract, error) {
 
-	file, err := entities.NewFile(typ, customer, versions, archived)
+	file, err := entities.NewFile(typ, user, authorized, versions, archived)
 	if err != nil {
 		return nil, err
 	}

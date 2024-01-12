@@ -9,7 +9,8 @@ import (
 
 func InvoiceFactory(
 	typ string,
-	customer pkg_entities.ID,
+	user pkg_entities.ID,
+	authorized []pkg_entities.ID,
 	versions []pkg_entities.ID,
 	dueDate time.Time,
 	value float64,
@@ -18,7 +19,7 @@ func InvoiceFactory(
 	archived bool,
 ) (*entities.Invoice, error) {
 
-	file, err := entities.NewFile(typ, customer, versions, archived)
+	file, err := entities.NewFile(typ, user, authorized, versions, archived)
 	if err != nil {
 		return nil, err
 	}

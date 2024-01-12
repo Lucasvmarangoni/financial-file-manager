@@ -7,7 +7,8 @@ import (
 
 func ContractFactory(
 	typ string,
-	customer pkg_entities.ID,
+	user pkg_entities.ID,
+	authorized []pkg_entities.ID,
 	versions []pkg_entities.ID,
 	title string,
 	parties []string,
@@ -17,7 +18,7 @@ func ContractFactory(
 	archived bool,
 ) (*entities.Contract, error) {
 
-	file, err := entities.NewFile(typ, customer, versions, archived)
+	file, err := entities.NewFile(typ, user, authorized, versions, archived)
 	if err != nil {
 		return nil, err
 	}

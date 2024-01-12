@@ -13,12 +13,13 @@ import (
 )
 
 type File struct {
-	ID        entities.ID   `json:"document_id" valid:"notnull,required"`
-	Type      string        `json:"type" valid:"notnull,required"`
-	CreatedAt time.Time     `json:"created_at" valid:"-"`
-	User      entities.ID   `json:"user" valid:"-"`
-	Versions  []entities.ID `json:"versions" valid:"-"`
-	Archived  bool          `json:"archived" valid:"-"`
+	ID         entities.ID   `json:"document_id" valid:"notnull,required"`
+	Type       string        `json:"type" valid:"notnull,required"`
+	CreatedAt  time.Time     `json:"created_at" valid:"-"`
+	User       entities.ID   `json:"user" valid:"-"`
+	Authorized []entities.ID `json:"authorized" valid:"-"`
+	Versions   []entities.ID `json:"versions" valid:"-"`
+	Archived   bool          `json:"archived" valid:"-"`
 }
 
 func (f *File) Validate() error {
@@ -37,6 +38,18 @@ func (f *File) Validate() error {
 		return pkg_errors.IsInvalidError("Type", fmt.Sprintf("Must be: %v", fileTypes))
 	}
 
+	for _, versionID := range f.Versions {
+		if _, err := entities.ParseID(versionID.String()); err != nil {
+			return pkg_errors.IsInvalidError("Versions", "Each ID must be a google uuid")
+		}
+	}
+
+	for _, authorizedID := range f.Authorized {
+		if _, err := entities.ParseID(authorizedID.String()); err != nil {
+			return pkg_errors.IsInvalidError("Authorized", "Each ID must be a google uuid")
+		}
+	}
+
 	_, err := govalidator.ValidateStruct(f)
 	if err != nil {
 		return err
@@ -44,11 +57,12 @@ func (f *File) Validate() error {
 	return nil
 }
 
-func NewFile(typ string, user entities.ID, versions []entities.ID, archived bool) (*File, error) {
+func NewFile(typ string, user entities.ID, authorized, versions []entities.ID, archived bool) (*File, error) {
 
 	file := File{
-		Type:     typ,
-		User: user,
+		Type:       typ,
+		User:       user,
+		Authorized: authorized,
 	}
 	file.prepare()
 
