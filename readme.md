@@ -43,6 +43,9 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 *<a href="./docs/doc-funcional.md"> ⇝ <u>Documentação detalhada.</u> </a>*
 
+⇝ Se você é um recrutador, não deixe de ver também os *<a href="./docs/registros-de-desenvolvimento.md"> <u>Resgistros de desenvolvimento.</u></a>* Neles detalho muitas das decisões de engenharia de software do projeto.
+
+
 <br>
 
 ## TECNOLOGIAS
