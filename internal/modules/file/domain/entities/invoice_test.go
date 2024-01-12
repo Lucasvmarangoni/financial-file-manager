@@ -14,9 +14,10 @@ import (
 func TestNewInvoice(t *testing.T) {
 
 	typ := "contract"
-	customer := entities_pkg.NewID()
+	user := entities_pkg.NewID()
+	authorized := []entities_pkg.ID{entities_pkg.NewID(), entities_pkg.NewID()}
 
-	file, err := entities.NewFile(typ, customer, nil, false)
+	file, err := entities.NewFile(typ, user, authorized, nil, false)
 
 	require.NotNil(t, file)
 	require.Nil(t, err)

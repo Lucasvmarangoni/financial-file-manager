@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/factories"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
+	consts "github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +16,8 @@ import (
 func TextInvoiceFactory(t *testing.T) {
 
 	typ := "invoice"
-	customer := pkg_entities.NewID()
+	user := pkg_entities.NewID()
+	authorized := []pkg_entities.ID{pkg_entities.NewID(), pkg_entities.NewID()}
 	dueDate, _ := time.Parse(time.RFC3339, "2022-03-14T09:26:22.123456789-07:00")
 	value := 12.0
 	method := "invalid"
@@ -25,7 +26,8 @@ func TextInvoiceFactory(t *testing.T) {
 
 		invoice, err := factories.InvoiceFactory(
 			typ,
-			customer,
+			user,
+			authorized,
 			nil,
 			dueDate,
 			value,
@@ -43,7 +45,8 @@ func TextInvoiceFactory(t *testing.T) {
 
 		invoice, err := factories.InvoiceFactory(
 			typ,
-			customer,
+			user,
+			authorized,
 			nil,
 			dueDate,
 			value,

@@ -7,10 +7,10 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 	entities_pkg "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/google/uuid"
 )
 
 func init() {
@@ -24,10 +24,11 @@ func TestNewFile(t *testing.T) {
 
 	typ := "contract"
 	user := entities_pkg.NewID()
+	authorized := []entities_pkg.ID{entities_pkg.NewID(), entities_pkg.NewID()}
 	now := time.Now()
 	t.Run("should return a new file when provided valid params", func(t *testing.T) {
 
-		file, err := entities.NewFile(typ, user, nil, false)
+		file, err := entities.NewFile(typ, user, authorized, nil, false)
 
 		require.NotNil(t, file)
 		require.Nil(t, err)
@@ -41,7 +42,7 @@ func TestNewFile(t *testing.T) {
 
 		typ = "-"
 
-		file, err := entities.NewFile(typ, user, nil, false)
+		file, err := entities.NewFile(typ, user, authorized, nil, false)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)
@@ -51,7 +52,7 @@ func TestNewFile(t *testing.T) {
 
 		user = uuid.Nil
 
-		file, err := entities.NewFile(typ, user, nil, false)
+		file, err := entities.NewFile(typ, user, authorized, nil, false)
 
 		require.NotNil(t, err)
 		require.Nil(t, file)

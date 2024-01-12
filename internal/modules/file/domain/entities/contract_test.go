@@ -12,16 +12,16 @@ import (
 func TestNewContract(t *testing.T) {
 
 	typ := "contract"
-	customer := entities_pkg.NewID()
-	file, err := entities.NewFile(typ, customer, nil, false)
+	user := entities_pkg.NewID()
+	authorized := []entities_pkg.ID{entities_pkg.NewID(), entities_pkg.NewID()}
 
+	file, err := entities.NewFile(typ, user, authorized, nil, false)
 	require.NotNil(t, file)
 	require.Nil(t, err)
 
 	title := "Test Title"
 	parties := []string{"Party 1", "Party 2"}
 	object := "Test Object"
-
 
 	t.Run("Should return a new contract when valid params are provided", func(t *testing.T) {
 
@@ -35,21 +35,21 @@ func TestNewContract(t *testing.T) {
 		assert.Equal(t, object, contract.Object)
 	})
 
-	t.Run("Should return error when invalid param title is provided", func(t *testing.T) {		
+	t.Run("Should return error when invalid param title is provided", func(t *testing.T) {
 		title = "-"
-	
+
 		contract, err := entities.NewContract(file, title, parties, object, nil, nil)
 
 		require.NotNil(t, err)
-		require.Nil(t, contract)		
+		require.Nil(t, contract)
 	})
 
-	t.Run("Should return error when invalid param parties is provided", func(t *testing.T) {		
+	t.Run("Should return error when invalid param parties is provided", func(t *testing.T) {
 		parties = []string{"Party 1"}
-	
+
 		contract, err := entities.NewContract(file, title, parties, object, nil, nil)
 
 		require.NotNil(t, err)
-		require.Nil(t, contract)		
+		require.Nil(t, contract)
 	})
 }

@@ -10,26 +10,28 @@ import (
 )
 
 func TextContractFactory(t *testing.T) {
-	
+
 	typ := "invoice"
-	
-	customer := pkg_entities.NewID()
+
+	user := pkg_entities.NewID()
 	title := "Test Title"
 	parties := []string{"Party 1", "Party 2"}
 	object := "Test Object"
+	authorized := []pkg_entities.ID{pkg_entities.NewID(), pkg_entities.NewID()}
 
 	t.Run("should return a new contract", func(t *testing.T) {
 
-		contract, err := factories.ContractFactory(		
-			typ,			
-			customer,
+		contract, err := factories.ContractFactory(
+			typ,
+			user,
+			authorized,
 			nil,
 			title,
 			parties,
-			object,	
+			object,
 			nil,
 			nil,
-			false,		
+			false,
 		)
 		require.NotNil(t, contract)
 		require.Nil(t, err)
@@ -39,16 +41,17 @@ func TextContractFactory(t *testing.T) {
 
 		typ = "invalid"
 
-		contract, err := factories.ContractFactory(			
-			typ,			
-			customer,
+		contract, err := factories.ContractFactory(
+			typ,
+			user,
+			authorized,
 			nil,
 			title,
 			parties,
-			object,	
+			object,
 			nil,
 			nil,
-			false,		
+			false,
 		)
 		require.Nil(t, contract)
 		require.NotNil(t, err)

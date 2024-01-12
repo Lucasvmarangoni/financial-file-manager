@@ -13,7 +13,8 @@ import (
 func TextExtractFactory(t *testing.T) {
 
 	typ := "invoice"
-	customer := pkg_entities.NewID()
+	user := pkg_entities.NewID()
+	authorized := []pkg_entities.ID{pkg_entities.NewID(), pkg_entities.NewID()}
 	account := 0
 	value := 20.0
 	category := "deposit"
@@ -24,7 +25,8 @@ func TextExtractFactory(t *testing.T) {
 
 		extract, err := factories.ExtractFactory(
 			typ,
-			customer,
+			user,
+			authorized,
 			nil,
 			account,
 			value,
@@ -44,7 +46,8 @@ func TextExtractFactory(t *testing.T) {
 
 		extract, err := factories.ExtractFactory(
 			typ,
-			customer,
+			user,
+			authorized,
 			nil,
 			account,
 			value,
