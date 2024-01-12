@@ -28,6 +28,12 @@ Dessa forma, se o valor do campo "Archived" está como falso, significa que é o
 
 **Obs**: Não entendi ser necessário um campo como "UpdatedAt" para o versionamento, uma vez que a própria data de criação ("CreatedAt") do novo documento já carrega essa informação consigo.
 
+**Update** [ 12 Jan 2024 ] - <u>Adição do campo "Authorized"</u> <br>
+O objetivo desse campo é permitir que o *user*, aquele que está enviando o arquivo, possa authorizar outros usuários a ter acesso a este documento. <br>
+Isso também evita a necessidade de duplicação de arquivos e dados.  
+
+O *user* não enviara os IDs autorizados, mas os CPFs, a aplicação será responsável por identificar se os CPFs estão registrados no sistema e coletar os respectivos IDs para atribuir a entidade *File* e persistir no banco.
+
 ### Contract
 
 **Title**: O título do contrato.
