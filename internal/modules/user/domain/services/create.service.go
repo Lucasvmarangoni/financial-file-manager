@@ -1,11 +1,11 @@
 package services
 
 import (
-	"context"
+	"encoding/json"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 func (u *UserService) Create(name, lastName, cpf, email, password string) error {
@@ -13,10 +13,12 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 	if err != nil {
 		return errors.NewError(err, "entities.NewUser")
 	}
-	newUser, err = u.Repository.Insert(newUser, context.Background())
+
+	userJSON, err := json.Marshal(newUser)
 	if err != nil {
-		return errors.NewError(err, "Repository.Insert")
+		return errors.NewError(err, "json.Marshal")
 	}
-	log.Info().Str("context", "UserHandler").Msgf("User created successfully (%s)", newUser.ID)
+
+	u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
 	return nil
 }

@@ -7,32 +7,46 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
+	"github.com/streadway/amqp"
+
+	// "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httprate"
 	"github.com/jackc/pgx/v5"
+	// "github.com/streadway/amqp"
 )
 
 type UserRouter struct {
-	Db            pgx.Tx
-	userHandler   *handlers.UserHandler
-	jwtExpiriesIn int
-	Router        *router.Router
+	Db             pgx.Tx
+	userHandler    *handlers.UserHandler
+	Router         *router.Router
+	RabbitMQ       *queue.RabbitMQ
+	MessageChannel chan amqp.Delivery
 }
 
-func NewUserRouter(db pgx.Tx, router *router.Router) *UserRouter {
+func NewUserRouter(db pgx.Tx, router *router.Router, rabbitMQ *queue.RabbitMQ, messageChannel chan amqp.Delivery) *UserRouter {
 	u := &UserRouter{
-		Db: db,
-		Router: router,
+		Db:             db,
+		Router:         router,
+		RabbitMQ:       rabbitMQ,
+		MessageChannel: messageChannel,
 	}
 	u.userHandler = u.init()
 	return u
 }
 
 func (u *UserRouter) init() *handlers.UserHandler {
+
 	userRepository := repositories.NewUserRepository(u.Db)
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(userRepository, u.RabbitMQ)
 	userHandler := handlers.NewUserHandler(userService)
+
+	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
+	go userManagement.CreateManagement(u.MessageChannel)
+
 	return userHandler
 }
 

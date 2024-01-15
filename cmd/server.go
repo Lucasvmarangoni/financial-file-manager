@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
-	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
 	_ "github.com/Lucasvmarangoni/financial-file-manager/docs"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
+	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
+	"github.com/streadway/amqp"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
@@ -21,8 +23,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/rs/zerolog/log"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 var db database.Config
@@ -39,7 +41,7 @@ func init() {
 
 // @title           Financial File Manager
 // @version         1.0
-// @description     
+// @description
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   Lucas V Marangoni
@@ -61,16 +63,20 @@ func main() {
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("Failed exec Database")
 	}
-
-	// rpc.Connect()	
+	// rpc.Connect()
 
 	r := chi.NewRouter()
-	Http(tx, r)
+
+	messageChannel, rabbitMQ, ch := Queues()
+	defer ch.Close()
+	Http(tx, r, messageChannel, rabbitMQ, ch)
+	
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("Failed server listen")
 	}
+
 }
 
 func Database(ctx context.Context) (pgx.Tx, error) {
@@ -93,7 +99,7 @@ func Database(ctx context.Context) (pgx.Tx, error) {
 	return tx, nil
 }
 
-func Http(tx pgx.Tx, r *chi.Mux) {
+func Http(tx pgx.Tx, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitMQ *queue.RabbitMQ, ch *amqp.Channel) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
 	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
@@ -101,8 +107,9 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 		jwtExpiresIn = 50
 		log.Warn().Err(errors.NewError(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
+
 	router := router.NewRouter()
-	userRouter := routers.NewUserRouter(tx, router)
+	userRouter := routers.NewUserRouter(tx, router, rabbitMQ, messageChannel)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -114,6 +121,14 @@ func Http(tx pgx.Tx, r *chi.Mux) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 		userRouter.UserRoutes(r)
-	})	
+	})
 	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
+}
+
+func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
+	messageChannel := make(chan amqp.Delivery)
+	rabbitMQ := queue.NewRabbitMQ()
+	ch := rabbitMQ.Connect()
+
+	return messageChannel, rabbitMQ, ch
 }
