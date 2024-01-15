@@ -9,34 +9,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Create user godoc
-// @Summary      Create user
-// @Description  Create user
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        request     body      dto.UserInput  true  "user data"
-// @Success      200
-// @Failure      400 
-// @Router       /authn/create [post]
-func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var user dto.UserInput
-
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Err(err).Msg("Error decode request")
-		return
-	}
-	err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Stack().Err(err).Msg("Error create user ")
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
 // Get user godoc
 // @Summary      Get me user data
 // @Description  Get me user data
