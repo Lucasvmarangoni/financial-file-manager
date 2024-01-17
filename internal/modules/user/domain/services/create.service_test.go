@@ -10,14 +10,27 @@ import (
 func TestUserService_Create(t *testing.T) {
 	userService, _, mockRabbitMQ := prepare(t)
 
-	mockRabbitMQ.EXPECT().
-		Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
-		Return().
-		Times(1)
+	t.Run("Should returned nil and publish in rabbitMQ queue when valid user is provided", func(t *testing.T) {
+		mockRabbitMQ.EXPECT().
+			Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
+			Return().
+			Times(1)
 
-	err := userService.Create("John", "Doe", "123.356.229-00", "john.doe@example.com", "hjH**g54gHç")
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
-	}
-	assert.Nil(t, err)
+		err := userService.Create("John", "Doe", "123.356.229-00", "john.doe@example.com", "hjH**g54gHç")
+		if err != nil {
+			t.Errorf("Create returned an error: %v", err)
+		}
+		assert.Nil(t, err)
+	})
+
+	t.Run("Should return an error when invalid param is provided", func(t *testing.T) {
+
+		invalid_cpf := "12335622900"
+
+		err := userService.Create("John", "Doe", invalid_cpf, "john.doe@example.com", "hjH**g54gHç")
+		assert.Error(t, err)
+		assert.Equal(t, `Error: cpf: 12335622900 does not validate as matches(^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$) Operation: entities.NewUser`, err.Error())
+
+	})
 }
+
