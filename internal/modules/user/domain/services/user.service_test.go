@@ -3,7 +3,7 @@ package services_test
 import (
 	"testing"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/mocks"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/mocks"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/golang/mock/gomock"
 )
