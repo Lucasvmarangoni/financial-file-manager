@@ -6,28 +6,12 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestUserService_Update(t *testing.T) {
 	userService, mockRepo, _ := prepare(t)
-	id, _ := pkg_entities.ParseID("52c599f3-af83-4fd9-bfd6-e532918f7b13")
-	var createdAt, _ = time.Parse(time.RFC3339Nano, "2024-01-17T01:04:23.883938Z")
-	var password = "hgGFHJ654*"
-
-	var user = &entities.User{
-		ID:        id,
-		Name:      "John",
-		LastName:  "Doe",
-		CPF:       "123.356.229-00",
-		Email:     "john.doe@example.com",
-		Password:  password,
-		Admin:     false,
-		CreatedAt: createdAt,
-		UpdatedAt: nil,
-	}
 
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
 		mockRepo.EXPECT().

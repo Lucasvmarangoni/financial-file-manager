@@ -4,28 +4,11 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
-
-var id, err = pkg_entities.ParseID("52c599f3-af83-4fd9-bfd6-e532918f7b13")
-var createdAt, _ = time.Parse(time.RFC3339Nano, "2024-01-17T01:04:23.883938Z")
-var password = "hgGFHJ654*"
-var user = &entities.User{
-	ID:        id,
-	Name:      "John",
-	LastName:  "Doe",
-	CPF:       "123.356.229-00",
-	Email:     "john.doe@example.com",
-	Password:  password,
-	Admin:     false,
-	CreatedAt: createdAt,
-	UpdatedAt: nil,
-}
 
 func TestUserService_FindByEmail(t *testing.T) {
 	userService, mockRepo, _ := prepare(t)
