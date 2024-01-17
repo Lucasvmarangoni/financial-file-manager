@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
 
 	"github.com/go-chi/jwtauth"
 	"github.com/spf13/viper"
@@ -29,21 +31,25 @@ func GetTokenAuth() *jwtauth.JWTAuth {
 
 func init() {
 	cfg := &conf{}
+
+	
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("Não foi possível obter o caminho para o arquivo config.go")
+	}
+	dir := filepath.Dir(filename)	
+	envPath := filepath.Join(dir, "../.env") 
+
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
-	viper.AddConfigPath("../")
-	viper.SetConfigFile(".env")
-	// viper.SetConfigFile("../config/.env.default")
+	viper.SetConfigFile(envPath)
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}
-
 	err = viper.Unmarshal(&cfg)
 	if err != nil {
 		panic(err)
 	}
-
-	
 }
