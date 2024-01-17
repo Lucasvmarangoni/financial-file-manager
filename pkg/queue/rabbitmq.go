@@ -7,6 +7,12 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type IRabbitMQ interface {
+	Connect() *amqp.Channel
+	Consume(messageChannel chan amqp.Delivery, routingKey string)
+	Publish(message string, contentType string, exchange string, routingKey string)
+}
+
 type RabbitMQ struct {
 	User              string
 	Password          string

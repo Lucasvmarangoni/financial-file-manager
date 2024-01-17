@@ -6,11 +6,11 @@ import (
 )
 
 type UserService struct {
-	Repository *repositories.UserRepositoryDb
-	RabbitMQ   *queue.RabbitMQ
+	Repository repositories.UserRepository
+	RabbitMQ   queue.IRabbitMQ
 }
 
-func NewUserService(repo *repositories.UserRepositoryDb, rabbitMQ *queue.RabbitMQ) *UserService {
+func NewUserService(repo repositories.UserRepository, rabbitMQ queue.IRabbitMQ) *UserService {
 	UserService := &UserService{
 		Repository: repo,
 		RabbitMQ:   rabbitMQ,

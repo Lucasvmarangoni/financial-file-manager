@@ -9,10 +9,13 @@ import (
 )
 
 type UserRepository interface {
-	Insert(user *entities.User) (*entities.User, error)
-	FindByEmail(email string) (*entities.User, error)
-	FindById(id pkg_entities.ID) (*entities.User, error)
-	FindByCpf(cpf string) (*entities.User, error)
+	Insert(user *entities.User, ctx context.Context) (*entities.User, error)
+	FindByEmail(email string, ctx context.Context) (*entities.User, error)
+	FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error)
+	FindByCpf(cpf string, ctx context.Context) (*entities.User, error)
+	Update(user *entities.User, ctx context.Context) (*entities.User, error)
+	ToggleAdmin(id string, ctx context.Context) error
+	Delete(id string, ctx context.Context) error
 }
 
 type UserRepositoryDb struct {
