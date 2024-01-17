@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserService_Create(t *testing.T) {
@@ -18,4 +19,5 @@ func TestUserService_Create(t *testing.T) {
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}
+	assert.Nil(t, err)
 }

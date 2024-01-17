@@ -25,9 +25,11 @@ func TestUserService_Authn(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to hash password: %v", err)
 	}
+	emailToFind := "john.doe@example.com"
+
 
 	mockRepo.EXPECT().
-		FindByEmail(gomock.Any(), gomock.Any()).
+		FindByEmail(emailToFind, gomock.Any()).
 		Return(&entities.User{
 			ID:        id,
 			Name:      "John",
@@ -40,7 +42,7 @@ func TestUserService_Authn(t *testing.T) {
 			UpdatedAt: nil,
 		}, nil).Times(1)
 
-		token, err := userService.Authn("john.doe@example.com", password, config.GetTokenAuth(), 3600)
+		token, err := userService.Authn(emailToFind, password, config.GetTokenAuth(), 3600)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, token, "The token should not be empty")
