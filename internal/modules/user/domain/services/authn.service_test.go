@@ -19,8 +19,7 @@ func TestUserService_Authn(t *testing.T) {
 	userService, mockRepo, _ := prepare(t)
 	id, err := pkg_entities.ParseID("52c599f3-af83-4fd9-bfd6-e532918f7b13")
 	createdAt, _ := time.Parse(time.RFC3339Nano, "2024-01-17T01:04:23.883938Z")
-
-	password := "hgGFHJ654"
+	password := "hgGFHJ654*"
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		t.Fatalf("failed to hash password: %v", err)
