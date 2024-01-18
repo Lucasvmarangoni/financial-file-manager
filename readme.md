@@ -45,8 +45,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ⇝ *<a href="./docs/registros-de-desenvolvimento.md"> <u>Resgistros de desenvolvimento.</u></a>* (Decisões de engenharia de software do projeto).
 
-<strong> Se você é um recrutador de alguma empresa que apliquei e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para 
-</strong> lucasvm.ti@gmail.com.
+<strong> Se você é um recrutador e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para </strong> lucasvm.ti@gmail.com.
 
 <br>
 
