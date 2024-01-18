@@ -41,10 +41,11 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Resiliência**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
 
- ⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação detalhada.</u> </a>*
+⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação detalhada.</u> </a>*
 
 ⇝ *<a href="./docs/registros-de-desenvolvimento.md"> <u>Resgistros de desenvolvimento.</u></a>* (Decisões de engenharia de software do projeto).
 
+Se você é um recrutador de alguma empresa que apliquei e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para lucasvm.ti@gmail.com.
 
 <br>
 
