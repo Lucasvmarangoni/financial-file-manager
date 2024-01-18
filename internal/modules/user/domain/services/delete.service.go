@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 func (u *UserService) Delete(id string) error {
@@ -12,6 +11,5 @@ func (u *UserService) Delete(id string) error {
 	if err != nil {
 		return errors.NewError(err, "Repository.Update")
 	}
-	log.Info().Str("context", "UserHandler").Msgf("User deleted successfully (%s)", id)
 	return nil
 }

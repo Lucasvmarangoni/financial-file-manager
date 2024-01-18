@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/Lucasvmarangoni/video-encoder v0.0.0-20231016153646-27129944f425
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
 	github.com/fatih/color v1.14.1
 	github.com/go-chi/chi v1.5.1
 	github.com/go-chi/httprate v0.8.0
@@ -71,7 +72,6 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	go.uber.org/atomic v1.9.0 // indirect

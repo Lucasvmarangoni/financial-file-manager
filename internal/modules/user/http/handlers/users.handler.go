@@ -86,6 +86,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		log.Error().Stack().Err(err).Msg("Error update user ")
 		return
 	}
+	log.Info().Str("context", "UserHandler").Msgf("User updated successfully (%s)", id)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -110,5 +111,6 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		log.Error().Stack().Err(err).Msg("Error delete user ")
 		return
 	}
+	log.Info().Str("context", "UserHandler").Msgf("User deleted successfully (%s)", id)
 	w.WriteHeader(http.StatusOK)
 }

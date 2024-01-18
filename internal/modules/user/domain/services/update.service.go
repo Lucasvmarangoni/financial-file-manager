@@ -5,7 +5,6 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 func (u *UserService) Update(id, name, lastName, email, password string) error {
@@ -38,6 +37,5 @@ func (u *UserService) Update(id, name, lastName, email, password string) error {
 	if err != nil {
 		return errors.NewError(err, "Repository.Update")
 	}
-	log.Info().Str("context", "UserHandler").Msgf("User updated successfully (%s)", user.ID)
 	return nil
 }
