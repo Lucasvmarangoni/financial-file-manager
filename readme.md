@@ -74,6 +74,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Logs**: Zerolog 
 - **Métricas**: Prometheus 
+- **Busca e Análise**: Elasticsearch
 
 ### Segurança
 
