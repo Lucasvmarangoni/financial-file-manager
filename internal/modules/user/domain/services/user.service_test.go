@@ -11,7 +11,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func prepare(t *testing.T) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ) {
+func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

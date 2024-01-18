@@ -19,3 +19,15 @@ func TestUserService_Delete(t *testing.T) {
 		assert.Nil(t, err)
 	})
 }
+
+func BenchmarkUserService_Delete(b *testing.B) {
+	userService, mockRepo, _ := prepare(b)
+
+	mockRepo.EXPECT().
+		Delete(gomock.Eq(id.String()), gomock.Any()).
+		Return(nil).AnyTimes()
+
+	for i := 0; i < b.N; i++ {
+		_ = userService.Delete(id.String())
+	}
+}

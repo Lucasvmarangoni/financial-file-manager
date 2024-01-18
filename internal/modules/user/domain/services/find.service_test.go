@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -75,20 +74,17 @@ func TestUserService_FindByCpf(t *testing.T) {
 	})
 }
 
-
 func TestUserService_FindById(t *testing.T) {
 	userService, mockRepo, _ := prepare(t)
-	id, _ := pkg_entities.ParseID("52c599f3-af83-4fd9-bfd6-e532918f7b13")
-	idToFind := id
 	invalid_id := "52c599f83-4fd9-bfd6-e532918f7b13"
 
 	t.Run("Should returned a valid user when valid and existing ID is provided", func(t *testing.T) {
 
 		mockRepo.EXPECT().
-			FindById(idToFind, gomock.Any()).
+			FindById(id, gomock.Any()).
 			Return(user, nil).Times(1)
 
-		foundUser, err := userService.FindById(idToFind.String(), context.Background())
+		foundUser, err := userService.FindById(id.String(), context.Background())
 
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
@@ -107,4 +103,42 @@ func TestUserService_FindById(t *testing.T) {
 
 		assert.Error(t, err)
 	})
+}
+
+func BenchmarkUserService_FindBeEmail(b *testing.B) {
+	userService, mockRepo, _ := prepare(b)
+
+	emailToFind := "john.doe@example.com"
+	mockRepo.EXPECT().
+		FindByEmail(emailToFind, gomock.Any()).
+		Return(user, nil).AnyTimes()
+
+	for i := 0; i < b.N; i++ {
+		_, _ = userService.FindByEmail(emailToFind, context.Background())
+	}
+}
+
+func BenchmarkUserService_FindBeCpf(b *testing.B) {
+	userService, mockRepo, _ := prepare(b)
+
+	cpfToFind := "123.356.229-00"
+	mockRepo.EXPECT().
+		FindByCpf(cpfToFind, gomock.Any()).
+		Return(user, nil).AnyTimes()
+
+	for i := 0; i < b.N; i++ {
+		_, _ = userService.FindByCpf(cpfToFind, context.Background())
+	}
+}
+
+func BenchmarkUserService_FindBeId(b *testing.B) {
+	userService, mockRepo, _ := prepare(b)
+
+	mockRepo.EXPECT().
+		FindById(id, gomock.Any()).
+		Return(user, nil).AnyTimes()
+
+	for i := 0; i < b.N; i++ {
+		_, _ = userService.FindById(id.String(), context.Background())
+	}
 }

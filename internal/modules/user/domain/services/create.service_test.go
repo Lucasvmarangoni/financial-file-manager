@@ -34,3 +34,17 @@ func TestUserService_Create(t *testing.T) {
 	})
 }
 
+func BenchmarkUserService_Create(b *testing.B) {
+	userService, _, mockRabbitMQ := prepare(b)
+
+	
+	mockRabbitMQ.EXPECT().
+		Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
+		Return().
+		AnyTimes()
+
+	
+	for i := 0; i < b.N; i++ {
+		_ = userService.Create("John", "Doe", "123.356.229-00", "john.doe@example.com", "hjH**g54gHç")
+	}
+}
