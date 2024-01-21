@@ -1,4 +1,4 @@
-# Registro de desenvolvimento
+# Registro de engenharia de software
 
 ## Entidades e agregadores
 
@@ -81,3 +81,26 @@ Não sendo estritamente necessário o campo "Archived", que foi implementado afi
 - Com isso, um novo documento pode arquivar vários outros documentos.
 
 Caso algum dos IDs não for encontrado no banco de dados, será removido do campo "Versions", e o *client* receberá a notificação informando o ocorrido.
+
+
+## Logs
+
+A decisão girou em torno de logs em tempo real x logs em buffer e a preocupação com o desempenho. 
+
+Pegando como exemplo a criação de usuário. A operação concluida com sucesso exibi os seguintes logs: 
+
+   1 - 2024-01-18T19:27:23-03:00 INFO ⇝ MESSAGE PUBLISHED TO EXCHANGE 'AMQ.DIRECT' WITH ROUTING KEY 'USER-CREATE' context=RabbitMQ
+
+   2 - 2024/01/18 19:27:23 "POST http://localhost:8000/authn/create HTTP/1.1" from [::1]:36932 - 200 0B in 68.228322ms
+
+   3 - 2024-01-18T19:27:23-03:00 INFO ⇝ NEW INCOMING MESSAGE context=RabbitMQ
+
+   4 - 2024-01-18T19:27:23-03:00 INFO ⇝ USER CREATED SUCCESSFULLY (CCFE7B4F-1AF0-4D91-A4CB-7235FAA09522) context=UserHandler
+
+
+Dessa operação, em tempo real ficaria apenas o log 2, gerado pelo próprio middleware do go-chi. Os demais seriam enviados para o buffer e posterior armazenamento em arquivo txt para auditoria. 
+
+Decidi manter errors internos como logs em tempo real, pois entendo que são necessários de se monitorar em tempo de execução. 
+
+Erros do usuário para o buffer e armazenamento.
+
