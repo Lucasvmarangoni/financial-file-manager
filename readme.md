@@ -41,13 +41,23 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Resiliência**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
 
-⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação detalhada.</u> </a>*
+⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação detalhada</u>.</a>*
 
-⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Resgistros de engenharia de softare.</u></a>*
+⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Resgistros de engenharia de softare</u>.</a>*
 
 <strong> Se você é um recrutador e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para </strong> lucasvm.ti@gmail.com.
 
+
+### Artigos e conteúdo
+
+Tenho o hábito de criar meu próprio material durante o estudo. A partir deste projeto, decidi publicá-los.
+
+⇝ *<a href="https://medium.com/@lucasvm.ti/desenvolvimento-voltado-para-a-auditoria-em-software-0d15c56bf99c"> <u>Desenvolvimento voltado para a auditoria em Software</u>.</a>*
+
+⇝ *<a href="https://medium.com/@lucasvm.ti/erros-e-logs-4e1fcd79a937"> <u>Como configurar erros e logs corretamente</u>.</a>*
+
 <br>
+
 
 ## TECNOLOGIAS
 
