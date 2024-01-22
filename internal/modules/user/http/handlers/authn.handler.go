@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	logella "github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
@@ -18,7 +18,7 @@ import (
 // @Produce      json
 // @Param        request     body      dto.UserInput  true  "user data"
 // @Success      200
-// @Failure      400 
+// @Failure      400
 // @Router       /authn/create [post]
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
@@ -45,8 +45,8 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  dto.GetJWTOutput
-// @Failure      400  
-// @Failure      401  
+// @Failure      400
+// @Failure      401
 // @Router       /authn/jwt [post]
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
@@ -81,12 +81,12 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", errors.NewError(err, "Failed to get JWT claims")
+		return "", logella.ErrCtx(err, "Failed to get JWT claims")
 	}
 	id, ok := claims["sub"].(string)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", errors.NewError(err, "sub claim is missing or not a string")
+		return "", logella.ErrCtx(err, "sub claim is missing or not a string")
 	}
 	return id, nil
 }

@@ -43,6 +43,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
+github.com/Lucasvmarangoni/logella v0.0.0-20240122213234-e253a5eb2328 h1:sOEySX1uRrrSGvmBsaG2AKhqv8L7TYmJROMeFRh96go=
+github.com/Lucasvmarangoni/logella v0.0.0-20240122213234-e253a5eb2328/go.mod h1:pCi/ed51BnTm7kfhpXb2QIwjw2LyN6lYFzelDMbzjeg=
 github.com/Lucasvmarangoni/video-encoder v0.0.0-20231016153646-27129944f425 h1:VuuB+olE+cUcQtl1yAVZlvn09D0J/SFKree16RC44Qk=
 github.com/Lucasvmarangoni/video-encoder v0.0.0-20231016153646-27129944f425/go.mod h1:glgafKXfqKTmgZI2NOH7IsIqq0cTtHbW6v8vgFjdDd4=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=

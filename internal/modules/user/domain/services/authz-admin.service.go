@@ -3,19 +3,19 @@ package services
 import (
 	"context"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	logella "github.com/Lucasvmarangoni/logella/err"
 )
 
 func (u *UserService) AuthzAdmin(adminID, id string) error {
 	admin, err := u.FindById(adminID, nil)
 	if err != nil {
-		return errors.NewError(err, "u.FindById")
+		return logella.ErrCtx(err, "u.FindById")
 	}
 
 	if admin.Admin == true {
 		err := u.Repository.ToggleAdmin(id, context.Background())
 		if err != nil {
-			return errors.NewError(err, "u.Repository.ToggleAdmin")
+			return logella.ErrCtx(err, "u.Repository.ToggleAdmin")
 		}
 	}
 	return nil

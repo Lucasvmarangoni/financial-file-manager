@@ -3,13 +3,13 @@ package services
 import (
 	"context"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	logella "github.com/Lucasvmarangoni/logella/err"
 )
 
 func (u *UserService) Delete(id string) error {
 	err := u.Repository.Delete(id, context.Background())
 	if err != nil {
-		return errors.NewError(err, "Repository.Update")
+		return logella.ErrCtx(err, "Repository.Update")
 	}
 	return nil
 }
