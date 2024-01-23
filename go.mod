@@ -3,11 +3,11 @@ module github.com/Lucasvmarangoni/financial-file-manager
 go 1.21.1
 
 require (
-	github.com/Lucasvmarangoni/video-encoder v0.0.0-20231016153646-27129944f425
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
+	github.com/casbin/casbin/v2 v2.81.0
 	github.com/fatih/color v1.14.1
-	github.com/go-chi/chi v1.5.1
+	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/httprate v0.8.0
 	github.com/go-chi/jwtauth v1.2.0
 	github.com/golang/mock v1.5.0
@@ -16,7 +16,6 @@ require (
 	github.com/jackc/pgx/v5 v5.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pdfcpu/pdfcpu v0.5.0
-	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
 	github.com/saudshaddad/malicious-pdf-detector v0.1.0
 	github.com/spf13/viper v1.18.2
@@ -30,8 +29,13 @@ require (
 )
 
 require (
+	github.com/casbin/govaluate v1.1.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+)
+
+require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Lucasvmarangoni/logella v0.0.0-20240122213234-e253a5eb2328
+	github.com/Lucasvmarangoni/logella v0.0.0-20240122231204-b58c02844cdd
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect

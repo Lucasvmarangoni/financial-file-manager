@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/Lucasvmarangoni/logella/err"
 	"net/http"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
-	logella "github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
@@ -81,12 +81,12 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", logella.ErrCtx(err, "Failed to get JWT claims")
+		return "", errors.ErrCtx(err, "Failed to get JWT claims")
 	}
 	id, ok := claims["sub"].(string)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", logella.ErrCtx(err, "sub claim is missing or not a string")
+		return "", errors.ErrCtx(err, "sub claim is missing or not a string")
 	}
 	return id, nil
 }

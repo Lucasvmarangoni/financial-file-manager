@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog/log"
 )
@@ -43,13 +43,13 @@ func (cfg *Config) Connect(ctx context.Context) (*pgx.Conn, error) {
 
 	cfg.Db, err = pgx.ParseConfig(url)
 	if err != nil {
-		return nil, errors.NewError(err, "pgx.ParseConfig(url)")
+		return nil, errors.ErrCtx(err, "pgx.ParseConfig(url)")
 	}
 
 	cfg.Db.RuntimeParams["application_name"] = "financial_file_manager"
 	conn, err := pgx.ConnectConfig(ctx, cfg.Db)
 	if err != nil {
-		return nil, errors.NewError(err, "pgx.ConnectConfig")
+		return nil, errors.ErrCtx(err, "pgx.ConnectConfig")
 	}
 	return conn, nil
 }

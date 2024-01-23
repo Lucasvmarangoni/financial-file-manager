@@ -11,7 +11,8 @@ import (
 	"github.com/streadway/amqp"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
+	"github.com/Lucasvmarangoni/logella/router"
+
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httprate"

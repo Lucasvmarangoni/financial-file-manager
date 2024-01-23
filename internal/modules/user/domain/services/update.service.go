@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	logella "github.com/Lucasvmarangoni/logella/err"
+	"github.com/Lucasvmarangoni/logella/err"
 )
 
 func (u *UserService) Update(id, name, lastName, email, password string) error {
 
 	user, err := u.FindById(id, nil)
 	if err != nil {
-		return logella.ErrCtx(err, "u.FindById")
+		return errors.ErrCtx(err, "u.FindById")
 	}
 
 	if name == "" {
@@ -29,13 +29,13 @@ func (u *UserService) Update(id, name, lastName, email, password string) error {
 
 	newUser, err := entities.NewUser(name, lastName, user.CPF, email, password, user.Admin)
 	if err != nil {
-		return logella.ErrCtx(err, "entities.NewUser")
+		return errors.ErrCtx(err, "entities.NewUser")
 	}
 	newUser.Update(user.ID, user.CreatedAt)
 
 	newUser, err = u.Repository.Update(newUser, context.Background())
 	if err != nil {
-		return logella.ErrCtx(err, "Repository.Update")
+		return errors.ErrCtx(err, "Repository.Update")
 	}
 	return nil
 }

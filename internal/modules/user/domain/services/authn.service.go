@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	logella "github.com/Lucasvmarangoni/logella/err"
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 )
 
@@ -22,19 +22,19 @@ func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtEx
 		user, err = u.FindByCpf(unique, nil)
 	}
 	if err != nil {
-		return "", logella.ErrCtx(err, operation)
+		return "", errors.ErrCtx(err, operation)
 	}
 
 	err = user.ValidateHashPassword(password)
 	if err != nil {
-		return "", logella.ErrCtx(err, "user.ValidateHashPassword")
+		return "", errors.ErrCtx(err, "user.ValidateHashPassword")
 	}
 
 	user.Password = ""
 
 	tokenString, err := u.GenerateJWT(user, jwt, jwtExpiresIn)
 	if err != nil {
-		return "", logella.ErrCtx(err, "u.GenerateJWT")
+		return "", errors.ErrCtx(err, "u.GenerateJWT")
 	}
 	return tokenString, nil
 }
@@ -45,7 +45,7 @@ func (u *UserService) GenerateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwt
 		"exp": time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
 	})
 	if err != nil {
-		return "", logella.ErrCtx(err, "jwt.Encode")
+		return "", errors.ErrCtx(err, "jwt.Encode")
 	}
 	return tokenString, nil
 }
