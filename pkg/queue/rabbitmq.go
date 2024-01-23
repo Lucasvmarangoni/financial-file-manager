@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	logella "github.com/Lucasvmarangoni/logella/err"
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
@@ -94,7 +94,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 			messageChannel <- message
 		}
 		if err := r.Channel.Close(); err != nil {
-			logella.ErrCtx(err, "Failed to close RabbitMQ channel")
+			errors.ErrCtx(err, "Failed to close RabbitMQ channel")
 		} else {
 			log.Info().Str("context", "RabbitMQ").Msg("RabbitMQ channel closed gracefully")
 		}
@@ -119,6 +119,6 @@ func (r *RabbitMQ) Publish(message string, contentType string, exchange string, 
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		logella.ErrCtx(err, msg)
+		errors.ErrCtx(err, msg)
 	}
 }
