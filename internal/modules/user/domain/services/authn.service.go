@@ -41,8 +41,9 @@ func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtEx
 
 func (u *UserService) GenerateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwtExpiresIn int) (string, error) {
 	_, tokenString, err := jwt.Encode(map[string]interface{}{
-		"sub": user.ID.String(),
-		"exp": time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
+		"sub":   user.ID.String(),
+		"admin": user.Admin,
+		"exp":   time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
 	})
 	if err != nil {
 		return "", errors.ErrCtx(err, "jwt.Encode")
