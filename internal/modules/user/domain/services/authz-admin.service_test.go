@@ -38,7 +38,7 @@ func TestUserService_AuthzAdmin(t *testing.T) {
 			ToggleAdmin(gomock.Eq(id.String()), gomock.Any()).
 			Return(nil).Times(1)
 
-		err := userService.AuthzAdmin(adminId.String(), id.String())
+		err := userService.AuthzAdmin(id.String())
 
 		assert.Nil(t, err)
 	})
@@ -73,6 +73,6 @@ func BenchmarkUserService_AuthzAdmin(b *testing.B) {
 		Return(nil).AnyTimes()
 
 	for i := 0; i < b.N; i++ {
-		_ = userService.AuthzAdmin(adminId.String(), id.String())
+		_ = userService.AuthzAdmin(id.String())
 	}
 }

@@ -96,12 +96,11 @@ func (mr *MockUserRepositoryMockRecorder) FindById(id, ctx interface{}) *gomock.
 }
 
 // Insert mocks base method.
-func (m *MockUserRepository) Insert(user *entities.User, ctx context.Context) (*entities.User, error) {
+func (m *MockUserRepository) Insert(user *entities.User, ctx context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", user, ctx)
-	ret0, _ := ret[0].(*entities.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Insert indicates an expected call of Insert.
@@ -125,12 +124,11 @@ func (mr *MockUserRepositoryMockRecorder) ToggleAdmin(id, ctx interface{}) *gomo
 }
 
 // Update mocks base method.
-func (m *MockUserRepository) Update(user *entities.User, ctx context.Context) (*entities.User, error) {
+func (m *MockUserRepository) Update(user *entities.User, ctx context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", user, ctx)
-	ret0, _ := ret[0].(*entities.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Update indicates an expected call of Update.

@@ -44,7 +44,7 @@ func TestUserService_Update(t *testing.T) {
 				assert.Equal(t, updated_user.Admin, user.Admin)
 				assert.Equal(t, updated_user.CreatedAt, user.CreatedAt)
 			}).
-			Return(updated_user, nil).Times(1)
+			Return(nil).Times(1)
 
 		err := userService.Update(id.String(), "", new_lastname, new_email, "")
 
@@ -86,7 +86,7 @@ func BenchmarkUserService_Update(b *testing.B) {
 			assert.Equal(b, updated_user.Admin, user.Admin)
 			assert.Equal(b, updated_user.CreatedAt, user.CreatedAt)
 		}).
-		Return(updated_user, nil).AnyTimes()
+		Return(nil).AnyTimes()
 
 	for i := 0; i < b.N; i++ {
 		_ = userService.Update(id.String(), "", new_lastname, new_email, "")
