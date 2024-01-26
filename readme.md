@@ -17,6 +17,8 @@
 ## <u>EM DESENVOLVIMENTO</u>
 Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>
 
+<strong> Se você é um recrutador e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para </strong> lucasvm.ti@gmail.com.
+
 <br>
 
 **Projeto de portfólio tem como objetivos aprendizado, prática e demonstração das minhas habilidades como desenvolvedor. Portanto, as escolhas no projeto são com esses objetivos.**
@@ -44,8 +46,6 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 ⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação detalhada</u>.</a>*
 
 ⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Resgistros de engenharia de softare</u>.</a>*
-
-<strong> Se você é um recrutador e deseja propor que eu realize alguma alteração ou implementação, por favor, envie por email para </strong> lucasvm.ti@gmail.com.
 
 
 ### Artigos e conteúdo
