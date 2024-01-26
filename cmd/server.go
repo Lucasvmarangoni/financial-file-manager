@@ -9,16 +9,21 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	_ "github.com/Lucasvmarangoni/financial-file-manager/docs"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/http"
+
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
-	"github.com/streadway/amqp"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/middleware"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
+	"github.com/Lucasvmarangoni/logella/err"
+	"github.com/Lucasvmarangoni/logella/router"
+	"github.com/streadway/amqp"
+
+	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
@@ -59,7 +64,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	tx, err := Database(ctx)
+	conn, err := Database(ctx)
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("Failed exec Database")
 	}
@@ -69,8 +74,7 @@ func main() {
 
 	messageChannel, rabbitMQ, ch := Queues()
 	defer ch.Close()
-	Http(tx, r, messageChannel, rabbitMQ, ch)
-	
+	Http(conn, r, messageChannel, rabbitMQ, ch)
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
@@ -79,37 +83,39 @@ func main() {
 
 }
 
-func Database(ctx context.Context) (pgx.Tx, error) {
-	dbConnection, err := db.Connect(ctx)
+func Database(ctx context.Context) (*pgx.Conn, error) {
+	conn, err := db.Connect(ctx)
 	if err != nil {
-		return nil, errors.NewError(err, "db.Connect")
+		return nil, errors.ErrCtx(err, "db.Connect")
 	}
 
-	tx, err := dbConnection.Begin(ctx)
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {		
+		repo := database.NewTableRepository(tx)
+		return repo.InitTables(ctx)
+	})
 	if err != nil {
-		dbConnection.Close(ctx)
-		return nil, errors.NewError(err, "dbConnection.Begin")
+		return nil, errors.ErrCtx(err, "repo.InitTables")
 	}
 
-	repo := database.NewTableRepository(tx)
-	err = repo.InitTables(ctx)
-	if err != nil {
-		return nil, errors.NewError(err, "repo.InitTables")
-	}
-	return tx, nil
+	// tx, err := conn.Begin(ctx)
+	// if err != nil {
+	// 	conn.Close(ctx)
+	// 	return nil, nil, errors.ErrCtx(err, "conn.Begin")
+	// }
+	return conn, nil
 }
 
-func Http(tx pgx.Tx, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitMQ *queue.RabbitMQ, ch *amqp.Channel) {
+func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitMQ *queue.RabbitMQ, ch *amqp.Channel) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
 	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
 	if err != nil {
 		jwtExpiresIn = 50
-		log.Warn().Err(errors.NewError(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
+		log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
 
 	router := router.NewRouter()
-	userRouter := routers.NewUserRouter(tx, router, rabbitMQ, messageChannel)
+	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -121,6 +127,11 @@ func Http(tx pgx.Tx, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitMQ *qu
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 		userRouter.UserRoutes(r)
+
+		r.Group(func(r chi.Router) {
+			r.Use(middlewares.AdminMiddleware)
+			userRouter.AdminRoutes(r)
+		})
 	})
 	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 }

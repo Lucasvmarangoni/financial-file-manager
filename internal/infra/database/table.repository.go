@@ -24,7 +24,7 @@ func NewTableRepository(db pgx.Tx) *TableRepositoryDb {
 func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 
 	_, err := r.tx.Exec(ctx, `CREATE TABLE IF NOT EXISTS users (
-			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			id UUID PRIMARY KEY,
 			name TEXT,
 			last_name TEXT,
 			email TEXT UNIQUE,

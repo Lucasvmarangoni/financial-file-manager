@@ -6,17 +6,12 @@ import (
 	"github.com/Lucasvmarangoni/logella/err"
 )
 
-func (u *UserService) AuthzAdmin(adminID, id string) error {
-	admin, err := u.FindById(adminID, nil)
+func (u *UserService) AuthzAdmin(id string) error {
+
+	err := u.Repository.ToggleAdmin(id, context.Background())
 	if err != nil {
-		return errors.ErrCtx(err, "u.FindById")
+		return errors.ErrCtx(err, "u.Repository.ToggleAdmin")
 	}
 
-	if admin.Admin == true {
-		err := u.Repository.ToggleAdmin(id, context.Background())
-		if err != nil {
-			return errors.ErrCtx(err, "u.Repository.ToggleAdmin")
-		}
-	}
 	return nil
 }

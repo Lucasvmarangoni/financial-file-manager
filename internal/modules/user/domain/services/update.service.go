@@ -33,7 +33,7 @@ func (u *UserService) Update(id, name, lastName, email, password string) error {
 	}
 	newUser.Update(user.ID, user.CreatedAt)
 
-	newUser, err = u.Repository.Update(newUser, context.Background())
+	err = u.Repository.Update(newUser, context.Background())
 	if err != nil {
 		return errors.ErrCtx(err, "Repository.Update")
 	}

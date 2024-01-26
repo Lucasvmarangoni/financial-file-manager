@@ -3,116 +3,169 @@ package repositories
 import (
 	"context"
 
+	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
+
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/jackc/pgx/v5"
 )
 
 type UserRepository interface {
-	Insert(user *entities.User, ctx context.Context) (*entities.User, error)
+	Insert(user *entities.User, ctx context.Context) error
 	FindByEmail(email string, ctx context.Context) (*entities.User, error)
 	FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error)
 	FindByCpf(cpf string, ctx context.Context) (*entities.User, error)
-	Update(user *entities.User, ctx context.Context) (*entities.User, error)
+	Update(user *entities.User, ctx context.Context) error
 	ToggleAdmin(id string, ctx context.Context) error
 	Delete(id string, ctx context.Context) error
 }
 
 type UserRepositoryDb struct {
-	tx pgx.Tx
+	conn *pgx.Conn
 }
 
-func NewUserRepository(db pgx.Tx) *UserRepositoryDb {
-	return &UserRepositoryDb{tx: db}
+func NewUserRepository(conn *pgx.Conn) *UserRepositoryDb {
+	return &UserRepositoryDb{
+
+		conn: conn,
+	}
 }
 
-func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) (*entities.User, error) {
+func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) error {
 	if user.ID.String() == "" {
 		user.ID = pkg_entities.NewID()
 	}
 	sql := `INSERT INTO users (id, name, last_name, email, cpf, password, admin, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-	_, err := r.tx.Exec(ctx, sql,
-		user.ID,
-		user.Name,
-		user.LastName,
-		user.Email,
-		user.CPF,
-		user.Password,
-		user.Admin,
-		user.CreatedAt,
-		user.UpdatedAt,
-	)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+
+		_, err := tx.Exec(ctx, sql,
+			user.ID,
+			user.Name,
+			user.LastName,
+			user.Email,
+			user.CPF,
+			user.Password,
+			user.Admin,
+			user.CreatedAt,
+			user.UpdatedAt,
+		)
+
+		if err != nil {
+			return errors.ErrCtx(err, "r.tx.Exec")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
-	return user, nil
+	return nil
 }
 
 func (r *UserRepositoryDb) FindByEmail(email string, ctx context.Context) (*entities.User, error) {
 	sql := `SELECT * FROM users WHERE email = $1`
-	row := r.tx.QueryRow(ctx, sql, email)
+	var row pgx.Row
 	user := &entities.User{}
-	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		row = tx.QueryRow(ctx, sql, email)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return errors.ErrCtx(err, "row.Scan")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return user, nil
 }
 
 func (r *UserRepositoryDb) FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error) {
 	sql := `SELECT * FROM users WHERE id = $1`
-	row := r.tx.QueryRow(ctx, sql, id)
+	var row pgx.Row
 	user := &entities.User{}
-	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		row = tx.QueryRow(ctx, sql, id)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return errors.ErrCtx(err, "row.Scan")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return user, nil
 }
 
 func (r *UserRepositoryDb) FindByCpf(cpf string, ctx context.Context) (*entities.User, error) {
 	sql := `SELECT * FROM users WHERE cpf = $1`
-	row := r.tx.QueryRow(ctx, sql, cpf)
+	var row pgx.Row
 	user := &entities.User{}
-	err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		row = tx.QueryRow(ctx, sql, cpf)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return errors.ErrCtx(err, "row.Scan")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return user, nil
 }
 
-func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) (*entities.User, error) {
+func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) error {
 	sql := `UPDATE users SET name = $2, last_name = $3, email = $4, cpf = $5, password = $6, admin = $7, updated_at = $8 WHERE id = $1`
-	_, err := r.tx.Exec(ctx, sql,
-		user.ID,
-		user.Name,
-		user.LastName,
-		user.Email,
-		user.CPF,
-		user.Password,
-		user.Admin,
-		user.UpdatedAt,
-	)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, sql,
+			user.ID,
+			user.Name,
+			user.LastName,
+			user.Email,
+			user.CPF,
+			user.Password,
+			user.Admin,
+			user.UpdatedAt,
+		)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Exec(")
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
-	return user, nil
+	return nil
 }
 
 func (r *UserRepositoryDb) ToggleAdmin(id string, ctx context.Context) error {
 	sql := `UPDATE users SET admin = NOT admin WHERE id = $1`
-	_, err := r.tx.Exec(ctx, sql, id)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, sql, id)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Exec(")
+		}
+		return nil
+	})
 	if err != nil {
-		return err
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return nil
 }
 
 func (r *UserRepositoryDb) Delete(id string, ctx context.Context) error {
 	sql := `DELETE FROM users WHERE id = $1`
-	_, err := r.tx.Exec(ctx, sql, id)
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, sql, id)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Exec(")
+		}
+		return nil
+	})
 	if err != nil {
-		return err
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return nil
 }
