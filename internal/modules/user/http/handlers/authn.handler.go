@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/Lucasvmarangoni/logella/err"
 	"net/http"
+	"sync"
+
+	"github.com/Lucasvmarangoni/logella/err"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/go-chi/jwtauth"
@@ -22,19 +24,27 @@ import (
 // @Router       /authn/create [post]
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
-
+	var wg sync.WaitGroup
+	
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
-	err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Stack().Err(err).Msg("Error create user ")
-		return
-	}
+	
+	wg.Add(1)
+	go func() {
+		err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			log.Error().Stack().Err(err).Msg("Error create user ")
+			wg.Done()
+			return		
+		}		
+		wg.Done()
+	}()	
+	wg.Wait()
 	w.WriteHeader(http.StatusOK)
 }
 

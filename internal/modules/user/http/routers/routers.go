@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/management"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
@@ -20,35 +19,30 @@ import (
 	// "github.com/streadway/amqp"
 )
 
-type UserRouter struct {	
+type UserRouter struct {
 	Conn           *pgx.Conn
 	userHandler    *handlers.UserHandler
 	Router         *router.Router
 	RabbitMQ       *queue.RabbitMQ
-	MessageChannel chan amqp.Delivery
+	MessageChannel chan amqp.Delivery	
 }
 
 func NewUserRouter(conn *pgx.Conn, router *router.Router, rabbitMQ *queue.RabbitMQ, messageChannel chan amqp.Delivery) *UserRouter {
 	u := &UserRouter{
-		
 		Conn:           conn,
 		Router:         router,
 		RabbitMQ:       rabbitMQ,
-		MessageChannel: messageChannel,
+		MessageChannel: messageChannel,		
 	}
 	u.userHandler = u.init()
 	return u
 }
 
-func (u *UserRouter) init() *handlers.UserHandler {
-
+func (u *UserRouter) init() *handlers.UserHandler {	
 	userRepository := repositories.NewUserRepository(u.Conn)
-	userService := services.NewUserService(userRepository, u.RabbitMQ)
+	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel)
 	userHandler := handlers.NewUserHandler(userService)
-
-	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
-	go userManagement.CreateManagement(u.MessageChannel)
-
+	
 	return userHandler
 }
 
