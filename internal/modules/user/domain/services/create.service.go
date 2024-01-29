@@ -28,7 +28,7 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 	go func() {
 		err := u.CreateManagement(u.MessageChannel)
 		if err != nil {
-			returnChannel <- err					
+			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")					
 		}		
 		returnChannel <- nil	
 	}()	
