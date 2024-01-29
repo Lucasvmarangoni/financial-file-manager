@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/management"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
 	"github.com/streadway/amqp"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
@@ -24,7 +26,7 @@ type UserRouter struct {
 	userHandler    *handlers.UserHandler
 	Router         *router.Router
 	RabbitMQ       *queue.RabbitMQ
-	MessageChannel chan amqp.Delivery	
+	MessageChannel chan amqp.Delivery
 }
 
 func NewUserRouter(conn *pgx.Conn, router *router.Router, rabbitMQ *queue.RabbitMQ, messageChannel chan amqp.Delivery) *UserRouter {
@@ -32,17 +34,33 @@ func NewUserRouter(conn *pgx.Conn, router *router.Router, rabbitMQ *queue.Rabbit
 		Conn:           conn,
 		Router:         router,
 		RabbitMQ:       rabbitMQ,
-		MessageChannel: messageChannel,		
+		MessageChannel: messageChannel,
 	}
 	u.userHandler = u.init()
 	return u
 }
 
-func (u *UserRouter) init() *handlers.UserHandler {	
+func (u *UserRouter) init() *handlers.UserHandler {
+	returnChannel := make(chan error)
+
 	userRepository := repositories.NewUserRepository(u.Conn)
-	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel)
+	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel, returnChannel)
 	userHandler := handlers.NewUserHandler(userService)
+
+	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
 	
+	var err error
+	go func() {
+		err = userManagement.CreateManagement(u.MessageChannel)
+		if err != nil {
+			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")
+		}
+		returnChannel <- nil
+	}()	
+	if err != nil {
+		err = <-returnChannel
+	}
+
 	return userHandler
 }
 

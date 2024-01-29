@@ -1,14 +1,12 @@
 package services
 
 import (
-	"context"
 	"encoding/json"
+	"sync"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/logella/err"
-	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
 )
 
 func (u *UserService) Create(name, lastName, cpf, email, password string) error {
@@ -22,39 +20,18 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 		return errors.ErrCtx(err, "json.Marshal")
 	}
 
-	u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))	
+	u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
 
-	returnChannel := make(chan error)
+	var wg sync.WaitGroup
+
+	wg.Add(1)
 	go func() {
-		err := u.CreateManagement(u.MessageChannel)
-		if err != nil {
-			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")					
-		}		
-		returnChannel <- nil	
-	}()	
-	err = <-returnChannel	
+		err = <-u.ReturnChannel
+		wg.Done()
+	}()
+	wg.Wait()
 	if err != nil {
 		return err
-	}
-	return nil
-}
-
-func (u *UserService) CreateManagement(messageChannel chan amqp.Delivery) error {
-
-	u.RabbitMQ.Consume(messageChannel, config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
-
-	for message := range messageChannel {
-		var user entities.User
-		err := json.Unmarshal(message.Body, &user)
-		if err != nil {
-			return errors.ErrCtx(err, "json.Unmarshal")
-		}
-
-		err = u.Repository.Insert(&user, context.Background())
-		if err != nil {
-			return errors.ErrCtx(err, "Repository.Insert")
-		}
-		log.Info().Str("context", "UserHandler").Msgf("User created successfully (%s)", user.ID)
 	}
 	return nil
 }

@@ -9,14 +9,16 @@ import (
 type UserService struct {
 	Repository     repositories.UserRepository
 	RabbitMQ       queue.IRabbitMQ
-	MessageChannel chan amqp.Delivery	
+	MessageChannel chan amqp.Delivery
+	ReturnChannel  chan error
 }
 
-func NewUserService(repo repositories.UserRepository, rabbitMQ queue.IRabbitMQ, messageChannel chan amqp.Delivery) *UserService {
+func NewUserService(repo repositories.UserRepository, rabbitMQ queue.IRabbitMQ, messageChannel chan amqp.Delivery, returnChannel chan error) *UserService {
 	UserService := &UserService{
 		Repository:     repo,
 		RabbitMQ:       rabbitMQ,
-		MessageChannel: messageChannel,	
+		MessageChannel: messageChannel,
+		ReturnChannel:  returnChannel,
 	}
 	return UserService
 }
