@@ -28,7 +28,6 @@ func TestUserService_Update(t *testing.T) {
 			CPF:       "123.356.229-00",
 			Email:     new_email,
 			Password:  user.Password,
-			Admin:     false,
 			CreatedAt: createdAt,
 			UpdatedAt: []time.Time{time.Now()},
 		}
@@ -41,7 +40,6 @@ func TestUserService_Update(t *testing.T) {
 				assert.Equal(t, updated_user.LastName, user.LastName)
 				assert.Equal(t, updated_user.CPF, user.CPF)
 				assert.Equal(t, updated_user.Email, user.Email)
-				assert.Equal(t, updated_user.Admin, user.Admin)
 				assert.Equal(t, updated_user.CreatedAt, user.CreatedAt)
 			}).
 			Return(nil).Times(1)
@@ -69,8 +67,7 @@ func BenchmarkUserService_Update(b *testing.B) {
 		LastName:  new_lastname,
 		CPF:       "123.356.229-00",
 		Email:     new_email,
-		Password:  user.Password,
-		Admin:     false,
+		Password:  user.Password,		
 		CreatedAt: createdAt,
 		UpdatedAt: []time.Time{time.Now()},
 	}
@@ -83,7 +80,6 @@ func BenchmarkUserService_Update(b *testing.B) {
 			assert.Equal(b, updated_user.LastName, user.LastName)
 			assert.Equal(b, updated_user.CPF, user.CPF)
 			assert.Equal(b, updated_user.Email, user.Email)
-			assert.Equal(b, updated_user.Admin, user.Admin)
 			assert.Equal(b, updated_user.CreatedAt, user.CreatedAt)
 		}).
 		Return(nil).AnyTimes()

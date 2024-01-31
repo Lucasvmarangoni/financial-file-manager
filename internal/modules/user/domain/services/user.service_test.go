@@ -9,6 +9,7 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/mocks"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
 	"github.com/golang/mock/gomock"
+	"github.com/streadway/amqp"
 )
 
 func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ) {
@@ -17,8 +18,10 @@ func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *m
 
 	mockUserRepository := mocks.NewMockUserRepository(ctrl)
 	mockRabbitMQ := mocks.NewMockIRabbitMQ(ctrl)
-	userService := services.NewUserService(mockUserRepository, mockRabbitMQ)
+	var deliveryChan = make(chan amqp.Delivery, 1)
+	var errorChan = make(chan error, 1)	
 
+	userService := services.NewUserService(mockUserRepository, mockRabbitMQ, deliveryChan, errorChan)
 	return userService, mockUserRepository, mockRabbitMQ
 }
 
@@ -32,7 +35,6 @@ var user = &entities.User{
 	CPF:       "123.356.229-00",
 	Email:     "john.doe@example.com",
 	Password:  password,
-	Admin:     false,
 	CreatedAt: createdAt,
 	UpdatedAt: nil,
 }

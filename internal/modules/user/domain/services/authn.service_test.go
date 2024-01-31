@@ -30,7 +30,6 @@ func TestUserService_Authn(t *testing.T) {
 			CPF:       "123.356.229-00",
 			Email:     "john.doe@example.com",
 			Password:  string(hashedPassword),
-			Admin:     false,
 			CreatedAt: createdAt,
 			UpdatedAt: nil,
 		}, nil).Times(1)
@@ -59,7 +58,6 @@ func BenchmarkUserService_Authn(b *testing.B) {
 			CPF:       "123.356.229-00",
 			Email:     "john.doe@example.com",
 			Password:  string(hashedPassword),
-			Admin:     false,
 			CreatedAt: createdAt,
 			UpdatedAt: nil,
 		}, nil).AnyTimes()
