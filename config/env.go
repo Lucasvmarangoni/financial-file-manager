@@ -21,13 +21,14 @@ type rabbitMQ struct {
 	vhost    string `mapstructure:"RABBITMQ_VHOST"`
 	consumer string `mapstructure:"RABBITMQ_CONSUMER"`
 	queue    string `mapstructure:"RABBITMQ_QUEUE"`
-	exchange string `mapstructure:"RABBITMQ_EXCHANGE"`	
-	dlx string `mapstructure:"RABBITMQ_DLX"`
+	exchange string `mapstructure:"RABBITMQ_EXCHANGE"`
+	dlx      string `mapstructure:"RABBITMQ_DLX"`
 	routingKey
 }
 
 type routingKey struct {
-	userCreate string `mapstructure:"ROUTINGKEY_USERCREATE"`
+	userCreate       string `mapstructure:"ROUTINGKEY_USERCREATE"`
+	userCreateReturn string `mapstructure:"ROUTINGKEY_USERCREATERETURN"`
 }
 
 type grpc struct {
@@ -37,4 +38,9 @@ type grpc struct {
 type storage struct {
 	localPath string `mapstructure:"LOCAL_STORAGE_PATH"`
 	localFile string `mapstructure:"LOCAL_FILE"`
+}
+
+type authz struct {
+	admin_1 string `mapstructure:"ADMIN_1"`
+	read_1 string  `mapstructure:"READ_1"`
 }

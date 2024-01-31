@@ -15,6 +15,7 @@ type conf struct {
 	grpc
 	storage
 	jwt
+	authz
 }
 
 func GetEnv(key string) interface{} {
@@ -29,13 +30,13 @@ func GetTokenAuth() *jwtauth.JWTAuth {
 	return tokenAuth
 }
 
-func init() {
-	cfg := &conf{}
-
+func init() {	
+	
+	cfg := &conf{}	
 	
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		panic("Não foi possível obter o caminho para o arquivo config.go")
+		panic("It was not possible to obtain the path to the config.go file")
 	}
 	dir := filepath.Dir(filename)	
 	envPath := filepath.Join(dir, "../.env") 
