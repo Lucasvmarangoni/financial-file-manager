@@ -29,8 +29,7 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			last_name TEXT,
 			email TEXT UNIQUE,
 			cpf TEXT UNIQUE,
-			password TEXT,
-			admin BOOLEAN,
+			password TEXT,			
 			created_at TIMESTAMP,
 			updated_at TIMESTAMP[]
 		)`)
