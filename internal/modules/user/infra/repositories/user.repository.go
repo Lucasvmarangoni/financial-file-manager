@@ -17,7 +17,6 @@ type UserRepository interface {
 	FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error)
 	FindByCpf(cpf string, ctx context.Context) (*entities.User, error)
 	Update(user *entities.User, ctx context.Context) error
-	ToggleAdmin(id string, ctx context.Context) error
 	Delete(id string, ctx context.Context) error
 }
 
@@ -36,7 +35,7 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) erro
 	if user.ID.String() == "" {
 		user.ID = pkg_entities.NewID()
 	}
-	sql := `INSERT INTO users (id, name, last_name, email, cpf, password, admin, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	sql := `INSERT INTO users (id, name, last_name, email, cpf, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 
 		_, err := tx.Exec(ctx, sql,
@@ -46,7 +45,6 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) erro
 			user.Email,
 			user.CPF,
 			user.Password,
-			user.Admin,
 			user.CreatedAt,
 			user.UpdatedAt,
 		)
@@ -68,7 +66,7 @@ func (r *UserRepositoryDb) FindByEmail(email string, ctx context.Context) (*enti
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, email)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -86,7 +84,7 @@ func (r *UserRepositoryDb) FindById(id pkg_entities.ID, ctx context.Context) (*e
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, id)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -104,7 +102,7 @@ func (r *UserRepositoryDb) FindByCpf(cpf string, ctx context.Context) (*entities
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, cpf)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.Admin, &user.CreatedAt, &user.UpdatedAt)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.Email, &user.CPF, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -117,7 +115,7 @@ func (r *UserRepositoryDb) FindByCpf(cpf string, ctx context.Context) (*entities
 }
 
 func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) error {
-	sql := `UPDATE users SET name = $2, last_name = $3, email = $4, cpf = $5, password = $6, admin = $7, updated_at = $8 WHERE id = $1`
+	sql := `UPDATE users SET name = $2, last_name = $3, email = $4, cpf = $5, password = $6, updated_at = $7 WHERE id = $1`
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, sql,
 			user.ID,
@@ -125,25 +123,9 @@ func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) erro
 			user.LastName,
 			user.Email,
 			user.CPF,
-			user.Password,
-			user.Admin,
+			user.Password,		
 			user.UpdatedAt,
 		)
-		if err != nil {
-			return errors.ErrCtx(err, "tx.Exec(")
-		}
-		return nil
-	})
-	if err != nil {
-		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
-	}
-	return nil
-}
-
-func (r *UserRepositoryDb) ToggleAdmin(id string, ctx context.Context) error {
-	sql := `UPDATE users SET admin = NOT admin WHERE id = $1`
-	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, sql, id)
 		if err != nil {
 			return errors.ErrCtx(err, "tx.Exec(")
 		}

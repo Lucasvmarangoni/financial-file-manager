@@ -108,15 +108,7 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 				}),
 			))
 			u.Router.Method("DELETE").Prefix(prefix).InitializeRoute(r, "/del", u.userHandler.Delete)
-			u.Router.Method("PATCH").Prefix(prefix).InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
 		})
 	})
 }
 
-func (u *UserRouter) AdminRoutes(r chi.Router) {
-	prefix := "/admin"
-	r.Route(prefix, func(r chi.Router) {
-		// r.Use(middlewares.AdminMiddleware)
-		u.Router.Method("PATCH").Prefix(prefix).InitializeRoute(r, "/authz/{id}", u.userHandler.AdminAuthz)
-	})
-}

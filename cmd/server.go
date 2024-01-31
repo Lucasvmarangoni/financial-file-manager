@@ -14,8 +14,8 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/middleware"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
 	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
 	"github.com/streadway/amqp"
@@ -89,19 +89,13 @@ func Database(ctx context.Context) (*pgx.Conn, error) {
 		return nil, errors.ErrCtx(err, "db.Connect")
 	}
 
-	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {		
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		repo := database.NewTableRepository(tx)
 		return repo.InitTables(ctx)
 	})
 	if err != nil {
 		return nil, errors.ErrCtx(err, "repo.InitTables")
 	}
-
-	// tx, err := conn.Begin(ctx)
-	// if err != nil {
-	// 	conn.Close(ctx)
-	// 	return nil, nil, errors.ErrCtx(err, "conn.Begin")
-	// }
 	return conn, nil
 }
 
@@ -114,6 +108,9 @@ func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitM
 		log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
 
+	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
+	
+
 	router := router.NewRouter()
 	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel)
 
@@ -121,23 +118,22 @@ func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitM
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
+	
 	userRouter.InitializeUserRoutes(r)
 
 	r.Route("/", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
+		r.Use(mw.Authorizer())
 		userRouter.UserRoutes(r)
 
-		r.Group(func(r chi.Router) {
-			r.Use(middlewares.AdminMiddleware)
-			userRouter.AdminRoutes(r)
-		})
+		
 	})
 	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 }
 
 func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
-	messageChannel := make(chan amqp.Delivery)
+	messageChannel := make(chan amqp.Delivery)	
 	rabbitMQ := queue.NewRabbitMQ()
 	ch := rabbitMQ.Connect()
 

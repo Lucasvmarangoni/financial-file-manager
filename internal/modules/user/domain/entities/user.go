@@ -17,7 +17,6 @@ type User struct {
 	CPF       string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string      `json:"email" valid:"email"`
 	Password  string      `json:"password" valid:"required"`
-	Admin     bool        `json:"admin" valid:"-"`
 	CreatedAt time.Time   `json:"created_at" valid:"required"`
 	UpdatedAt []time.Time `json:"updated_at" valid:"-"`
 }
@@ -59,7 +58,7 @@ func validatePassword(password string) error {
 	return nil
 }
 
-func NewUser(name, lastName, cpf, email, password string, admin bool) (*User, error) {
+func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 
 	err := validatePassword(password)
 	if err != nil {
@@ -76,8 +75,7 @@ func NewUser(name, lastName, cpf, email, password string, admin bool) (*User, er
 		LastName: lastName,
 		CPF:      cpf,
 		Email:    email,
-		Password: string(hash),
-		Admin:    admin,
+		Password: string(hash),		
 	}
 	user.prepare()
 

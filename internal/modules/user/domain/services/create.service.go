@@ -10,7 +10,7 @@ import (
 )
 
 func (u *UserService) Create(name, lastName, cpf, email, password string) error {
-	newUser, err := entities.NewUser(name, lastName, cpf, email, password, false)
+	newUser, err := entities.NewUser(name, lastName, cpf, email, password)
 	if err != nil {
 		return errors.ErrCtx(err, "entities.NewUser")
 	}
@@ -35,3 +35,4 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 	}
 	return nil
 }
+
