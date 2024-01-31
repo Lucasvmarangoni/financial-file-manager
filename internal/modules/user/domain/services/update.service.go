@@ -27,7 +27,7 @@ func (u *UserService) Update(id, name, lastName, email, password string) error {
 		password = user.Password
 	}
 
-	newUser, err := entities.NewUser(name, lastName, user.CPF, email, password, user.Admin)
+	newUser, err := entities.NewUser(name, lastName, user.CPF, email, password)
 	if err != nil {
 		return errors.ErrCtx(err, "entities.NewUser")
 	}
