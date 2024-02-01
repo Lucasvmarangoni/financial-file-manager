@@ -45,10 +45,6 @@ func (a *Authorization) init() {
 		a.enforcer.AddGroupingPolicy(rule)
 	}
 
-	for _, rule := range policy.Groups {
-		a.enforcer.AddGroupingPolicy(rule)
-	}
-
 }
 
 func (a *Authorization) Authorizer() func(next http.Handler) http.Handler {
