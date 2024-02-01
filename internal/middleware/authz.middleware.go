@@ -2,22 +2,21 @@ package middlewares
 
 import (
 	"net/http"
-	"os"
 	"slices"
-	"strings"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	errors "github.com/Lucasvmarangoni/logella/err"
+	p "github.com/Lucasvmarangoni/financial-file-manager/config/casbin"
+	// errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-chi/jwtauth"
-	"github.com/rs/zerolog/log"
 )
 
 type Authorization struct {
 	enforcer *casbin.Enforcer
 	policy   string
 	model    string
-	admins   []string
+	admin    []string
+	read     []string
+	rules    [][]string
 }
 
 func NewAuthorization(policy string, model string) *Authorization {
@@ -29,30 +28,28 @@ func NewAuthorization(policy string, model string) *Authorization {
 	return a
 }
 
-func (a *Authorization) add(adminID string) string {
-	content, err := os.ReadFile(a.policy)
-	if err != nil {
-		panic(errors.ErrCtx(err, "os.ReadFile"))
-	}
-	env_id := config.GetEnv(strings.ToLower(adminID)).(string)
-	a.admins = append(a.admins, env_id)
-	newContent := strings.ReplaceAll(string(content), adminID, env_id)
-	return newContent
-}
-
 func (a *Authorization) init() {
+	policy := p.NewPolice()
+	policy.SetPolicy()
 
-	newContent := a.add("ADMIN_1")
-	newContent = a.add("READ_1")
+	a.rules = policy.Rules
+	a.admin = policy.Admin
+	a.read = policy.Read
 
-	err := os.WriteFile(a.policy, []byte(newContent), 0644)
-	if err != nil {
-		panic(errors.ErrCtx(err, "os.WriteFile"))
+	a.enforcer, _ = casbin.NewEnforcer(a.model)
+
+	for _, rule := range a.rules {
+		a.enforcer.AddPolicy(rule)
 	}
-	a.enforcer, err = casbin.NewEnforcer(a.model, a.policy)
-	if err != nil {
-		log.Print("Failed to create enforcer:", err)
+
+	for _, rule := range policy.Groups {
+		a.enforcer.AddGroupingPolicy(rule)
 	}
+
+	for _, rule := range policy.Groups {
+		a.enforcer.AddGroupingPolicy(rule)
+	}
+
 }
 
 func (a *Authorization) Authorizer() func(next http.Handler) http.Handler {
@@ -62,15 +59,14 @@ func (a *Authorization) Authorizer() func(next http.Handler) http.Handler {
 			var role string
 			id := getSub(w, r)
 
-			if !slices.Contains(a.admins, id) {
-				role = "member"
-			} else {
+			if slices.Contains(a.admin, id) || slices.Contains(a.read, id) {
 				role = id
+			} else {
+				role = "member"
 			}
-			log.Print(role)
 			method := r.Method
 			path := r.URL.Path
-
+		
 			if ok, _ := a.enforcer.Enforce(role, path, method); !ok {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return

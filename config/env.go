@@ -41,6 +41,8 @@ type storage struct {
 }
 
 type authz struct {
-	admin_1 string `mapstructure:"ADMIN_1"`
-	read_1 string  `mapstructure:"READ_1"`
+	max_admin string `mapstructure:"AUTHZ_MAX_ADMIN"`
+	max_read  string `mapstructure:"AUTHZ_MAX_READ"`
+	admin_1   string `mapstructure:"ADMIN_1"`
+	read_1    string `mapstructure:"READ_1"`
 }
