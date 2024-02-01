@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
+	errors "github.com/Lucasvmarangoni/logella/err"
 )
 
 type Policy struct {
@@ -31,10 +32,12 @@ func (p *Policy) SetPolicy() {
 	maxAdminsStr := config.GetEnv("authz_max_admin").(string)
 	maxAdmins, err := strconv.Atoi(maxAdminsStr)
 	if err != nil {
+		panic(errors.ErrCtx(err, "Failed to parse authz_max_admin"))
 	}
 	maxReadsStr := config.GetEnv("authz_max_read").(string)
 	maxReads, err := strconv.Atoi(maxReadsStr)
 	if err != nil {
+		panic(errors.ErrCtx(err, "Failed to parse authz_max_read"))
 	}
 
 	for i := 0; i < maxAdmins; i++ {
