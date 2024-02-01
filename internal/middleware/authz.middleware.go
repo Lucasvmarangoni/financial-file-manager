@@ -5,7 +5,6 @@ import (
 	"slices"
 
 	p "github.com/Lucasvmarangoni/financial-file-manager/config/casbin"
-	// errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-chi/jwtauth"
 )
