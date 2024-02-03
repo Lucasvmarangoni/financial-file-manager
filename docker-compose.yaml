@@ -2,6 +2,15 @@ version: '3.5'
 
 services:
 
+  # cockroachdb:
+  #   image: cockroachdb/cockroach:v19.2.2
+  #   ports:
+  #     - "26257:26257"
+  #     - "8080:8080"
+  #   command: start-single-node --insecure
+  #   volumes:
+  #     - "./internal/infra/database/cockroach-data/crdb:/cockroach/cockroach-data"
+
   rabbit:
     image: "rabbitmq:3-management"
     environment:
@@ -12,3 +21,19 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+
+  memcached-1:
+      image: memcached:latest
+      ports:
+        - "11211:11211"
+      command:
+        - memcached
+        - -m 64
+
+  memcached-2:
+      image: memcached:latest
+      ports:
+        - "11212:11211"
+      command:
+        - memcached
+        - -m 64
