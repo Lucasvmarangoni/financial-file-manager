@@ -87,10 +87,10 @@ func TestUserService_FindById(t *testing.T) {
 	t.Run("Should returned a valid user when valid and existing ID is provided", func(t *testing.T) {
 
 		mockRepo.EXPECT().
-			FindById(id, gomock.Any()).
+			FindById( user.ID, gomock.Any()).
 			Return(user, nil).Times(1)
 
-		foundUser, err := userService.FindById(id.String(), context.Background())
+		foundUser, err := userService.FindById(user.ID.String(), context.Background())
 
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
@@ -141,10 +141,10 @@ func BenchmarkUserService_FindBeId(b *testing.B) {
 	userService, mockRepo, _, _ := prepare(b)
 
 	mockRepo.EXPECT().
-		FindById(id, gomock.Any()).
+		FindById( user.ID, gomock.Any()).
 		Return(user, nil).AnyTimes()
 
 	for i := 0; i < b.N; i++ {
-		_, _ = userService.FindById(id.String(), context.Background())
+		_, _ = userService.FindById( user.ID.String(), context.Background())
 	}
 }
