@@ -109,20 +109,6 @@ func (mr *MockUserRepositoryMockRecorder) Insert(user, ctx interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockUserRepository)(nil).Insert), user, ctx)
 }
 
-// ToggleAdmin mocks base method.
-func (m *MockUserRepository) ToggleAdmin(id string, ctx context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ToggleAdmin", id, ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ToggleAdmin indicates an expected call of ToggleAdmin.
-func (mr *MockUserRepositoryMockRecorder) ToggleAdmin(id, ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToggleAdmin", reflect.TypeOf((*MockUserRepository)(nil).ToggleAdmin), id, ctx)
-}
-
 // Update mocks base method.
 func (m *MockUserRepository) Update(user *entities.User, ctx context.Context) error {
 	m.ctrl.T.Helper()

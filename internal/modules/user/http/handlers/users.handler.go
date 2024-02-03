@@ -45,7 +45,7 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 		CPF:       finduser.CPF,
 		Email:     finduser.Email,		
 		CreatedAt: finduser.CreatedAt,
-		UpdatedAt: finduser.UpdatedAt,
+		UpdateLog: finduser.UpdateLog,
 	}
 	userJSON, err := json.MarshalIndent(user, "", "  ")
 

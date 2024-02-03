@@ -31,7 +31,7 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			cpf TEXT UNIQUE,
 			password TEXT,			
 			created_at TIMESTAMP,
-			updated_at TIMESTAMP[]
+			update_log JSONB
 		)`)
 	if err != nil {
 		return err
