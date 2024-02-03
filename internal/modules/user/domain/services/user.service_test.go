@@ -12,17 +12,18 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ) {
+func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ, *mocks.MockMencacher) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockUserRepository := mocks.NewMockUserRepository(ctrl)
 	mockRabbitMQ := mocks.NewMockIRabbitMQ(ctrl)
-	var deliveryChan = make(chan amqp.Delivery, 1)
-	var errorChan = make(chan error, 1)	
+	mockMemcached := mocks.NewMockMencacher(ctrl)
+	var messageChannel = make(chan amqp.Delivery, 1)
+	var returnChannel = make(chan error, 1)
 
-	userService := services.NewUserService(mockUserRepository, mockRabbitMQ, deliveryChan, errorChan)
-	return userService, mockUserRepository, mockRabbitMQ
+	userService := services.NewUserService(mockUserRepository, mockRabbitMQ, messageChannel, returnChannel, mockMemcached)
+	return userService, mockUserRepository, mockRabbitMQ, mockMemcached
 }
 
 var id, err = pkg_entities.ParseID("52c599f3-af83-4fd9-bfd6-e532918f7b13")

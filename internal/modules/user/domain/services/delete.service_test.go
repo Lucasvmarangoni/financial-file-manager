@@ -8,7 +8,7 @@ import (
 )
 
 func TestUserService_Delete(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+	userService, mockRepo, _, _ := prepare(t)
 	t.Run("Should delete user", func(t *testing.T) {
 		mockRepo.EXPECT().
 			Delete(gomock.Eq(id.String()), gomock.Any()).
@@ -21,7 +21,7 @@ func TestUserService_Delete(t *testing.T) {
 }
 
 func BenchmarkUserService_Delete(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
+	userService, mockRepo, _, _ := prepare(b)
 
 	mockRepo.EXPECT().
 		Delete(gomock.Eq(id.String()), gomock.Any()).

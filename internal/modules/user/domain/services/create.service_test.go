@@ -8,18 +8,18 @@ import (
 )
 
 func TestUserService_Create(t *testing.T) {
-	userService, _, mockRabbitMQ := prepare(t)
+	userService, _, mockRabbitMQ, _ := prepare(t)
 
 	t.Run("Should returned nil and publish in rabbitMQ queue when valid user is provided", func(t *testing.T) {
 		mockRabbitMQ.EXPECT().
 			Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
 			Return().
 			Times(1)
-	
+
 		go func() {
-			userService.ReturnChannel <- nil 
+			userService.ReturnChannel <- nil
 		}()
-	
+
 		err := userService.Create("John", "Doe", "123.356.229-00", "john.doe@example.com", "hjH**g54gHç")
 		if err != nil {
 			t.Errorf("Create returned an error: %v", err)
@@ -39,16 +39,18 @@ func TestUserService_Create(t *testing.T) {
 }
 
 func BenchmarkUserService_Create(b *testing.B) {
-	userService, _, mockRabbitMQ := prepare(b)
+	userService, _, mockRabbitMQ, _ := prepare(b)
 
-	
 	mockRabbitMQ.EXPECT().
 		Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
 		Return().
 		AnyTimes()
 
-	
 	for i := 0; i < b.N; i++ {
+		go func() {
+			userService.ReturnChannel <- nil
+		}()
 		_ = userService.Create("John", "Doe", "123.356.229-00", "john.doe@example.com", "hjH**g54gHç")
 	}
+
 }

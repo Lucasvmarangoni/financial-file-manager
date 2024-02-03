@@ -14,7 +14,11 @@ import (
 )
 
 func TestUserService_Authn(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+	userService, mockRepo, _, mockMemcached := prepare(t)
+
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		t.Fatalf("failed to hash password: %v", err)
@@ -44,10 +48,13 @@ func TestUserService_Authn(t *testing.T) {
 }
 
 func BenchmarkUserService_Authn(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
+	userService, mockRepo, _, mockMemcached := prepare(b)
+
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
+
 	emailToFind := "john.doe@example.com"
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-
 
 	mockRepo.EXPECT().
 		FindByEmail(emailToFind, gomock.Any()).

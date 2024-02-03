@@ -10,7 +10,9 @@ import (
 )
 
 func TestUserService_FindByEmail(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+	userService, mockRepo, _, mockMemcached := prepare(t)
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
 
 	emailToFind := "john.doe@example.com"
 	invalid_email := "invalid@example.com"
@@ -41,7 +43,9 @@ func TestUserService_FindByEmail(t *testing.T) {
 }
 
 func TestUserService_FindByCpf(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+	userService, mockRepo, _, mockMemcached := prepare(t)
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
 
 	cpfToFind := "123.356.229-00"
 	invalid_cpf := "123356229-00"
@@ -75,7 +79,9 @@ func TestUserService_FindByCpf(t *testing.T) {
 }
 
 func TestUserService_FindById(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+	userService, mockRepo, _, mockMemcached := prepare(t)
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
 	invalid_id := "52c599f83-4fd9-bfd6-e532918f7b13"
 
 	t.Run("Should returned a valid user when valid and existing ID is provided", func(t *testing.T) {
@@ -106,7 +112,7 @@ func TestUserService_FindById(t *testing.T) {
 }
 
 func BenchmarkUserService_FindBeEmail(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
+	userService, mockRepo, _, _ := prepare(b)
 
 	emailToFind := "john.doe@example.com"
 	mockRepo.EXPECT().
@@ -119,7 +125,7 @@ func BenchmarkUserService_FindBeEmail(b *testing.B) {
 }
 
 func BenchmarkUserService_FindBeCpf(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
+	userService, mockRepo, _, _ := prepare(b)
 
 	cpfToFind := "123.356.229-00"
 	mockRepo.EXPECT().
@@ -132,7 +138,7 @@ func BenchmarkUserService_FindBeCpf(b *testing.B) {
 }
 
 func BenchmarkUserService_FindBeId(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
+	userService, mockRepo, _, _ := prepare(b)
 
 	mockRepo.EXPECT().
 		FindById(id, gomock.Any()).
