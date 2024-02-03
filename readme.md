@@ -76,7 +76,7 @@ Bibliotecas e pacotes que criei em razão desse projeto.
 - **Banco de dados**: CockroachDB 
 - **Driver de banco de dados**: Pgx 
 - **Armazenamento**: Google Cloud Storage
-- **Cache**: Memchached
+- **Cache**: Memcached
 - **Transporte**: 
   - **Filas**: RabbitMQ 
   - **Comunicação de Serviço**: gRPC
