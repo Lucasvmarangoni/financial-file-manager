@@ -10,17 +10,18 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	_ "github.com/Lucasvmarangoni/financial-file-manager/docs"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
+	middlewares "github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
-	"github.com/Lucasvmarangoni/logella/err"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
 	"github.com/streadway/amqp"
 
-	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
+	crdbpgx "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
 
@@ -71,10 +72,11 @@ func main() {
 	// rpc.Connect()
 
 	r := chi.NewRouter()
+	mc := Cache()
 
 	messageChannel, rabbitMQ, ch := Queues()
 	defer ch.Close()
-	Http(conn, r, messageChannel, rabbitMQ, ch)
+	Http(conn, r, messageChannel, rabbitMQ, ch, mc)
 
 	err = http.ListenAndServe(":8000", r)
 	if err != nil {
@@ -99,7 +101,14 @@ func Database(ctx context.Context) (*pgx.Conn, error) {
 	return conn, nil
 }
 
-func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitMQ *queue.RabbitMQ, ch *amqp.Channel) {
+func Http(
+	conn *pgx.Conn,
+	r *chi.Mux,
+	messageChannel chan amqp.Delivery,
+	rabbitMQ *queue.RabbitMQ,
+	ch *amqp.Channel,
+	mc *cache.Memcached,
+) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
 	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
@@ -109,16 +118,15 @@ func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitM
 	}
 
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
-	
 
 	router := router.NewRouter()
-	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel)
+	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
-	
+
 	userRouter.InitializeUserRoutes(r)
 
 	r.Route("/", func(r chi.Router) {
@@ -127,15 +135,19 @@ func Http(conn *pgx.Conn, r *chi.Mux, messageChannel chan amqp.Delivery, rabbitM
 		r.Use(mw.Authorizer())
 		userRouter.UserRoutes(r)
 
-		
 	})
 	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 }
 
 func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
-	messageChannel := make(chan amqp.Delivery)	
+	messageChannel := make(chan amqp.Delivery)
 	rabbitMQ := queue.NewRabbitMQ()
 	ch := rabbitMQ.Connect()
 
 	return messageChannel, rabbitMQ, ch
+}
+
+func Cache() *cache.Memcached {
+	mc := cache.NewMencached("localhost:11211", "localhost:11212")
+	return mc
 }

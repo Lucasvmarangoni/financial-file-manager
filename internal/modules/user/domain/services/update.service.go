@@ -37,5 +37,6 @@ func (u *UserService) Update(id, name, lastName, email, password string) error {
 	if err != nil {
 		return errors.ErrCtx(err, "Repository.Update")
 	}
+	u.setToMemcacheIfNotNil(newUser)
 	return nil
 }

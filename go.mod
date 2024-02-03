@@ -32,6 +32,7 @@ require (
 require (
 	github.com/casbin/govaluate v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 )
 
 require (

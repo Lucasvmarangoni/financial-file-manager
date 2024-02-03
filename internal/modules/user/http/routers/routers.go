@@ -14,6 +14,7 @@ import (
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httprate"
@@ -27,14 +28,22 @@ type UserRouter struct {
 	Router         *router.Router
 	RabbitMQ       *queue.RabbitMQ
 	MessageChannel chan amqp.Delivery
+	Memcached      *cache.Memcached
 }
 
-func NewUserRouter(conn *pgx.Conn, router *router.Router, rabbitMQ *queue.RabbitMQ, messageChannel chan amqp.Delivery) *UserRouter {
+func NewUserRouter(
+	conn *pgx.Conn,
+	router *router.Router,
+	rabbitMQ *queue.RabbitMQ,
+	messageChannel chan amqp.Delivery,
+	mencached *cache.Memcached,
+) *UserRouter {
 	u := &UserRouter{
 		Conn:           conn,
 		Router:         router,
 		RabbitMQ:       rabbitMQ,
 		MessageChannel: messageChannel,
+		Memcached:      mencached,
 	}
 	u.userHandler = u.init()
 	return u
@@ -44,11 +53,11 @@ func (u *UserRouter) init() *handlers.UserHandler {
 	returnChannel := make(chan error)
 
 	userRepository := repositories.NewUserRepository(u.Conn)
-	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel, returnChannel)
+	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel, returnChannel, u.Memcached)
 	userHandler := handlers.NewUserHandler(userService)
 
 	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
-	
+
 	var err error
 	go func() {
 		err = userManagement.CreateManagement(u.MessageChannel)
@@ -56,7 +65,7 @@ func (u *UserRouter) init() *handlers.UserHandler {
 			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")
 		}
 		returnChannel <- nil
-	}()	
+	}()
 	if err != nil {
 		err = <-returnChannel
 	}
@@ -111,4 +120,3 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 		})
 	})
 }
-
