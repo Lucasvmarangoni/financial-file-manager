@@ -45,7 +45,6 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 		CPF:       finduser.CPF,
 		Email:     finduser.Email,		
 		CreatedAt: finduser.CreatedAt,
-		UpdateLog: finduser.UpdateLog,
 	}
 	userJSON, err := json.MarshalIndent(user, "", "  ")
 
@@ -79,7 +78,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		log.Error().Stack().Err(err).Msg("Error get sub")
 	}
 
-	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password)
+	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password, user.NewPassword)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Stack().Err(err).Msg("Error update user ")

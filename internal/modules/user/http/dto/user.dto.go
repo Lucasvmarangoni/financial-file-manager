@@ -42,8 +42,9 @@ type UserOutput struct {
 }
 
 type UserUpdateInput struct {
-	Name     string `json:"name" valid:"-"`
-	LastName string `json:"last_name" valid:"-"`
-	Email    string `json:"email" valid:"-"`
-	Password string `json:"password" valid:"-"`
+	Name        string `json:"name" valid:"-"`
+	LastName    string `json:"last_name" valid:"-"`
+	Email       string `json:"email" valid:"-"`
+	Password    string `json:"password" valid:"required"`
+	NewPassword string `json:"new_password" valid:"-"`
 }
