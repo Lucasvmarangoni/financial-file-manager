@@ -99,11 +99,8 @@ func (u *User) prepare() {
 	}
 }
 
-func (u *User) Update(oldValues map[string]interface{}, id entities.ID, createdAt time.Time) {
-	u.UpdateLog = append(u.UpdateLog, UpdateLog{
-		Timestamp: time.Now(),
-		OldValues: oldValues,
-	})
+func (u *User) Update(oldValues []UpdateLog, id entities.ID, createdAt time.Time) {
+	u.UpdateLog = oldValues
 	u.CreatedAt = createdAt
 	u.ID = id
 }

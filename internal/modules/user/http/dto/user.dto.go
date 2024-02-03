@@ -40,7 +40,7 @@ type UserOutput struct {
 	Email     string               `json:"email" valid:"email"`
 	Admin     bool                 `json:"admin" valid:"-"`
 	CreatedAt time.Time            `json:"created_at" valid:"-"`
-	UpdateLog []entities.UpdateLog `json:"updated_at" valid:"-"`
+	UpdateLog []entities.UpdateLog `json:"update_log" valid:"-"`
 }
 
 type UserUpdateInput struct {
