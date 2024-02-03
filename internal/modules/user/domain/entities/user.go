@@ -10,6 +10,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UpdateLog struct {
+	Timestamp time.Time
+	OldValues map[string]interface{}
+}
+
 type User struct {
 	ID        entities.ID `json:"id" valid:"required"`
 	Name      string      `json:"name" valid:"length(3|10),alpha"`
@@ -18,7 +23,7 @@ type User struct {
 	Email     string      `json:"email" valid:"email"`
 	Password  string      `json:"password" valid:"required"`
 	CreatedAt time.Time   `json:"created_at" valid:"required"`
-	UpdatedAt []time.Time `json:"updated_at" valid:"-"`
+	UpdateLog []UpdateLog `json:"update_log" valid:"-"`
 }
 
 func (u *User) Validate() error {
@@ -75,7 +80,7 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 		LastName: lastName,
 		CPF:      cpf,
 		Email:    email,
-		Password: string(hash),		
+		Password: string(hash),
 	}
 	user.prepare()
 
@@ -88,14 +93,17 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 }
 
 func (u *User) prepare() {
-	if len(u.UpdatedAt) == 0 && u.CreatedAt.IsZero() {
+	if len(u.UpdateLog) == 0 && u.CreatedAt.IsZero() {
 		u.ID = entities.NewID()
 		u.CreatedAt = time.Now()
 	}
 }
 
-func (u *User) Update(id entities.ID, createdAt time.Time) {
-	u.UpdatedAt = append(u.UpdatedAt, time.Now())
+func (u *User) Update(oldValues map[string]interface{}, id entities.ID, createdAt time.Time) {
+	u.UpdateLog = append(u.UpdateLog, UpdateLog{
+		Timestamp: time.Now(),
+		OldValues: oldValues,
+	})
 	u.CreatedAt = createdAt
 	u.ID = id
 }
