@@ -19,7 +19,6 @@ type UserInput struct {
 	CPF      string `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"required"`
-	Admin    bool   `json:"admin" valid:"-"`
 }
 
 type AuthenticationInput struct {
@@ -38,7 +37,6 @@ type UserOutput struct {
 	LastName  string               `json:"last_name" valid:"required,alpha,length(3|50)"`
 	CPF       string               `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string               `json:"email" valid:"email"`
-	Admin     bool                 `json:"admin" valid:"-"`
 	CreatedAt time.Time            `json:"created_at" valid:"-"`
 	UpdateLog []entities.UpdateLog `json:"update_log" valid:"-"`
 }
