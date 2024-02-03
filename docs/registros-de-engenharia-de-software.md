@@ -1,5 +1,7 @@
 # Registro de engenharia de software
 
+# File 
+
 ## Entidades e agregadores
 
 ![Alt text](<./img/file-aggregates.png>)
@@ -83,5 +85,38 @@ Não sendo estritamente necessário o campo "Archived", que foi implementado afi
 Caso algum dos IDs não for encontrado no banco de dados, será removido do campo "Versions", e o *client* receberá a notificação informando o ocorrido.
 
 
+# User 
+
+## Entidades
+
+![Alt text](./img/user-entity.png)
 
 
+JSON EXAMPLE:
+
+```json
+{
+    "id": "3eae7314-b0a3-4a1a-a9eb-432f2b469c7b",
+    "name": "JohnF",
+    "last_name": "DoeF",
+    "cpf": "222.411.314-00",
+    "email": "admin@example.com",
+    "created_at": "2024-02-03T00:31:27.563319Z",
+    "update_log": [
+        {
+            "Timestamp": "0001-01-01T00:00:00Z",
+            "OldValues": {
+                "LastName": "Doe",
+                "Name": "John"
+            }
+        },
+        {
+            "Timestamp": "0001-01-01T00:00:00Z",
+            "OldValues": {
+                "LastName": "DoeG",
+                "Name": "JohnG"
+            }
+        }
+    ]
+}
+```
