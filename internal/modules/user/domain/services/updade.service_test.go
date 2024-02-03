@@ -16,7 +16,7 @@ func TestUserService_Update(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
-	
+
 	userService, mockRepo, _, mockMemcached := prepare(t)
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
@@ -25,9 +25,7 @@ func TestUserService_Update(t *testing.T) {
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
 		mockRepo.EXPECT().
 			FindById(user.ID, gomock.Any()).
-			Return(user, nil).Times(1)
-
-		
+			Return(user, nil).Times(1)		
 
 		new_lastname := "NewLastName"
 		new_email := "new-email@example.com"
