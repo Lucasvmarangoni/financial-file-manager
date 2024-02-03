@@ -11,9 +11,14 @@ import (
 )
 
 func TestUserService_Update(t *testing.T) {
-	userService, mockRepo, _ := prepare(t)
+
+	userService, mockRepo, _, mockMemcached := prepare(t)
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
 
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
+
+
 		mockRepo.EXPECT().
 			FindById(id, gomock.Any()).
 			Return(user, nil).Times(1)
@@ -29,7 +34,15 @@ func TestUserService_Update(t *testing.T) {
 			Email:     new_email,
 			Password:  user.Password,
 			CreatedAt: createdAt,
-			UpdatedAt: []time.Time{time.Now()},
+			UpdateLog: []entities.UpdateLog{
+				{
+					Timestamp: time.Now(),
+					OldValues: map[string]interface{}{
+						"LastName": user.LastName,
+						"Email":    user.Email,
+					},
+				},
+			},
 		}
 
 		mockRepo.EXPECT().
@@ -52,8 +65,10 @@ func TestUserService_Update(t *testing.T) {
 }
 
 func BenchmarkUserService_Update(b *testing.B) {
-	userService, mockRepo, _ := prepare(b)
-
+	userService, mockRepo, _, mockMemcached := prepare(b)
+	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
+	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
+	
 	mockRepo.EXPECT().
 		FindById(id, gomock.Any()).
 		Return(user, nil).AnyTimes()
@@ -64,13 +79,22 @@ func BenchmarkUserService_Update(b *testing.B) {
 	updated_user := &entities.User{
 		ID:        id,
 		Name:      "John",
-		LastName:  new_lastname,
+		LastName: new_lastname,
 		CPF:       "123.356.229-00",
 		Email:     new_email,
-		Password:  user.Password,		
+		Password: user.Password,
 		CreatedAt: createdAt,
-		UpdatedAt: []time.Time{time.Now()},
+		UpdateLog: []entities.UpdateLog{
+			{
+				Timestamp: time.Now(),
+				OldValues: map[string]interface{}{
+					"LastName": user.LastName,
+					"Email":    user.Email,
+				},
+			},
+		},
 	}
+	
 
 	mockRepo.EXPECT().
 		Update(gomock.Any(), gomock.Any()).

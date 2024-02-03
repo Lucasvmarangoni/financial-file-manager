@@ -37,5 +37,5 @@ var user = &entities.User{
 	Email:     "john.doe@example.com",
 	Password:  password,
 	CreatedAt: createdAt,
-	UpdatedAt: nil,
+	UpdateLog: nil,
 }

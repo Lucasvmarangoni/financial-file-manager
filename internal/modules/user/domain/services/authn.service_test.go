@@ -35,7 +35,7 @@ func TestUserService_Authn(t *testing.T) {
 			Email:     "john.doe@example.com",
 			Password:  string(hashedPassword),
 			CreatedAt: createdAt,
-			UpdatedAt: nil,
+			UpdateLog: nil,
 		}, nil).Times(1)
 
 	token, err := userService.Authn(emailToFind, password, config.GetTokenAuth(), 3600)
@@ -66,7 +66,7 @@ func BenchmarkUserService_Authn(b *testing.B) {
 			Email:     "john.doe@example.com",
 			Password:  string(hashedPassword),
 			CreatedAt: createdAt,
-			UpdatedAt: nil,
+			UpdateLog: nil,
 		}, nil).AnyTimes()
 
 	for i := 0; i < b.N; i++ {
