@@ -1,6 +1,6 @@
 # BUG LOG
 
-## (BUG) - DB Persistence
+## DB Persistence
 
 ### Solution:
 
@@ -28,7 +28,7 @@ Instead of using the `tx` from the anonymous function `func(tx pgx.Tx) error`, d
 
 This was what I was doing before, using this instance throughout the project.
 
-## (BUG) - The user has already been created, it does not display the log and returns response
+## The user has already been created, it does not display the log and returns response
 
 I used sync.WaitGroup to solve this.
 
@@ -37,7 +37,7 @@ I used sync.WaitGroup to solve this.
 
 
 
-## (BUG) - The 200 status doesn't usually return when creating a user
+## The 200 status doesn't usually return when creating a user
 
 The 200 status doesn't usually return when creating a user, only if the server is shut down or if attempting to immediately register the same user, in which case it returns both 200 and 400
 
@@ -64,4 +64,4 @@ func (m *UserManagement) CreateManagement(messageChannel chan amqp.Delivery) err
 	}	
 	return nil
     }
-    ```
+```
