@@ -40,6 +40,7 @@ func (m *UserManagement) CreateManagement(messageChannel chan amqp.Delivery) err
 			return errors.ErrCtx(err, "Repository.Insert")
 		}
 		log.Info().Str("context", "UserHandler").Msgf("User created successfully (%s)", user.ID)
+		return nil
 	}	
 	return nil
 }

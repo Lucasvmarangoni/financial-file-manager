@@ -25,25 +25,24 @@ import (
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
 	var wg sync.WaitGroup
-	
+
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
-	
+
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Error().Stack().Err(err).Msg("Error create user ")
-			wg.Done()
-			return		
-		}		
-		wg.Done()
-	}()	
+			return
+		}				
+	}()
 	wg.Wait()
 	w.WriteHeader(http.StatusOK)
 }

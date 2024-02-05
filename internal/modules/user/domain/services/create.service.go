@@ -23,7 +23,6 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 	u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
 
 	var wg sync.WaitGroup
-
 	wg.Add(1)
 	go func() {
 		err = <-u.ReturnChannel
@@ -31,8 +30,8 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 	}()
 	wg.Wait()
 	if err != nil {
-		return err
-	}
+		return errors.ErrCtx(err, "CreateManagement")
+	}		
 	return nil
 }
 

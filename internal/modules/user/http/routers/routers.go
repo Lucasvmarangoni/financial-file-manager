@@ -64,11 +64,8 @@ func (u *UserRouter) init() *handlers.UserHandler {
 		if err != nil {
 			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")
 		}
-		returnChannel <- nil
+		returnChannel <- err
 	}()
-	if err != nil {
-		err = <-returnChannel
-	}
 
 	return userHandler
 }
