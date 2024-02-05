@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	_ "github.com/Lucasvmarangoni/financial-file-manager/docs"
+	_ "github.com/Lucasvmarangoni/financial-file-manager/api"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"

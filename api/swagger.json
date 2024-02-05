@@ -5,7 +5,7 @@
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "Lucas V Marangoni",
-            "url": "https://www.linkedin.com/in/lucasvmarangoni/",
+            "url": "https://lucasvmarangoni.vercel.app/",
             "email": "lucasvm.ti@gmail.com"
         },
         "license": {
@@ -36,7 +36,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UserInput"
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput"
                         }
                     }
                 ],
@@ -67,7 +67,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GetJWTOutput"
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput"
                         }
                     },
                     "400": {
@@ -75,34 +75,6 @@
                     },
                     "401": {
                         "description": "Unauthorized"
-                    }
-                }
-            }
-        },
-        "/authz/{id}": {
-            "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Authorization user to admin",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Authz"
-                ],
-                "summary": "Authorization user to admin",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     }
                 }
             }
@@ -157,7 +129,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.UserOutput"
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserOutput"
                         }
                     },
                     "500": {
@@ -191,7 +163,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UserInput"
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput"
                         }
                     }
                 ],
@@ -207,7 +179,19 @@
         }
     },
     "definitions": {
-        "dto.GetJWTOutput": {
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_domain_entities.UpdateLog": {
+            "type": "object",
+            "properties": {
+                "oldValues": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -215,12 +199,9 @@
                 }
             }
         },
-        "dto.UserInput": {
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput": {
             "type": "object",
             "properties": {
-                "admin": {
-                    "type": "boolean"
-                },
                 "cpf": {
                     "type": "string"
                 },
@@ -238,12 +219,9 @@
                 }
             }
         },
-        "dto.UserOutput": {
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserOutput": {
             "type": "object",
             "properties": {
-                "admin": {
-                    "type": "boolean"
-                },
                 "cpf": {
                     "type": "string"
                 },
@@ -262,10 +240,10 @@
                 "name": {
                     "type": "string"
                 },
-                "updated_at": {
+                "update_log": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_domain_entities.UpdateLog"
                     }
                 }
             }

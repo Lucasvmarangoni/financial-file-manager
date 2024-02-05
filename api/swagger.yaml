@@ -1,14 +1,20 @@
 basePath: /
 definitions:
-  dto.GetJWTOutput:
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_domain_entities.UpdateLog:
+    properties:
+      oldValues:
+        additionalProperties: true
+        type: object
+      timestamp:
+        type: string
+    type: object
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput:
     properties:
       access_token:
         type: string
     type: object
-  dto.UserInput:
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput:
     properties:
-      admin:
-        type: boolean
       cpf:
         type: string
       email:
@@ -20,10 +26,8 @@ definitions:
       password:
         type: string
     type: object
-  dto.UserOutput:
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserOutput:
     properties:
-      admin:
-        type: boolean
       cpf:
         type: string
       created_at:
@@ -36,9 +40,9 @@ definitions:
         type: string
       name:
         type: string
-      updated_at:
+      update_log:
         items:
-          type: string
+          $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_domain_entities.UpdateLog'
         type: array
     type: object
 host: localhost:8000
@@ -46,7 +50,7 @@ info:
   contact:
     email: lucasvm.ti@gmail.com
     name: Lucas V Marangoni
-    url: https://www.linkedin.com/in/lucasvmarangoni/
+    url: https://lucasvmarangoni.vercel.app/
   license:
     name: MIT
   termsOfService: http://swagger.io/terms/
@@ -64,7 +68,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.UserInput'
+          $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput'
       produces:
       - application/json
       responses:
@@ -86,7 +90,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.GetJWTOutput'
+            $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput'
         "400":
           description: Bad Request
         "401":
@@ -94,23 +98,6 @@ paths:
       summary: Generate a user JWT
       tags:
       - Authn
-  /authz/{id}:
-    patch:
-      consumes:
-      - application/json
-      description: Authorization user to admin
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-      security:
-      - ApiKeyAuth: []
-      summary: Authorization user to admin
-      tags:
-      - Authz
   /user/del:
     delete:
       consumes:
@@ -139,7 +126,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.UserOutput'
+            $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserOutput'
         "500":
           description: Internal Server Error
       security:
@@ -158,7 +145,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.UserInput'
+          $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput'
       produces:
       - application/json
       responses:
