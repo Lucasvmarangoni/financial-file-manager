@@ -14,8 +14,8 @@ func init() {
 }
 
 type UserInput struct {
-	Name     string `json:"name" valid:"required,alpha,length(3|10)"`
-	LastName string `json:"last_name" valid:"required,alpha,length(3|50)"`
+	Name     string `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
+	LastName string `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
 	CPF      string `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"required"`
@@ -33,8 +33,8 @@ type GetJWTOutput struct {
 
 type UserOutput struct {
 	ID        pkg_entities.ID      `json:"id" valid:"-"`
-	Name      string               `json:"name" valid:"required,alpha,length(3|10)"`
-	LastName  string               `json:"last_name" valid:"required,alpha,length(3|50)"`
+	Name      string               `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
+	LastName  string               `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
 	CPF       string               `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string               `json:"email" valid:"email"`
 	CreatedAt time.Time            `json:"created_at" valid:"-"`

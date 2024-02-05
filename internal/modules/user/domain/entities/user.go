@@ -17,8 +17,8 @@ type UpdateLog struct {
 
 type User struct {
 	ID        entities.ID `json:"id" valid:"required"`
-	Name      string      `json:"name" valid:"length(3|10),alpha"`
-	LastName  string      `json:"last_name" valid:"length(3|50),alpha"`
+	Name      string      `json:"name" valid:"length(3|10),matches(^[a-zA-Z ]+$)"`
+	LastName  string      `json:"last_name" valid:"length(3|50),matches(^[a-zA-Z ]+$)"`
 	CPF       string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email     string      `json:"email" valid:"email"`
 	Password  string      `json:"password" valid:"required"`
