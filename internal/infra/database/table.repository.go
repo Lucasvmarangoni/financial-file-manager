@@ -27,8 +27,10 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			id UUID PRIMARY KEY,
 			name TEXT,
 			last_name TEXT,
-			email TEXT UNIQUE,
 			cpf TEXT UNIQUE,
+			hash_cpf TEXT,			
+			email TEXT UNIQUE,	
+			hash_email TEXT,		
 			password TEXT,			
 			created_at TIMESTAMP,
 			update_log JSONB

@@ -9,7 +9,6 @@ import (
 
 const fieldNamePassword = "Password"
 
-
 func (u *UserService) Update(id, name, lastName, email, password, newPassword string) error {
 	var newUpdateValues entities.UpdateLog
 	newUpdateValues.OldValues = make(map[string]interface{})
@@ -22,7 +21,7 @@ func (u *UserService) Update(id, name, lastName, email, password, newPassword st
 	err = user.ValidateHashPassword(password)
 	if err != nil {
 		return errors.ErrCtx(err, "user.ValidateHashPassword")
-	}	
+	}
 
 	u.updateField(&name, user.Name, name, "Name", &newUpdateValues)
 	u.updateField(&lastName, user.LastName, lastName, "LastName", &newUpdateValues)
@@ -41,6 +40,11 @@ func (u *UserService) Update(id, name, lastName, email, password, newPassword st
 		return errors.ErrCtx(err, "entities.NewUser")
 	}
 
+	err = u.encrypt(newUser)
+	if err != nil {
+		return errors.ErrCtx(err, "u.encrypt")
+	}
+
 	newUser.Update(oldValues, user.ID, user.CreatedAt)
 
 	err = u.Repository.Update(newUser, context.Background())
@@ -56,7 +60,7 @@ func (u *UserService) updateField(field *string, oldValue string, newValue strin
 		*field = oldValue
 	} else {
 		if fieldName == fieldNamePassword {
-			oldValue =  "****"
+			oldValue = "****"
 		}
 		newUpdateValues.OldValues[fieldName] = oldValue
 	}

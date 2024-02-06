@@ -61,9 +61,11 @@ func (mr *MockIRabbitMQMockRecorder) Consume(messageChannel, routingKey interfac
 }
 
 // Publish mocks base method.
-func (m *MockIRabbitMQ) Publish(message, contentType, exchange, routingKey string) {
+func (m *MockIRabbitMQ) Publish(message, contentType, exchange, routingKey string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Publish", message, contentType, exchange, routingKey)
+	ret := m.ctrl.Call(m, "Publish", message, contentType, exchange, routingKey)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Publish indicates an expected call of Publish.

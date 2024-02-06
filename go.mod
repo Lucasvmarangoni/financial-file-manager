@@ -25,6 +25,7 @@ require (
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.2
 	golang.org/x/crypto v0.16.0
+	google.golang.org/appengine v1.6.7
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )

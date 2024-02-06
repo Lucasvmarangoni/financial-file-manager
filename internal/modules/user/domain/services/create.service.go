@@ -6,7 +6,7 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	"github.com/Lucasvmarangoni/logella/err"
+	errors "github.com/Lucasvmarangoni/logella/err"
 )
 
 func (u *UserService) Create(name, lastName, cpf, email, password string) error {
@@ -15,12 +15,20 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 		return errors.ErrCtx(err, "entities.NewUser")
 	}
 
-	userJSON, err := json.Marshal(newUser)
+	err = u.encrypt(newUser)
 	if err != nil {
-		return errors.ErrCtx(err, "json.Marshal")
+		return errors.ErrCtx(err, "u.encrypt")
 	}
 
-	u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
+	userJSON, err := json.Marshal(newUser)
+	if err != nil {
+		errors.ErrCtx(err, "json.Marshal")
+	}
+
+	err = u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
+	if err != nil {
+		return errors.ErrCtx(err, "RabbitMQ.Publish")
+	}
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -29,9 +37,10 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 		wg.Done()
 	}()
 	wg.Wait()
+
 	if err != nil {
 		return errors.ErrCtx(err, "CreateManagement")
-	}		
+	}
+
 	return nil
 }
-

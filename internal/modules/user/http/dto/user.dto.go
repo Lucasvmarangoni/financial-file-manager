@@ -16,7 +16,7 @@ func init() {
 type UserInput struct {
 	Name     string `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
 	LastName string `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
-	CPF      string `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	CPF      string `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"required"`
 }

@@ -33,6 +33,13 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// _, err = govalidator.ValidateStruct(user)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	log.Error().Err(err).Msg("Validation failed")
+	// 	return
+	// }
+
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

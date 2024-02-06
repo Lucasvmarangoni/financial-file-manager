@@ -51,33 +51,33 @@ func (mr *MockUserRepositoryMockRecorder) Delete(id, ctx interface{}) *gomock.Ca
 }
 
 // FindByCpf mocks base method.
-func (m *MockUserRepository) FindByCpf(cpf string, ctx context.Context) (*entities.User, error) {
+func (m *MockUserRepository) FindByCpf(hashCPF string, ctx context.Context) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByCpf", cpf, ctx)
+	ret := m.ctrl.Call(m, "FindByCpf", hashCPF, ctx)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByCpf indicates an expected call of FindByCpf.
-func (mr *MockUserRepositoryMockRecorder) FindByCpf(cpf, ctx interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) FindByCpf(hashCPF, ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByCpf", reflect.TypeOf((*MockUserRepository)(nil).FindByCpf), cpf, ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByCpf", reflect.TypeOf((*MockUserRepository)(nil).FindByCpf), hashCPF, ctx)
 }
 
 // FindByEmail mocks base method.
-func (m *MockUserRepository) FindByEmail(email string, ctx context.Context) (*entities.User, error) {
+func (m *MockUserRepository) FindByEmail(hashEmail string, ctx context.Context) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByEmail", email, ctx)
+	ret := m.ctrl.Call(m, "FindByEmail", hashEmail, ctx)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByEmail indicates an expected call of FindByEmail.
-func (mr *MockUserRepositoryMockRecorder) FindByEmail(email, ctx interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) FindByEmail(hashEmail, ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), email, ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), hashEmail, ctx)
 }
 
 // FindById mocks base method.
