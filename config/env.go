@@ -46,3 +46,7 @@ type authz struct {
 	admin_1   string `mapstructure:"ADMIN_1"`
 	read_1    string `mapstructure:"READ_1"`
 }
+
+type security struct {
+	aes_key string `mapstructure:"SECURITY_AES_KEY"`
+}
