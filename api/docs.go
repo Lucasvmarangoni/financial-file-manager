@@ -165,7 +165,7 @@ const docTemplate = `{
                 "summary": "Update user",
                 "parameters": [
                     {
-                        "description": "user data update",
+                        "description": "user data update, password is required",
                         "name": "request",
                         "in": "body",
                         "required": true,

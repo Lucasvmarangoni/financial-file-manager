@@ -140,7 +140,7 @@ paths:
       - application/json
       description: Update user
       parameters:
-      - description: user data update
+      - description: user data update, password is required
         in: body
         name: request
         required: true
