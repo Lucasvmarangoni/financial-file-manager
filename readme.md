@@ -100,7 +100,7 @@ Bibliotecas e pacotes que criei em razão desse projeto.
 
 - **Autenticação e Autorização**: JSON Web Token (JWT)
 - **Criptografia (password)**: Bcrypt
-- **Criptografia (Dados sensíveis)**: AES
+- **Criptografia (Dados sensíveis)**: AES e SHA-256
 
 ### Infraestrutura
 
