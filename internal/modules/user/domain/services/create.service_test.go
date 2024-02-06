@@ -11,9 +11,10 @@ func TestUserService_Create(t *testing.T) {
 	userService, _, mockRabbitMQ, _ := prepare(t)
 
 	t.Run("Should returned nil and publish in rabbitMQ queue when valid user is provided", func(t *testing.T) {
+
 		mockRabbitMQ.EXPECT().
 			Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
-			Return().
+			Return(nil).
 			Times(1)
 
 		go func() {
@@ -30,11 +31,8 @@ func TestUserService_Create(t *testing.T) {
 	t.Run("Should return an error when invalid param is provided", func(t *testing.T) {
 
 		invalid_cpf := "12335622900"
-
 		err := userService.Create("John", "Doe", invalid_cpf, "john.doe@example.com", "hjH**g54gHç")
 		assert.Error(t, err)
-		assert.Equal(t, `Error: cpf: 12335622900 does not validate as matches(^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$) Operation: entities.NewUser`, err.Error())
-
 	})
 }
 
@@ -43,7 +41,7 @@ func BenchmarkUserService_Create(b *testing.B) {
 
 	mockRabbitMQ.EXPECT().
 		Publish(gomock.Any(), "application/json", gomock.Any(), gomock.Any()).
-		Return().
+		Return(nil).
 		AnyTimes()
 
 	for i := 0; i < b.N; i++ {

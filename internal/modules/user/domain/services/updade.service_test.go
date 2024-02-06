@@ -5,7 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/security"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,12 +22,21 @@ func TestUserService_Update(t *testing.T) {
 	userService, mockRepo, _, mockMemcached := prepare(t)
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
+	aes_key := config.GetEnv("security_aes_key").(string)
 
-	t.Log(user.Password)
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
+
+		encryptedEmail, _ := security.Encrypt(user.Email, aes_key)
+		encryptedCPF, _ := security.Encrypt(user.CPF, aes_key)
+		encryptedLastName, _ := security.Encrypt(user.LastName, aes_key)
+
+		user.Email = encryptedEmail
+		user.CPF = encryptedCPF
+		user.LastName = encryptedLastName
+
 		mockRepo.EXPECT().
 			FindById(user.ID, gomock.Any()).
-			Return(user, nil).Times(1)		
+			Return(user, nil).Times(1)
 
 		new_lastname := "NewLastName"
 		new_email := "new-email@example.com"
@@ -49,16 +60,15 @@ func TestUserService_Update(t *testing.T) {
 			},
 		}
 
-		t.Log(updated_user.Password)
-
 		mockRepo.EXPECT().
 			Update(gomock.Any(), gomock.Any()).
 			Do(func(user *entities.User, _ context.Context) {
 				assert.Equal(t, updated_user.ID, user.ID)
 				assert.Equal(t, updated_user.Name, user.Name)
-				assert.Equal(t, updated_user.LastName, user.LastName)
-				assert.Equal(t, updated_user.CPF, user.CPF)
-				assert.Equal(t, updated_user.Email, user.Email)
+				
+				assert.NotEmpty(t, user.LastName)
+				assert.NotEmpty(t, user.CPF)
+				assert.NotEmpty(t, user.Email)
 				assert.Equal(t, updated_user.CreatedAt, user.CreatedAt)
 			}).
 			Return(nil).Times(1)

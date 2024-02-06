@@ -6,16 +6,17 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/mocks"
+	internal_mocks "github.com/Lucasvmarangoni/financial-file-manager/internal/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/streadway/amqp"
 )
 
-func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *mocks.MockIRabbitMQ, *mocks.MockMencacher) {
+func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *internal_mocks.MockIRabbitMQ, *mocks.MockMencacher) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockUserRepository := mocks.NewMockUserRepository(ctrl)
-	mockRabbitMQ := mocks.NewMockIRabbitMQ(ctrl)
+	mockRabbitMQ := internal_mocks.NewMockIRabbitMQ(ctrl)
 	mockMemcached := mocks.NewMockMencacher(ctrl)
 	var messageChannel = make(chan amqp.Delivery, 1)
 	var returnChannel = make(chan error, 1)
