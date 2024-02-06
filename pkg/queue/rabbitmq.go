@@ -65,7 +65,6 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 		false,
 		r.Args,
 	)
-
 	failOnError(err, "Failed to declare a queue")
 
 	err = r.Channel.QueueBind(
@@ -94,15 +93,16 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 			messageChannel <- message
 		}
 		if err := r.Channel.Close(); err != nil {
-			errors.ErrCtx(err, "Failed to close RabbitMQ channel")
+			log.Error().Err(errors.ErrCtx(err, "Failed to close RabbitMQ channel")).Send()
 		} else {
 			log.Info().Str("context", "RabbitMQ").Msg("RabbitMQ channel closed gracefully")
 		}
 		close(messageChannel)
 	}()
+	return
 }
 
-func (r *RabbitMQ) Publish(message string, contentType string, exchange string, routingKey string) {
+func (r *RabbitMQ) Publish(message string, contentType string, exchange string, routingKey string) error {
 	err := r.Channel.Publish(
 		exchange,
 		routingKey,
@@ -113,12 +113,14 @@ func (r *RabbitMQ) Publish(message string, contentType string, exchange string, 
 			Body:        []byte(message),
 		},
 	)
-	failOnError(err, "Failed to publish message:")
-	log.Info().Str("context", "RabbitMQ").Msgf("Message published to exchange '%s' with routing key '%s'", exchange, routingKey)
+	if err != nil {
+		return errors.ErrCtx(err, "Failed to publish message")
+	}
+	return nil
 }
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		errors.ErrCtx(err, msg)
+		log.Fatal().Err(errors.ErrCtx(err, msg))
 	}
 }
