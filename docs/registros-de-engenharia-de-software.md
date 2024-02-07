@@ -135,3 +135,7 @@ Email e CPF são utilizandos para login (authn), e consequentemente para busca d
 Estando esses dados criptografados se torna impossível a busca. Para solucionar esse problema decidi acrescentar mais dois cambos ao dados de usuário, EmailHash e CPFHash. 
 
 Dessa forma, é gerada uma hash SHA-256 para Email e CPF, que serão persistidas no banco de dados para permitir consultar os dados de usuário. 
+
+#### Desencriptação
+
+Optei por realizar a desencriptação no próprio backend, por razões de implementação no projeto. Assim, quando o cliente solicitar os dados, eles serão enviados já desencriptados.
