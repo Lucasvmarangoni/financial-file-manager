@@ -27,16 +27,16 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			id UUID PRIMARY KEY,
 			name TEXT,
 			last_name TEXT,
-			cpf TEXT UNIQUE,
-			hash_cpf TEXT,			
-			email TEXT UNIQUE,	
-			hash_email TEXT,		
+			cpf TEXT,
+			hash_cpf TEXT UNIQUE,			
+			email TEXT,	
+			hash_email TEXT UNIQUE,		
 			password TEXT,			
 			created_at TIMESTAMP,
 			update_log JSONB
 		)`)
 	if err != nil {
-		return err
+		return errors.ErrCtx(err, "r.tx.Exec")
 	}
 	log.Info().Str("context", "TableRepository").Msg("Database - Created users table successfully.")
 	return nil
