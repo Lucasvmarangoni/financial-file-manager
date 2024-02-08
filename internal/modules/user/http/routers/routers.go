@@ -11,7 +11,6 @@ import (
 	"github.com/streadway/amqp"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
-	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
@@ -57,14 +56,9 @@ func (u *UserRouter) init() *handlers.UserHandler {
 	userHandler := handlers.NewUserHandler(userService)
 
 	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
-
-	var err error
+	
 	go func() {
-		err = userManagement.CreateManagement(u.MessageChannel)
-		if err != nil {
-			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")
-		}
-		returnChannel <- err
+		userManagement.CreateManagement(u.MessageChannel, returnChannel)		
 	}()
 
 	return userHandler
