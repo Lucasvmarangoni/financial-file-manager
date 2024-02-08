@@ -22,7 +22,7 @@ func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtEx
 		user, err = u.FindByCpf(entities.Hash(unique), nil)
 	}
 	if err != nil {
-		errors.ErrCtx(err, operation)
+		return "", errors.ErrCtx(err, operation)
 	}
 
 	err = user.ValidateHashPassword(password)

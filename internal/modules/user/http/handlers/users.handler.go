@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
@@ -16,7 +17,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Success      200 		 {object}  dto.UserOutput
-// @Failure      500  
+// @Failure      500
 // @Router       /user/me [get]
 // @Security ApiKeyAuth
 func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,7 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 		Name:      finduser.Name,
 		LastName:  finduser.LastName,
 		CPF:       finduser.CPF,
-		Email:     finduser.Email,		
+		Email:     finduser.Email,
 		CreatedAt: finduser.CreatedAt,
 		UpdateLog: finduser.UpdateLog,
 	}
@@ -60,9 +61,9 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        request     body      dto.UserInput  true  "user data update"
+// @Param        request     body      dto.UserInput  true  "user data update, password is required"
 // @Success      200
-// @Failure      400  
+// @Failure      400
 // @Router       /user/update [put]
 // @Security ApiKeyAuth
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -74,9 +75,25 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u.validatePassword(user.Password, w)
+
+	err = u.validateUserUpdateInput(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+
 	id, err := u.GetSub(w, r)
 	if err != nil {
-		log.Error().Stack().Err(err).Msg("Error get sub")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 	}
 
 	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password, user.NewPassword)
@@ -96,7 +113,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Success      200
-// @Failure      400 
+// @Failure      400
 // @Router       /user/del [delete]
 // @Security ApiKeyAuth
 func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -112,4 +129,14 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Info().Str("context", "UserHandler").Msgf("User deleted successfully (%s)", id)
 	w.WriteHeader(http.StatusOK)
+}
+
+func (u *UserHandler) validateUserUpdateInput(user *dto.UserUpdateInput) error {
+	if err := u.validateEmail(&user.Email); err != nil {
+		return err // Using the golang standard error type because it will be sent in the response
+	}
+	if err := u.validateNameAndLastname(&user.Name, &user.LastName); err != nil {
+		return err // Using the golang standard error type because it will be sent in the response
+	}
+	return nil
 }

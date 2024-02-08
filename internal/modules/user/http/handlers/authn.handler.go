@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	go_err "errors"
+	"fmt"
+	"github.com/Lucasvmarangoni/logella/err"
+	"github.com/asaskevich/govalidator"
 	"net/http"
 	"sync"
-
-	"github.com/Lucasvmarangoni/logella/err"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/go-chi/jwtauth"
@@ -33,12 +35,15 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// _, err = govalidator.ValidateStruct(user)
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	log.Error().Err(err).Msg("Validation failed")
-	// 	return
-	// }
+	_, err = govalidator.ValidateStruct(user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
 
 	wg.Add(1)
 	go func() {
@@ -48,7 +53,7 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Error().Stack().Err(err).Msg("Error create user ")
 			return
-		}				
+		}
 	}()
 	wg.Wait()
 	w.WriteHeader(http.StatusOK)
@@ -56,13 +61,14 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // Authentication godoc
 // @Summary      Generate a user JWT
-// @Description  Generate a user JWT
+// @Description  Generate a user JWT. Requires either a CPF or an Email and Password.
 // @Tags         Authn
 // @Accept       json
 // @Produce      json
+// @Param        request     body      dto.AuthenticationInput  true  "Authentication input. Requires either a CPF or an Email and Password."
 // @Success      200  {object}  dto.GetJWTOutput
-// @Failure      400
-// @Failure      401
+// @Failure      400  {object}  string  "Both email and CPF are required for authentication."
+// @Failure      401  {object}  string  "Unauthorized."
 // @Router       /authn/jwt [post]
 func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
@@ -75,10 +81,17 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
-	if user.Email != "" && user.CPF != "" {
+	u.validatePassword(user.Password, w)
+
+	err = u.validateUserUpdateInputForCPFAndEmail(&user)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 	}
+
 	unique := user.Email + user.CPF
 	tokenString, err := u.userService.Authn(unique, user.Password, jwt, jwtExpiresIn)
 	if err != nil {
@@ -105,4 +118,22 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 		return "", errors.ErrCtx(err, "sub claim is missing or not a string")
 	}
 	return id, nil
+}
+
+func (u *UserHandler) validateUserUpdateInputForCPFAndEmail(user *dto.AuthenticationInput) error {
+
+	if user.Email == "" && user.CPF == "" {
+		return go_err.New("An Email or a CPF is necessary") // Using the golang standard error type because it will be sent in the response
+	}
+	if user.Email != "" && user.CPF != "" {
+		user.CPF = ""
+	}
+	if err := u.validateEmail(&user.Email); err != nil {
+		return err // Using the golang standard error type because it will be sent in the response
+	}
+
+	if err := u.validateCPF(&user.CPF); err != nil {
+		return err // Using the golang standard error type because it will be sent in the response
+	}
+	return nil
 }

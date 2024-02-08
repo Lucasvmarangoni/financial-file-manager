@@ -3,11 +3,10 @@ package entities
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	go_err "errors"
-	"regexp"
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/crypto/bcrypt"
@@ -42,32 +41,8 @@ func (u *User) Validate() error {
 func (u *User) ValidateHashPassword(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
-		errors.ErrCtx(err, "bcrypt.CompareHashAndPassword")
+		return errors.ErrCtx(err, "bcrypt.CompareHashAndPassword")
 	}
-	return nil
-}
-
-func validatePassword(password string) error {
-	if len(password) < 10 {
-		return errors.ErrCtx(go_err.New("password must be at least 10 characters long"), "validatePassword")
-	}
-
-	if !regexp.MustCompile(`[a-z]`).MatchString(password) {
-		return errors.ErrCtx(go_err.New("password must contain at least one lowercase letter"), "validatePassword")
-	}
-
-	if !regexp.MustCompile(`[A-Z]`).MatchString(password) {
-		return errors.ErrCtx(go_err.New("password must contain at least one uppercase letter"), "validatePassword")
-	}
-
-	if !regexp.MustCompile(`[0-9]`).MatchString(password) {
-		return errors.ErrCtx(go_err.New("password must contain at least one digit"), "validatePassword")
-	}
-
-	if !regexp.MustCompile(`[!@#\$%\^&\*]`).MatchString(password) {
-		return errors.ErrCtx(go_err.New("password must contain at least one special character"), "validatePassword")
-	}
-
 	return nil
 }
 
@@ -79,7 +54,7 @@ func Hash(str string) string {
 
 func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 
-	err := validatePassword(password)
+	err := validate.ValidatePassword(password)
 	if err != nil {
 		return nil, errors.ErrCtx(err, "validatePassword")
 	}
