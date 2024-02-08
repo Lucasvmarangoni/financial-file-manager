@@ -10,7 +10,7 @@ import (
 type IRabbitMQ interface {
 	Connect() *amqp.Channel
 	Consume(messageChannel chan amqp.Delivery, routingKey string)
-	Publish(message string, contentType string, exchange string, routingKey string)
+	Publish(message string, contentType string, exchange string, routingKey string) error
 }
 
 type RabbitMQ struct {
