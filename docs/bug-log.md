@@ -65,3 +65,53 @@ func (m *UserManagement) CreateManagement(messageChannel chan amqp.Delivery) err
 	return nil
     }
 ```
+
+Isso causou outro problema grave. Ao criar o usuário, o loop era encerrado, tornando impossível realizar qualquer nova operação de criação de usuário
+
+### Solução:
+
+Modifiquei o método *CreateManagement* para enviar diretamente para o returnChannel. Além disso, utilizei uma condicional else para garantir que nil fosse inserido no returnChannel apenas quando não houvesse erros.
+
+```go
+func (m *UserManagement) CreateManagement(messageChannel chan amqp.Delivery, returnChannel chan error) {
+
+	m.RabbitMQ.Consume(messageChannel, config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
+
+	for message := range messageChannel {
+		var user entities.User
+		err := json.Unmarshal(message.Body, &user)
+		if err != nil {
+			returnChannel <- errors.ErrCtx(err, "json.Unmarshal")
+		}
+
+		err = m.Repository.Insert(&user, context.Background())
+		if err != nil {
+			returnChannel <- errors.ErrCtx(err, "Repository.Insert")
+		} else {
+			returnChannel <- nil
+			log.Info().Str("context", "UserHandler").Msgf("User created successfully (%s)", user.ID)
+		}
+	}
+}
+```
+
+Dessa forma, foi necessário alterar a chamada do método *CreateManagement* no *init*() do *router*, o que resultou em um código muito mais simples e limpo, principalmente ao melhorar a repartição de responsabilidades
+
+```go
+go func() {
+		userManagement.CreateManagement(u.MessageChannel, returnChannel)		
+	}()
+```
+
+antes:
+
+```go
+	var err error
+	go func() {
+		err = userManagement.CreateManagement(u.MessageChannel)
+		if err != nil {
+			returnChannel <- errors.ErrCtx(err, "u.CreateManagement")
+		}
+		returnChannel <- err
+	}()
+```
