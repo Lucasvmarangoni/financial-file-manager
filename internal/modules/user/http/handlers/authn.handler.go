@@ -30,13 +30,19 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Err(err).Msg("Error decode request")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)		
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 		return
 	}
+	u.validatePassword(user.Password, w)
 
 	_, err = govalidator.ValidateStruct(user)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",
@@ -52,10 +58,14 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Error().Stack().Err(err).Msg("Error create user ")
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "BadRequest",
+				"message": fmt.Sprintf("%v", err),
+			})
 			return
 		}
 	}()
-	wg.Wait()
+	wg.Wait()	
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -77,6 +87,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Err(err).Msg("Error decode request")
 		return
@@ -85,6 +96,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 
 	err = u.validateUserUpdateInputForCPFAndEmail(&user)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",

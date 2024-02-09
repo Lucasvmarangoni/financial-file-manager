@@ -26,6 +26,7 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 func (u *UserHandler) validatePassword(password string, w http.ResponseWriter) {
 	err := validate.ValidatePassword(password)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",

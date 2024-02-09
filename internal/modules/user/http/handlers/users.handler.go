@@ -69,9 +69,13 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserUpdateInput
 	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
+	if err != nil {		
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Err(err).Msg("Error decode request")
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 		return
 	}
 
@@ -79,6 +83,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = u.validateUserUpdateInput(&user)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",
@@ -89,6 +94,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := u.GetSub(w, r)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",
@@ -98,8 +104,13 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password, user.NewPassword)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Stack().Err(err).Msg("Error update user ")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 		return
 	}
 	log.Info().Str("context", "UserHandler").Msgf("User updated successfully (%s)", id)
@@ -123,8 +134,13 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	err = u.userService.Delete(id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Stack().Err(err).Msg("Error delete user ")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
 		return
 	}
 	log.Info().Str("context", "UserHandler").Msgf("User deleted successfully (%s)", id)
