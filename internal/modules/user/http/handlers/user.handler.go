@@ -2,14 +2,10 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	go_err "errors"
-	"fmt"
-	"net/http"
 	"regexp"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
-	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 )
 
 type UserHandler struct {
@@ -20,19 +16,6 @@ type UserHandler struct {
 func NewUserHandler(userService *services.UserService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
-	}
-}
-
-func (u *UserHandler) validatePassword(password string, w http.ResponseWriter) {
-	err := validate.ValidatePassword(password)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "BadRequest",
-			"message": fmt.Sprintf("Valid password is required. %v", err),
-		})
-		return
 	}
 }
 

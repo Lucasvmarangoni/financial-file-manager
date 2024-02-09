@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	go_err "errors"
 	"fmt"
-	"github.com/Lucasvmarangoni/logella/err"
-	"github.com/asaskevich/govalidator"
 	"net/http"
 	"sync"
 
+	"github.com/Lucasvmarangoni/logella/err"
+	"github.com/asaskevich/govalidator"
+
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
@@ -31,14 +33,24 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)		
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "BadRequest",
 			"message": fmt.Sprintf("%v", err),
 		})
 		return
 	}
-	u.validatePassword(user.Password, w)
+
+	err = validate.ValidatePassword(user.Password)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("Valid password is required. %v", err),
+		})
+		return
+	}
 
 	_, err = govalidator.ValidateStruct(user)
 	if err != nil {
@@ -65,7 +77,7 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}()
-	wg.Wait()	
+	wg.Wait()
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -92,7 +104,17 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("Error decode request")
 		return
 	}
-	u.validatePassword(user.Password, w)
+
+	err = validate.ValidatePassword(user.Password)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("Valid password is required. %v", err),
+		})
+		return
+	}
 
 	err = u.validateUserUpdateInputForCPFAndEmail(&user)
 	if err != nil {

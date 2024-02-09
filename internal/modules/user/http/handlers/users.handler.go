@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
@@ -69,7 +70,7 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserUpdateInput
 	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {		
+	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -79,7 +80,16 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u.validatePassword(user.Password, w)
+	err = validate.ValidatePassword(user.Password)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("Valid password is required. %v", err),
+		})
+		return
+	}
 
 	err = u.validateUserUpdateInput(&user)
 	if err != nil {
