@@ -120,20 +120,21 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 	return id, nil
 }
 
+// 1: Using the golang standard error type because it will be sent in the response
 func (u *UserHandler) validateUserUpdateInputForCPFAndEmail(user *dto.AuthenticationInput) error {
 
 	if user.Email == "" && user.CPF == "" {
-		return go_err.New("An Email or a CPF is necessary") // Using the golang standard error type because it will be sent in the response
+		return go_err.New("An Email or a CPF is necessary") // 1
 	}
 	if user.Email != "" && user.CPF != "" {
 		user.CPF = ""
 	}
 	if err := u.validateEmail(&user.Email); err != nil {
-		return err // Using the golang standard error type because it will be sent in the response
+		return err // 1
 	}
 
 	if err := u.validateCPF(&user.CPF); err != nil {
-		return err // Using the golang standard error type because it will be sent in the response
+		return err // 1
 	}
 	return nil
 }

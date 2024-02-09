@@ -131,12 +131,13 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// 1: Using the golang standard error type because it will be sent in the response
 func (u *UserHandler) validateUserUpdateInput(user *dto.UserUpdateInput) error {
 	if err := u.validateEmail(&user.Email); err != nil {
-		return err // Using the golang standard error type because it will be sent in the response
+		return err // 1
 	}
 	if err := u.validateNameAndLastname(&user.Name, &user.LastName); err != nil {
-		return err // Using the golang standard error type because it will be sent in the response
+		return err // 1
 	}
 	return nil
 }
