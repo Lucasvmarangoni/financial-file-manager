@@ -66,10 +66,10 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
-		if err != nil {
+		err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
+		if err != nil {		
 			w.WriteHeader(http.StatusBadRequest)
-			log.Error().Stack().Err(err).Msg("Error create user ")
+			log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
 			json.NewEncoder(w).Encode(map[string]string{
 				"status":  "BadRequest",
 				"message": fmt.Sprintf("%v", err),
@@ -101,7 +101,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Err(err).Msg("Error decode request")
+		log.Error().Err(errors.ErrStack()).Msg("Error decode request")
 		return
 	}
 
@@ -130,7 +130,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	tokenString, err := u.userService.Authn(unique, user.Password, jwt, jwtExpiresIn)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		log.Error().Stack().Err(err).Msg("Error authenticate user")
+		log.Error().Stack().Err(errors.ErrStack()).Msg("Error authenticate user")
 		return
 	}
 
@@ -144,31 +144,29 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", errors.ErrCtx(err, "Failed to get JWT claims")
+		return "", errors.ErrCtx(err, "jwtauth.FromContext")
 	}
 	id, ok := claims["sub"].(string)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
-		return "", errors.ErrCtx(err, "sub claim is missing or not a string")
+		return "", errors.ErrCtx(err, `claims["sub"].(string)`)
 	}
 	return id, nil
 }
 
-// 1: Using the golang standard error type because it will be sent in the response
 func (u *UserHandler) validateUserUpdateInputForCPFAndEmail(user *dto.AuthenticationInput) error {
 
 	if user.Email == "" && user.CPF == "" {
-		return go_err.New("An Email or a CPF is necessary") // 1
+		return go_err.New("An Email or a CPF is necessary") 
 	}
 	if user.Email != "" && user.CPF != "" {
 		user.CPF = ""
 	}
 	if err := u.validateEmail(&user.Email); err != nil {
-		return err // 1
+		return err 
 	}
-
 	if err := u.validateCPF(&user.CPF); err != nil {
-		return err // 1
+		return err 
 	}
 	return nil
 }

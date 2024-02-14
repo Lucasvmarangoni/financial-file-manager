@@ -46,7 +46,7 @@ func (u *UserService) setToMemcacheIfNotNil(user *entities.User) {
 }
 
 func (u *UserService) returnCachedUserIfExists() (*entities.User, bool) {
-	if u.cacheUser != nil {		
+	if u.cacheUser != nil {
 		return u.cacheUser, true
 	}
 	return nil, false

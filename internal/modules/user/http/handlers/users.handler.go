@@ -7,6 +7,7 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
@@ -25,7 +26,7 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Error().Err(err).Msg("Failed to get JWT claims")
+		log.Error().Err(errors.ErrStack()).Msg("Failed to get JWT claims")
 		return
 	}
 	sub, ok := claims["sub"].(string)
@@ -37,7 +38,7 @@ func (u *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 	finduser, err := u.userService.FindById(sub, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Error().Err(err).Stack().Msg("User not found")
+		log.Error().Err(errors.ErrStack()).Stack().Msg("User not found")
 		return
 	}
 	user := dto.UserOutput{
@@ -114,7 +115,7 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = u.userService.Update(id, user.Name, user.LastName, user.Email, user.Password, user.NewPassword)
 	if err != nil {
-		log.Error().Stack().Err(err).Msg("Error update user ")
+		log.Error().Stack().Err(errors.ErrStack()).Msg("Error update user ")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -144,7 +145,7 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	err = u.userService.Delete(id)
 	if err != nil {
-		log.Error().Stack().Err(err).Msg("Error delete user ")
+		log.Error().Stack().Err(errors.ErrStack()).Msg("Error delete user ")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -157,13 +158,12 @@ func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// 1: Using the golang standard error type because it will be sent in the response
 func (u *UserHandler) validateUserUpdateInput(user *dto.UserUpdateInput) error {
 	if err := u.validateEmail(&user.Email); err != nil {
-		return err // 1
+		return err 
 	}
 	if err := u.validateNameAndLastname(&user.Name, &user.LastName); err != nil {
-		return err // 1
+		return err 
 	}
 	return nil
 }

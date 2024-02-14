@@ -10,7 +10,6 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
 	"github.com/streadway/amqp"
 
-	// "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/management"
 	"github.com/Lucasvmarangoni/logella/router"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
@@ -18,7 +17,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httprate"
 	"github.com/jackc/pgx/v5"
-	// "github.com/streadway/amqp"
 )
 
 type UserRouter struct {
@@ -56,9 +54,9 @@ func (u *UserRouter) init() *handlers.UserHandler {
 	userHandler := handlers.NewUserHandler(userService)
 
 	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
-	
+
 	go func() {
-		userManagement.CreateManagement(u.MessageChannel, returnChannel)		
+		userManagement.CreateManagement(u.MessageChannel, returnChannel)
 	}()
 
 	return userHandler
