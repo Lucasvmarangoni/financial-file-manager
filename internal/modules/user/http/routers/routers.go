@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/management"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/handlers"
@@ -25,7 +26,7 @@ type UserRouter struct {
 	Router         *router.Router
 	RabbitMQ       *queue.RabbitMQ
 	MessageChannel chan amqp.Delivery
-	Memcached      *cache.Memcached
+	Memcached      *cache.Memcached[*entities.User]
 }
 
 func NewUserRouter(
@@ -33,7 +34,7 @@ func NewUserRouter(
 	router *router.Router,
 	rabbitMQ *queue.RabbitMQ,
 	messageChannel chan amqp.Delivery,
-	mencached *cache.Memcached,
+	mencached *cache.Memcached[*entities.User],
 ) *UserRouter {
 	u := &UserRouter{
 		Conn:           conn,
@@ -66,9 +67,10 @@ func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
 	prefix := "/authn"
 	r.Route(prefix, func(r chi.Router) {
 		u.Router.Method("POST").Prefix(prefix).InitializeRoute(r, "/create", u.userHandler.Create)
+		u.Router.Method("GET").Prefix(prefix).InitializeRoute(r, "/google", u.userHandler.Oauth)
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
-				5,
+				10,
 				60*time.Minute,
 				httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
 				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +100,7 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
-				3,
+				5,
 				60*time.Minute,
 				httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
 				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {

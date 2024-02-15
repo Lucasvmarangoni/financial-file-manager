@@ -18,7 +18,7 @@ type UserService struct {
 	RabbitMQ       queue.IRabbitMQ
 	MessageChannel chan amqp.Delivery
 	ReturnChannel  chan error
-	memcached      cache.Mencacher
+	memcached      cache.Mencacher[*entities.User]
 	cacheUser      *entities.User
 }
 
@@ -27,7 +27,7 @@ func NewUserService(
 	rabbitMQ queue.IRabbitMQ,
 	messageChannel chan amqp.Delivery,
 	returnChannel chan error,
-	memcached cache.Mencacher,
+	memcached cache.Mencacher[*entities.User],
 ) *UserService {
 	UserService := &UserService{
 		Repository:     repo,

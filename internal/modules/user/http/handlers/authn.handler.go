@@ -9,12 +9,34 @@ import (
 
 	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
+	"github.com/markbates/goth/gothic"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
+
+func (u *UserHandler) Oauth(w http.ResponseWriter, r *http.Request) {
+	user, err := gothic.CompleteUserAuth(w, r)
+	if err != nil {
+		fmt.Fprintln(w, r)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+
+	
+}
 
 // Create user godoc
 // @Summary      Create user
@@ -67,7 +89,7 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		defer wg.Done()
 		err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
-		if err != nil {		
+		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
 			json.NewEncoder(w).Encode(map[string]string{
@@ -157,16 +179,16 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 func (u *UserHandler) validateUserUpdateInputForCPFAndEmail(user *dto.AuthenticationInput) error {
 
 	if user.Email == "" && user.CPF == "" {
-		return go_err.New("An Email or a CPF is necessary") 
+		return go_err.New("An Email or a CPF is necessary")
 	}
 	if user.Email != "" && user.CPF != "" {
 		user.CPF = ""
 	}
 	if err := u.validateEmail(&user.Email); err != nil {
-		return err 
+		return err
 	}
 	if err := u.validateCPF(&user.CPF); err != nil {
-		return err 
+		return err
 	}
 	return nil
 }

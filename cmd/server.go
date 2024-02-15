@@ -7,8 +7,8 @@ import (
 
 	"time"
 
-	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	_ "github.com/Lucasvmarangoni/financial-file-manager/api"
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
 	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	middlewares "github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
+	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/logella/router"
@@ -72,7 +73,7 @@ func main() {
 	// rpc.Connect()
 
 	r := chi.NewRouter()
-	mc := Cache()
+	mc := Cache[*entities.User]()
 
 	messageChannel, rabbitMQ, ch := Queues()
 	defer ch.Close()
@@ -107,7 +108,7 @@ func Http(
 	messageChannel chan amqp.Delivery,
 	rabbitMQ *queue.RabbitMQ,
 	ch *amqp.Channel,
-	mc *cache.Memcached,
+	mc *cache.Memcached[*entities.User],
 ) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
@@ -147,7 +148,7 @@ func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
 	return messageChannel, rabbitMQ, ch
 }
 
-func Cache() *cache.Memcached {
-	mc := cache.NewMencached("localhost:11211", "localhost:11212")
+func Cache[T cache.Entity]() *cache.Memcached[T] {
+	mc := cache.NewMencached[T]("localhost:11211", "localhost:11212")
 	return mc
 }
