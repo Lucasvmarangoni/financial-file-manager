@@ -11,13 +11,13 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *internal_mocks.MockIRabbitMQ, *mocks.MockMencacher) {
+func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *internal_mocks.MockIRabbitMQ, *mocks.MockMencacher[*entities.User]) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockUserRepository := mocks.NewMockUserRepository(ctrl)
 	mockRabbitMQ := internal_mocks.NewMockIRabbitMQ(ctrl)
-	mockMemcached := mocks.NewMockMencacher(ctrl)
+	mockMemcached := mocks.NewMockMencacher[*entities.User](ctrl)
 	var messageChannel = make(chan amqp.Delivery, 1)
 	var returnChannel = make(chan error, 1)
 
@@ -26,4 +26,4 @@ func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *i
 }
 
 var password = "hgGFHJ654*"
-var user, err = entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", "hgGFHJ654*")
+var user, _ = entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", password)

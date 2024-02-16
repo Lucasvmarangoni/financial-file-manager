@@ -6,36 +6,42 @@ package mocks
 
 import (
 	reflect "reflect"
+	e_files "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
+	e_user "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 
 	memcache "github.com/bradfitz/gomemcache/memcache"
 	gomock "github.com/golang/mock/gomock"
 )
 
+type Entity interface {
+	*e_user.User | *e_files.Contract | *e_files.Extract | *e_files.Invoice
+}
+
 // MockMencacher is a mock of Mencacher interface.
-type MockMencacher struct {
+type MockMencacher[T Entity] struct {
 	ctrl     *gomock.Controller
-	recorder *MockMencacherMockRecorder
+	recorder *MockMencacherMockRecorder[T]
 }
 
 // MockMencacherMockRecorder is the mock recorder for MockMencacher.
-type MockMencacherMockRecorder struct {
-	mock *MockMencacher
+type MockMencacherMockRecorder[T Entity] struct {
+	mock *MockMencacher[T]
 }
 
 // NewMockMencacher creates a new mock instance.
-func NewMockMencacher(ctrl *gomock.Controller) *MockMencacher {
-	mock := &MockMencacher{ctrl: ctrl}
-	mock.recorder = &MockMencacherMockRecorder{mock}
+func NewMockMencacher[T Entity](ctrl *gomock.Controller) *MockMencacher[T] {
+	mock := &MockMencacher[T]{ctrl: ctrl}
+	mock.recorder = &MockMencacherMockRecorder[T]{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockMencacher) EXPECT() *MockMencacherMockRecorder {
+func (m *MockMencacher[T]) EXPECT() *MockMencacherMockRecorder[T] {
 	return m.recorder
 }
 
 // Delete mocks base method.
-func (m *MockMencacher) Delete(key string) error {
+func (m *MockMencacher[T]) Delete(key string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", key)
 	ret0, _ := ret[0].(error)
@@ -43,13 +49,13 @@ func (m *MockMencacher) Delete(key string) error {
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockMencacherMockRecorder) Delete(key interface{}) *gomock.Call {
+func (mr *MockMencacherMockRecorder[T]) Delete(key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockMencacher)(nil).Delete), key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockMencacher[T])(nil).Delete), key)
 }
 
 // Get mocks base method.
-func (m *MockMencacher) Get(key string) (*memcache.Item, error) {
+func (m *MockMencacher[T]) Get(key string) (*memcache.Item, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", key)
 	ret0, _ := ret[0].(*memcache.Item)
@@ -58,13 +64,13 @@ func (m *MockMencacher) Get(key string) (*memcache.Item, error) {
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockMencacherMockRecorder) Get(key interface{}) *gomock.Call {
+func (mr *MockMencacherMockRecorder[T]) Get(key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockMencacher)(nil).Get), key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockMencacher[T])(nil).Get), key)
 }
 
 // GetMulti mocks base method.
-func (m *MockMencacher) GetMulti(key []string) (map[string]*memcache.Item, error) {
+func (m *MockMencacher[T]) GetMulti(key []string) (map[string]*memcache.Item, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMulti", key)
 	ret0, _ := ret[0].(map[string]*memcache.Item)
@@ -73,13 +79,13 @@ func (m *MockMencacher) GetMulti(key []string) (map[string]*memcache.Item, error
 }
 
 // GetMulti indicates an expected call of GetMulti.
-func (mr *MockMencacherMockRecorder) GetMulti(key interface{}) *gomock.Call {
+func (mr *MockMencacherMockRecorder[T]) GetMulti(key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMulti", reflect.TypeOf((*MockMencacher)(nil).GetMulti), key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMulti", reflect.TypeOf((*MockMencacher[T])(nil).GetMulti), key)
 }
 
 // Set mocks base method.
-func (m *MockMencacher) Set(key string, i interface{}) error {
+func (m *MockMencacher[T]) Set(key string, i T) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Set", key, i)
 	ret0, _ := ret[0].(error)
@@ -87,7 +93,7 @@ func (m *MockMencacher) Set(key string, i interface{}) error {
 }
 
 // Set indicates an expected call of Set.
-func (mr *MockMencacherMockRecorder) Set(key, i interface{}) *gomock.Call {
+func (mr *MockMencacherMockRecorder[T]) Set(key, i interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockMencacher)(nil).Set), key, i)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockMencacher[T])(nil).Set), key, i)
 }
