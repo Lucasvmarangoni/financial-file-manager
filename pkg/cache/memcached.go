@@ -5,9 +5,13 @@ import (
 
 	e_files "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/file/domain/entities"
 	e_user "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	errors "github.com/Lucasvmarangoni/logella/err"
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/bradfitz/gomemcache/memcache"
 )
+
+type Entity interface {
+	*e_user.User | *e_files.Contract | *e_files.Extract | *e_files.Invoice
+}
 
 type Mencacher[T Entity] interface {
 	Set(key string, i T) error
@@ -20,15 +24,11 @@ type Memcached[T Entity] struct {
 	Client *memcache.Client
 }
 
-func NewMencached[T Entity](server ...string) *Memcached[T] {
+func NewMemcached[T Entity](server ...string) *Memcached[T] {
 	client := memcache.New(server...)
 	return &Memcached[T]{
 		Client: client,
 	}
-}
-
-type Entity interface {
-	*e_user.User | *e_files.Contract | *e_files.Extract | *e_files.Invoice
 }
 
 func (m *Memcached[T]) Set(key string, i T) error {
