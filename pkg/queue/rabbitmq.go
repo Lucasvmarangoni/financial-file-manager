@@ -48,10 +48,10 @@ func NewRabbitMQ() *RabbitMQ {
 func (r *RabbitMQ) Connect() *amqp.Channel {
 	dsn := "amqp://" + r.User + ":" + r.Password + "@" + r.Host + ":" + r.Port + r.Vhost
 	conn, err := amqp.Dial(dsn)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	errors.FailOnErrLog(err, "amqp.Dial", "Failed to connect to RabbitMQ")
 
 	r.Channel, err = conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	errors.FailOnErrLog(err, "conn.Channel", "Failed to open a channel")
 
 	return r.Channel
 }
@@ -65,7 +65,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 		false,
 		r.Args,
 	)
-	failOnError(err, "Failed to declare a queue")
+	errors.FailOnErrLog(err, "r.Channel.QueueDeclare", "Failed to declare a queue")
 
 	err = r.Channel.QueueBind(
 		q.Name,
@@ -74,7 +74,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 		false,
 		nil,
 	)
-	failOnError(err, "Failed to bind a queue")
+	errors.FailOnErrLog(err, "r.Channel.QueueBind", "Failed to bind a queue")
 
 	incomingMessage, err := r.Channel.Consume(
 		q.Name,
@@ -85,7 +85,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 		false,
 		r.Args,
 	)
-	failOnError(err, "Failed to register a consumer")
+	errors.FailOnErrLog(err, "r.Channel.Consume", "Failed to register a consumer")
 
 	go func() {
 		for message := range incomingMessage {
@@ -98,8 +98,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 			log.Info().Str("context", "RabbitMQ").Msg("RabbitMQ channel closed gracefully")
 		}
 		close(messageChannel)
-	}()
-	return
+	}()	
 }
 
 func (r *RabbitMQ) Publish(message string, contentType string, exchange string, routingKey string) error {
@@ -117,10 +116,4 @@ func (r *RabbitMQ) Publish(message string, contentType string, exchange string, 
 		return errors.ErrCtx(err, "Failed to publish message")
 	}
 	return nil
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatal().Err(errors.ErrCtx(err, msg))
-	}
 }

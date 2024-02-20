@@ -67,9 +67,7 @@ func main() {
 	defer cancel()
 
 	conn, err := Database(ctx)
-	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("Failed exec Database")
-	}
+	errors.FailOnErrLog(err, "Database(ctx)", "Failed exec Database")
 	// rpc.Connect()
 
 	r := chi.NewRouter()
@@ -80,14 +78,11 @@ func main() {
 	Http(conn, r, messageChannel, rabbitMQ, ch, mc)
 
 	err = http.ListenAndServe(":8000", r)
-	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("Failed server listen")
-	}
-
+	errors.FailOnErrLog(err, "http.ListenAndServe", "Failed server listen")
 }
 
 func Database(ctx context.Context) (*pgx.Conn, error) {
-	conn, err := db.Connect(ctx)
+	conn, err := db.Connect(ctx)	
 	if err != nil {
 		return nil, errors.ErrCtx(err, "db.Connect")
 	}
@@ -149,6 +144,6 @@ func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
 }
 
 func Cache[T cache.Entity]() *cache.Memcached[T] {
-	mc := cache.NewMencached[T]("localhost:11211", "localhost:11212")
+	mc := cache.NewMemcached[T]("localhost:11211", "localhost:11212")
 	return mc
 }
