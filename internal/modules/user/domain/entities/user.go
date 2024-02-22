@@ -18,16 +18,20 @@ type UpdateLog struct {
 }
 
 type User struct {
-	ID        entities.ID `json:"id" valid:"required"`
-	Name      string      `json:"name" valid:"length(3|10),matches(^[a-zA-Z ]+$)"`
-	LastName  string      `json:"last_name" valid:"length(3|50),matches(^[a-zA-Z ]+$)"`
-	CPF       string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
-	HashCPF   string      `json:"hash_cpf" valid:"-"`
-	Email     string      `json:"email" valid:"email"`
-	HashEmail string      `json:"hash_email" valid:"-"`
-	Password  string      `json:"password" valid:"required"`
-	CreatedAt time.Time   `json:"created_at" valid:"required"`
-	UpdateLog []UpdateLog `json:"update_log" valid:"-"`
+	ID          entities.ID `json:"id" valid:"required"`
+	Name        string      `json:"name" valid:"length(3|10),matches(^[a-zA-Z ]+$)"`
+	LastName    string      `json:"last_name" valid:"length(3|50),matches(^[a-zA-Z ]+$)"`
+	CPF         string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	HashCPF     string      `json:"hash_cpf" valid:"-"`
+	Email       string      `json:"email" valid:"email"`
+	HashEmail   string      `json:"hash_email" valid:"-"`
+	Password    string      `json:"password" valid:"required"`
+	OtpSecret   string      `json:"otp_secret" valid:"-"`
+	OtpAuthUrl  string      `json:"otp_auth_url" valid:"-"`
+	OtpVerified bool        `json:"otp_verified" valid:"-"`
+	OtpEnabled  bool        `json:"otp_enabled" valid:"-"`
+	CreatedAt   time.Time   `json:"created_at" valid:"required"`
+	UpdateLog   []UpdateLog `json:"update_log" valid:"-"`
 }
 
 func (u *User) Validate() error {
@@ -54,14 +58,9 @@ func Hash(str string) string {
 
 func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 
-	err := validate.ValidatePassword(password)
+	hashPassword, err := PreparePassword(password)
 	if err != nil {
-		return nil, errors.ErrCtx(err, "validatePassword")
-	}
-
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, errors.ErrCtx(err, "bcrypt.GenerateFromPassword")
+		return nil, errors.ErrCtx(err, "u.PreparePassword")
 	}
 
 	user := User{
@@ -71,7 +70,7 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 		HashCPF:   Hash(cpf),
 		Email:     email,
 		HashEmail: Hash(email),
-		Password:  string(hashPassword),
+		Password:  hashPassword,
 	}
 	user.prepare()
 
@@ -79,7 +78,6 @@ func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 	if err != nil {
 		return nil, errors.ErrCtx(err, "user.Validate")
 	}
-
 	return &user, nil
 }
 
@@ -90,8 +88,34 @@ func (u *User) prepare() {
 	}
 }
 
-func (u *User) Update(oldValues []UpdateLog, id entities.ID, createdAt time.Time) {
+func (u *User) PrepateTOTP(otpSecret, otpAuthUrl string) {
+	u.OtpSecret = otpSecret
+	u.OtpAuthUrl = otpAuthUrl
+}
+
+func (u *User) Update(oldValues []UpdateLog, name, lastName, email, password string) error {
 	u.UpdateLog = oldValues
-	u.CreatedAt = createdAt
-	u.ID = id
+	u.Name = name
+	u.LastName = lastName
+	u.Email = email
+
+	hashPassword, err := PreparePassword(password)
+	if err != nil {
+		return errors.ErrCtx(err, "u.PreparePassword")
+	}
+	u.Password = string(hashPassword)
+	return nil
+}
+
+func PreparePassword(password string) (string, error) {
+	err := validate.ValidatePassword(password)
+	if err != nil {
+		return "", errors.ErrCtx(err, "validatePassword")
+	}
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.ErrCtx(err, "bcrypt.GenerateFromPassword")
+	}
+	return string(hashPassword), nil
 }
