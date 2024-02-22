@@ -35,23 +35,19 @@ func (u *UserService) Update(id, name, lastName, email, password, newPassword st
 	if newPassword != "" {
 		password = newPassword
 	}
-	newUser, err := entities.NewUser(name, lastName, user.CPF, email, password)
-	if err != nil {
-		return errors.ErrCtx(err, "entities.NewUser")
-	}
+	
+	user.Update(oldValues, name, lastName, email, password)
 
-	err = u.encrypt(newUser)
+	err = u.encrypt(user)
 	if err != nil {
 		return errors.ErrCtx(err, "u.encrypt")
-	}
+	}	
 
-	newUser.Update(oldValues, user.ID, user.CreatedAt)
-
-	err = u.Repository.Update(newUser, context.Background())
+	err = u.Repository.Update(user, context.Background())
 	if err != nil {
 		return errors.ErrCtx(err, "Repository.Update")
 	}
-	u.setToMemcacheIfNotNil(newUser)
+	u.setToMemcacheIfNotNil(user)
 	return nil
 }
 
