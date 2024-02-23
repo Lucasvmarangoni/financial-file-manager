@@ -106,9 +106,9 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := u.GetSub(w, r)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "BadRequest",
+			"status":  "StatusInternalServerError",
 			"message": fmt.Sprintf("%v", err),
 		})
 	}
@@ -141,7 +141,12 @@ func (u *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (u *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := u.GetSub(w, r)
 	if err != nil {
-		log.Error().Stack().Err(err).Msg("Error get sub")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
 	}
 	err = u.userService.Delete(id)
 	if err != nil {
