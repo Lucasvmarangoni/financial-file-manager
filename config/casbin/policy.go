@@ -22,30 +22,30 @@ func (p *Policy) SetPolicy() {
 	p.Rules = [][]string{
 		{"anonymous", "/authn/create", "POST"},
 		{"anonymous", "/authn/jwt", "POST"},
+		{"member", "/totp/generate", "GET"},
+		{"member", "/totp/verify/*", "POST"},
+		{"member", "/totp/disable", "PATCH"},
 		{"member", "/user/me", "GET"},
 		{"member", "/user/update", "PUT"},
 		{"member", "/user/del", "DELETE"},
 		{"ADMIN", "*", "*"},
-		{"READ", "*", "GET"},
+		{"READ", "/user/*", "GET"},
 	}
 
 	maxAdminsStr := config.GetEnv("authz_max_admin").(string)
 	maxAdmins, err := strconv.Atoi(maxAdminsStr)
-	if err != nil {
-		panic(errors.ErrCtx(err, "Failed to parse authz_max_admin"))
-	}
+	errors.PanicErr(err, "strconv.Atoi")
+
 	maxReadsStr := config.GetEnv("authz_max_read").(string)
 	maxReads, err := strconv.Atoi(maxReadsStr)
-	if err != nil {
-		panic(errors.ErrCtx(err, "Failed to parse authz_max_read"))
-	}
+	errors.PanicErr(err, "strconv.Atoi")
 
 	for i := 0; i < maxAdmins; i++ {
-		p.Admin = append(p.Admin, config.GetEnv("admin_"+strconv.Itoa(i +1)).(string))
+		p.Admin = append(p.Admin, config.GetEnv("admin_"+strconv.Itoa(i+1)).(string))
 	}
 
 	for i := 0; i < maxReads; i++ {
-		p.Read = append(p.Read, config.GetEnv("read_"+strconv.Itoa(i +1)).(string))
+		p.Read = append(p.Read, config.GetEnv("read_"+strconv.Itoa(i+1)).(string))
 	}
 
 	p.Groups = [][]string{}
