@@ -11,13 +11,13 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *internal_mocks.MockIRabbitMQ, *mocks.MockMencacher[*entities.User]) {
+func prepare(t testing.TB) (*services.UserService, *mocks.MockUserRepository, *internal_mocks.MockIRabbitMQ, *internal_mocks.MockMencacher[*entities.User]) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockUserRepository := mocks.NewMockUserRepository(ctrl)
 	mockRabbitMQ := internal_mocks.NewMockIRabbitMQ(ctrl)
-	mockMemcached := mocks.NewMockMencacher[*entities.User](ctrl)
+	mockMemcached := internal_mocks.NewMockMencacher[*entities.User](ctrl)
 	var messageChannel = make(chan amqp.Delivery, 1)
 	var returnChannel = make(chan error, 1)
 
