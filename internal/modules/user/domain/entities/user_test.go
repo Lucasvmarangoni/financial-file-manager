@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	"github.com/asaskevich/govalidator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,12 +32,8 @@ func TestNewUser(t *testing.T) {
 		user, err := entities.NewUser(name, lastName, cpf, email, password)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "name: Jo does not validate as length(3|10)")
 
-		if errs, ok := err.(govalidator.Errors); ok {
-			for _, e := range errs {
-				assert.Contains(t, e.Error(), "name: Jo does not validate as length(3|10)")
-			}
-		}
 	})
 
 	t.Run("should not return a user when provided invalid lastName", func(t *testing.T) {
@@ -48,12 +43,7 @@ func TestNewUser(t *testing.T) {
 		user, err := entities.NewUser(name, lastName, cpf, email, password)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
-
-		if errs, ok := err.(govalidator.Errors); ok {
-			for _, e := range errs {
-				assert.Contains(t, e.Error(), "last_name: Do does not validate as length(3|50)")
-			}
-		}
+		assert.Contains(t, err.Error(), "last_name: Do does not validate as length(3|50)")
 	})
 
 	t.Run("should not return a user when provided invalid cpf", func(t *testing.T) {
@@ -63,14 +53,7 @@ func TestNewUser(t *testing.T) {
 		user, err := entities.NewUser(name, lastName, cpf, email, password)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
-
-		if errs, ok := err.(govalidator.Errors); ok {
-			for _, e := range errs {
-				assert.Contains(t, e.Error(), "cpf: 990.001.8sss8802 does not validate as matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)")
-			}
-		} else {
-			t.Errorf("Expected govalidator.Errors, got %T", err)
-		}
+		assert.Contains(t, err.Error(), "cpf: 990.001.8sss8802 does not validate as matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)")
 	})
 
 	t.Run("should not return a user when provided invalid password", func(t *testing.T) {
@@ -80,13 +63,7 @@ func TestNewUser(t *testing.T) {
 		user, err := entities.NewUser(name, lastName, cpf, email, password)
 		assert.Nil(t, user)
 		assert.NotNil(t, err)
-
-		if errs, ok := err.(govalidator.Errors); ok {
-			for _, e := range errs {
-				assert.Contains(t, e.Error(), "")
-			}
-		}
-
+		assert.Contains(t, err.Error(), "")
 	})
 }
 
@@ -102,7 +79,7 @@ func TestUser_ValidatePassword(t *testing.T) {
 
 		err = user.ValidateHashPassword(password + "i")
 		assert.NotNil(t, err)
-		
+
 		assert.NotEqual(t, password, user.Password)
 	})
 
