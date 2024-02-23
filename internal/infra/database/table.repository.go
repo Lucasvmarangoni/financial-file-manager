@@ -31,7 +31,11 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 			hash_cpf TEXT UNIQUE,			
 			email TEXT,	
 			hash_email TEXT UNIQUE,		
-			password TEXT,			
+			password TEXT,		
+			otp_secret TEXT,
+			otp_auth_url TEXT,
+			otp_verified BOOL,
+			otp_enabled BOOL,
 			created_at TIMESTAMP,
 			update_log JSONB
 		)`)
