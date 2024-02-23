@@ -1,8 +1,6 @@
 package services
 
 import (
-	"log"
-
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
@@ -78,25 +76,5 @@ func (u *UserService) encrypt(user *entities.User) error {
 	if err != nil {
 		return errors.ErrCtx(err, "security.Encrypt CPF")
 	}
-	return nil
-}
-
-func (u *UserService) decrypt(user *entities.User) error {
-	aes_key := config.GetEnv("security_aes_key").(string)
-	var err error
-
-	user.LastName, err = security.Decrypt(user.LastName, aes_key)
-	if err != nil {
-		return errors.ErrCtx(err, "security.Decrypt LastName")
-	}
-	user.Email, err = security.Decrypt(user.Email, aes_key)
-	if err != nil {
-		return errors.ErrCtx(err, "security.Decrypt Email")
-	}
-	user.CPF, err = security.Decrypt(user.CPF, aes_key)
-	if err != nil {
-		return errors.ErrCtx(err, "security.Decrypt CPF")
-	}
-	log.Print(user.CPF)
 	return nil
 }
