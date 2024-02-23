@@ -122,3 +122,31 @@ func (mr *MockUserRepositoryMockRecorder) Update(user, ctx interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserRepository)(nil).Update), user, ctx)
 }
+
+// UpdateOTP mocks base method.
+func (m *MockUserRepository) UpdateOTP(user *entities.User, ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOTP", user, ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateOTP indicates an expected call of UpdateOTP.
+func (mr *MockUserRepositoryMockRecorder) UpdateOTP(user, ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOTP", reflect.TypeOf((*MockUserRepository)(nil).UpdateOTP), user, ctx)
+}
+
+// UpdateOTPVerify mocks base method.
+func (m *MockUserRepository) UpdateOTPVerify(user *entities.User, ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOTPVerify", user, ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateOTPVerify indicates an expected call of UpdateOTPVerify.
+func (mr *MockUserRepositoryMockRecorder) UpdateOTPVerify(user, ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOTPVerify", reflect.TypeOf((*MockUserRepository)(nil).UpdateOTPVerify), user, ctx)
+}
