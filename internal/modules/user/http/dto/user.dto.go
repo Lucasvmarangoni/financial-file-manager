@@ -14,11 +14,11 @@ func init() {
 }
 
 type UserInput struct {
-	Name     string `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
-	LastName string `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
-	CPF      string `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
-	Email    string `json:"email" valid:"email"`
-	Password string `json:"password" valid:"required"`
+	Name       string `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
+	LastName   string `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
+	CPF        string `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	Email      string `json:"email" valid:"email"`
+	Password   string `json:"password" valid:"required"`
 }
 
 type AuthenticationInput struct {
@@ -32,13 +32,14 @@ type GetJWTOutput struct {
 }
 
 type UserOutput struct {
-	ID        pkg_entities.ID      `json:"id" valid:"-"`
-	Name      string               `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
-	LastName  string               `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
-	CPF       string               `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
-	Email     string               `json:"email" valid:"email"`
-	CreatedAt time.Time            `json:"created_at" valid:"-"`
-	UpdateLog []entities.UpdateLog `json:"update_log" valid:"-"`
+	ID         pkg_entities.ID      `json:"id" valid:"-"`
+	Name       string               `json:"name" valid:"required,matches(^[a-zA-Z ]+$),length(3|10)"`
+	LastName   string               `json:"last_name" valid:"required,matches(^[a-zA-Z ]+$),length(3|50)"`
+	CPF        string               `json:"cpf" valid:"required,matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	Email      string               `json:"email" valid:"email"`
+	OtpEnabled bool                 `json:"otp_enabled" valid:"-"`
+	CreatedAt  time.Time            `json:"created_at" valid:"-"`
+	UpdateLog  []entities.UpdateLog `json:"update_log" valid:"-"`
 }
 
 type UserUpdateInput struct {
@@ -47,4 +48,8 @@ type UserUpdateInput struct {
 	Email       string `json:"email" valid:"-"`
 	Password    string `json:"password" valid:"required"`
 	NewPassword string `json:"new_password" valid:"-"`
+}
+
+type OTPInput struct {
+	Token  string `json:"token" valid:"required"`
 }

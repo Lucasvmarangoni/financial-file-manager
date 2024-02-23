@@ -9,34 +9,13 @@ import (
 
 	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
-	"github.com/markbates/goth/gothic"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/dto"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
+	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 	"github.com/rs/zerolog/log"
 )
-
-func (u *UserHandler) Oauth(w http.ResponseWriter, r *http.Request) {
-	user, err := gothic.CompleteUserAuth(w, r)
-	if err != nil {
-		fmt.Fprintln(w, r)
-		return
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "BadRequest",
-			"message": fmt.Sprintf("%v", err),
-		})
-		return
-	}
-
-	
-}
 
 // Create user godoc
 // @Summary      Create user
@@ -91,11 +70,11 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
 			json.NewEncoder(w).Encode(map[string]string{
 				"status":  "BadRequest",
 				"message": fmt.Sprintf("%v", err),
 			})
+			log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
 			return
 		}
 	}()
@@ -146,6 +125,7 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 			"status":  "BadRequest",
 			"message": fmt.Sprintf("%v", err),
 		})
+		return
 	}
 
 	unique := user.Email + user.CPF
@@ -160,6 +140,101 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
+}
+
+func (u *UserHandler) TwoFactorAuthn(w http.ResponseWriter, r *http.Request) {
+
+	id, err := u.GetSub(w, r)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+
+	otpResponse, err := u.userService.GenerateTOTP(id)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		log.Error().Err(errors.ErrStack()).Msg("Error generate totp")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(otpResponse)
+}
+
+func (u *UserHandler) TwoFactorVerify(w http.ResponseWriter, r *http.Request) {
+	var totpToken dto.OTPInput
+
+	id, err := u.GetSub(w, r)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&totpToken)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		log.Error().Err(errors.ErrStack()).Msg("Error decode request")
+		return
+	}
+
+	isValidate := chi.URLParam(r, "is_validate")
+	err = u.userService.VerifyTOTP(id, totpToken.Token, isValidate)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		log.Error().Err(errors.ErrStack()).Msg("Error validate totp")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{"otp_verified": true})
+}
+
+func (u *UserHandler) TwoFactorDisable(w http.ResponseWriter, r *http.Request) {
+	id, err := u.GetSub(w, r)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+
+	err = u.userService.DisableOTP(id)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "StatusInternalServerError",
+			"message": fmt.Sprintf("%v", err),
+		})
+		log.Error().Err(errors.ErrStack()).Msg("Error disable two factor authentication")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{"otp_disabled": true})
 }
 
 func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, error) {
@@ -179,7 +254,7 @@ func (u *UserHandler) GetSub(w http.ResponseWriter, r *http.Request) (string, er
 func (u *UserHandler) validateUserUpdateInputForCPFAndEmail(user *dto.AuthenticationInput) error {
 
 	if user.Email == "" && user.CPF == "" {
-		return go_err.New("An Email or a CPF is necessary")
+		return go_err.New("an Email or a CPF is necessary")
 	}
 	if user.Email != "" && user.CPF != "" {
 		user.CPF = ""

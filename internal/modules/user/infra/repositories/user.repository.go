@@ -17,6 +17,8 @@ type UserRepository interface {
 	FindById(id pkg_entities.ID, ctx context.Context) (*entities.User, error)
 	FindByCpf(hashCPF string, ctx context.Context) (*entities.User, error)
 	Update(user *entities.User, ctx context.Context) error
+	UpdateOTP(user *entities.User, ctx context.Context) error
+	UpdateOTPVerify(user *entities.User, ctx context.Context) error
 	Delete(id string, ctx context.Context) error
 }
 
@@ -26,7 +28,6 @@ type UserRepositoryDb struct {
 
 func NewUserRepository(conn *pgx.Conn) *UserRepositoryDb {
 	return &UserRepositoryDb{
-
 		conn: conn,
 	}
 }
@@ -35,7 +36,7 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) erro
 	if user.ID.String() == "" {
 		user.ID = pkg_entities.NewID()
 	}
-	sql := `INSERT INTO users (id, name, last_name, cpf, hash_cpf, email, hash_email, password, created_at, update_log) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	sql := `INSERT INTO users (id, name, last_name, cpf, hash_cpf, email, hash_email, password, otp_secret, otp_auth_url, otp_verified, otp_enabled, created_at, update_log) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 
 		_, err := tx.Exec(ctx, sql,
@@ -47,6 +48,10 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) erro
 			user.Email,
 			user.HashEmail,
 			user.Password,
+			user.OtpSecret,
+			user.OtpAuthUrl,
+			user.OtpVerified,
+			user.OtpEnabled,
 			user.CreatedAt,
 			user.UpdateLog,
 		)
@@ -68,7 +73,7 @@ func (r *UserRepositoryDb) FindById(id pkg_entities.ID, ctx context.Context) (*e
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, id)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.CreatedAt, &user.UpdateLog)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.OtpSecret, &user.OtpAuthUrl, &user.OtpVerified, &user.OtpEnabled, &user.CreatedAt, &user.UpdateLog)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -86,7 +91,7 @@ func (r *UserRepositoryDb) FindByEmail(hashEmail string, ctx context.Context) (*
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, hashEmail)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.CreatedAt, &user.UpdateLog)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.OtpSecret, &user.OtpAuthUrl, &user.OtpVerified, &user.OtpEnabled, &user.CreatedAt, &user.UpdateLog)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -104,7 +109,7 @@ func (r *UserRepositoryDb) FindByCpf(hashCPF string, ctx context.Context) (*enti
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, hashCPF)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.CreatedAt, &user.UpdateLog)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.OtpEnabled, &user.CreatedAt, &user.UpdateLog)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -117,21 +122,57 @@ func (r *UserRepositoryDb) FindByCpf(hashCPF string, ctx context.Context) (*enti
 }
 
 func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) error {
-	sql := `UPDATE users SET name = $2, last_name = $3, cpf = $4, hash_cpf = $5, email = $6, hash_email = $7, password = $8, update_log = $9 WHERE id = $1`
+	sql := `UPDATE users SET name = $2, last_name = $3, email = $4, hash_email = $5, password = $6, update_log = $7 WHERE id = $1`
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, sql,
 			user.ID,
 			user.Name,
-			user.LastName,
-			user.CPF,
-			user.HashCPF,
+			user.LastName,			
 			user.Email,
 			user.HashEmail,
-			user.Password,
+			user.Password,			
 			user.UpdateLog,
 		)
 		if err != nil {
 			return errors.ErrCtx(err, "tx.Exec(")
+		}
+		return nil
+	})
+	if err != nil {
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
+	}
+	return nil
+}
+
+func (r *UserRepositoryDb) UpdateOTP(user *entities.User, ctx context.Context) error {
+	sql := `UPDATE users SET otp_auth_url = $2, otp_secret = $3 WHERE id = $1`
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, sql,
+			user.ID,
+			user.OtpAuthUrl,
+			user.OtpSecret,
+		)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Exec")
+		}
+		return nil
+	})
+	if err != nil {
+		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
+	}
+	return nil
+}
+
+func (r *UserRepositoryDb) UpdateOTPVerify(user *entities.User, ctx context.Context) error {
+	sql := `UPDATE users SET otp_verified = $2, otp_enabled = $3 WHERE id = $1`
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, sql,
+			user.ID,
+			user.OtpVerified,
+			user.OtpEnabled,
+		)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Exec")
 		}
 		return nil
 	})
