@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	pkg_entities "github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/security"
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/rs/zerolog/log"
 )
@@ -90,5 +92,24 @@ func (u *UserService) getCache(key string) *entities.User {
 			log.Error().Err(errors.ErrCtx(err, "json.Unmarshal")).Msg("Get User cache error")
 		}
 	}
+	return nil
+}
+
+func (u *UserService) decrypt(user *entities.User) error {
+	aes_key := config.GetEnv("security_aes_key").(string)
+	var err error
+
+	user.LastName, err = security.Decrypt(user.LastName, aes_key)
+	if err != nil {
+		return errors.ErrCtx(err, "security.Decrypt LastName")
+	}
+	user.Email, err = security.Decrypt(user.Email, aes_key)
+	if err != nil {
+		return errors.ErrCtx(err, "security.Decrypt Email")
+	}
+	user.CPF, err = security.Decrypt(user.CPF, aes_key)
+	if err != nil {
+		return errors.ErrCtx(err, "security.Decrypt CPF")
+	}	
 	return nil
 }
