@@ -31,16 +31,16 @@ func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtEx
 	}
 	user.Password = ""
 
-	tokenString, err := u.GenerateJWT(user, jwt, jwtExpiresIn)
+	tokenString, err := u.generateJWT(user, jwt, jwtExpiresIn)
 	if err != nil {
-		errors.ErrCtx(err, "u.GenerateJWT")
+		errors.ErrCtx(err, "u.generateJWT")
 	}
 	return tokenString, nil
 }
 
-func (u *UserService) GenerateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwtExpiresIn int) (string, error) {
+func (u *UserService) generateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwtExpiresIn int) (string, error) {
 	_, tokenString, err := jwt.Encode(map[string]interface{}{
-		"sub": user.ID.String(),
+		"sub": user.ID.String(),		
 		"exp": time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
 	})
 	if err != nil {
@@ -48,3 +48,5 @@ func (u *UserService) GenerateJWT(user *entities.User, jwt *jwtauth.JWTAuth, jwt
 	}
 	return tokenString, nil
 }
+
+
