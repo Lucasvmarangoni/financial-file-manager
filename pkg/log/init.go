@@ -13,39 +13,38 @@ import (
 )
 
 func init() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, NoColor: false, TimeFormat: time.RFC3339,
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, NoColor: false, TimeFormat: time.RFC3339,
 		FormatMessage: func(i interface{}) string {
 			value := failOnError(i)
-			return Format(c.magenta, strings.ToUpper(value))
+			return Format(colorMagenta, strings.ToUpper(value))
 		},
 		FormatLevel: func(i interface{}) string {
 			level := failOnError(i)
 			switch level {
 			case "info":
-				return Format(c.green, strings.ToUpper(level)+" ⇝")
+				return Format(colorGreen, strings.ToUpper(level)+" ⇝")
 			case "error":
-				return Format(c.red, strings.ToUpper(level)+" ⇝")
+				return Format(colorRed, strings.ToUpper(level)+" ⇝")
 			case "warn":
-				return Format(c.yellow, strings.ToUpper(level)+" ⇝")
+				return Format(colorYellow, strings.ToUpper(level)+" ⇝")
 			case "debug":
-				return Format(c.cyan, strings.ToUpper(level)+" ⇝")
+				return Format(colorCyan, strings.ToUpper(level)+" ⇝")
 			case "fatal":
-				return Format(c.red, strings.ToUpper(level)+" ⇝")
+				return Format(colorRed, strings.ToUpper(level)+" ⇝")
 			default:
 				return level
 			}
 		},
 		FormatErrFieldValue: func(i interface{}) string {
 			value := failOnError(i)
-			formattedOperation := Format(c.blue, "Operation")
-			formattedError := Format(c.red, "Error")
+			formattedOperation := Format(colorBlue, "Operation")
+			formattedError := Format(colorRed, "Error")
 			Str := strings.ReplaceAll(value, "Operation", formattedOperation)
 			Str = strings.ReplaceAll(Str, "Error", formattedError)
 			return Str
 		},
 		FormatErrFieldName: func(i interface{}) string {
 			value := failOnError(i)
-			value = " "
 			return value
 		},
 	})
