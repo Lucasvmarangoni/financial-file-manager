@@ -2,38 +2,96 @@ version: '3.5'
 
 services:
 
-  # cockroachdb:
-  #   image: cockroachdb/cockroach:v19.2.2
-  #   ports:
-  #     - "26257:26257"
-  #     - "8080:8080"
-  #   command: start-single-node --insecure
-  #   volumes:
-  #     - "./internal/infra/database/cockroach-data/crdb:/cockroach/cockroach-data"
+  app:
+    container_name: financial-file-manager
+    build:
+      context: .
+      dockerfile: ./dockerfile
+      target: financial-file-manager
+    ports:
+      - 8000:8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      - memcached-2
+    environment:
+      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+      - RABBITMQ_CONSUMER=${RABBITMQ_CONSUMER}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
+      - RABBITMQ_DLX=${RABBITMQ_DLX}
+      - RABBITMQ_ROUTINGKEY_USERCREATE=${RABBITMQ_ROUTINGKEY_USERCREATE}
+      - ROUTINGKEY_USERCREATERETURN=${ROUTINGKEY_USERCREATERETURN}
+      - GRPC_PORT=${GRPC_PORT}
+      - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
+      - LOCAL_FILE=${LOCAL_FILE}
+      - COCKROACHDB_PASSWORD=${COCKROACHDB_PASSWORD}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIREDIN=${JWT_EXPIREDIN}
+      - ADMIN_1=${ADMIN_1}
+      - READ_1=${READ_1}
+      - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
+      - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
+      - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
 
   rabbit:
     image: "rabbitmq:3-management"
     environment:
-      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
-      RABBITMQ_DEFAULT_VHOST: "/"
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_VHOST}
     ports:
       - "15672:15672"
       - "5672:5672"
+    restart: always
+    networks:
+      - ffm
 
   memcached-1:
-      image: memcached:latest
-      ports:
-        - "11211:11211"
-      command:
-        - memcached
-        - -m 64
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+    restart: always
+    networks:
+      - ffm
+    command:
+      - memcached
+      - -m 64
 
   memcached-2:
-      image: memcached:latest
-      ports:
-        - "11212:11211"
-      command:
-        - memcached
-        - -m 64
+    image: memcached:latest
+    ports:
+      - "11212:11211"
+    restart: always
+    networks:
+      - ffm
+    command:
+      - memcached
+      - -m 64
+
+networks:
+  ffm:

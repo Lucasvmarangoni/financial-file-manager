@@ -34,7 +34,7 @@ func NewRabbitMQ() *RabbitMQ {
 	rabbitMQ := RabbitMQ{
 		User:              config.GetEnv("rabbitMQ_user").(string),
 		Password:          config.GetEnv("rabbitMQ_pass").(string),
-		Host:              "localhost", //config.GetEnv("rabbitMQ_host").(string),
+		Host:              config.GetEnv("rabbitMQ_host").(string),
 		Port:              config.GetEnv("rabbitMQ_port").(string),
 		Vhost:             config.GetEnv("rabbitMQ_vhost").(string),
 		ConsumerQueueName: config.GetEnv("rabbitMQ_queue").(string),

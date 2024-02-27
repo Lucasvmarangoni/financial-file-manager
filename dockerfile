@@ -1,7 +1,19 @@
-FROM golang:1.21.1-alpine as financial-file-manager
+FROM golang:1.22.0-alpine as financial-file-manager
 
 WORKDIR /app
 
 COPY . .
 
-EXPOSE  8080
+RUN go mod tidy
+
+FROM alpine:latest
+
+WORKDIR /app
+
+RUN go build -o financial-file-manager
+
+COPY --from=builder /app/financial-file-manager /app/financial-file-manager
+
+EXPOSE  8000
+
+CMD ["./financial-file-manager"]
