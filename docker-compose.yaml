@@ -8,8 +8,9 @@ services:
       context: .
       dockerfile: ./dockerfile
       target: financial-file-manager
+    network_mode: bridge
     ports:
-      - 8000:8000
+      - :8000
     restart: always
     networks:
       - ffm
@@ -63,8 +64,9 @@ services:
       context: .
       dockerfile: ./dockerfile
       target: financial-file-manager
+    network_mode: bridge
     ports:
-      - 8001:8000
+      - :8000
     restart: always
     networks:
       - ffm
@@ -118,8 +120,9 @@ services:
       context: .
       dockerfile: ./dockerfile
       target: financial-file-manager
+    network_mode: bridge
     ports:
-      - 8002:8000
+      - :8000
     restart: always
     networks:
       - ffm

@@ -25,7 +25,8 @@ import (
 	crdbpgx "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
-
+    
+	"github.com/go-chi/cors"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
@@ -118,6 +119,14 @@ func Http(
 	router := router.NewRouter()
 	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
 
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://192.168.96.1"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, 
+	  }))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
