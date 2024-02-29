@@ -77,7 +77,7 @@ func main() {
 	defer ch.Close()
 	Http(conn, r, messageChannel, rabbitMQ, ch, mc)
 
-	err = http.ListenAndServe(":8000", r)
+	err = http.ListenAndServeTLS(":8000","/app/nginx/cert.pem", "/app//nginx/key.pem", r)
 	errors.FailOnErrLog(err, "http.ListenAndServe", "Failed server listen")
 }
 
