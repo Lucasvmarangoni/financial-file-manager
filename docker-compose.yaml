@@ -2,14 +2,124 @@ version: '3.5'
 
 services:
 
-  app:
-    container_name: financial-file-manager
+  app-0:
+    container_name: financial-file-manager-0
     build:
       context: .
       dockerfile: ./dockerfile
       target: financial-file-manager
     ports:
       - 8000:8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      - memcached-2
+    environment:
+      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+      - RABBITMQ_CONSUMER=${RABBITMQ_CONSUMER}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
+      - RABBITMQ_DLX=${RABBITMQ_DLX}
+      - RABBITMQ_ROUTINGKEY_USERCREATE=${RABBITMQ_ROUTINGKEY_USERCREATE}
+      - ROUTINGKEY_USERCREATERETURN=${ROUTINGKEY_USERCREATERETURN}
+      - GRPC_PORT=${GRPC_PORT}
+      - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
+      - LOCAL_FILE=${LOCAL_FILE}
+      - COCKROACHDB_PASSWORD=${COCKROACHDB_PASSWORD}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIREDIN=${JWT_EXPIREDIN}
+      - ADMIN_1=${ADMIN_1}
+      - READ_1=${READ_1}
+      - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
+      - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
+      - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
+
+  app-1:
+    container_name: financial-file-manager-1
+    build:
+      context: .
+      dockerfile: ./dockerfile
+      target: financial-file-manager
+    ports:
+      - 8001:8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      - memcached-2
+    environment:
+      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+      - RABBITMQ_CONSUMER=${RABBITMQ_CONSUMER}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
+      - RABBITMQ_DLX=${RABBITMQ_DLX}
+      - RABBITMQ_ROUTINGKEY_USERCREATE=${RABBITMQ_ROUTINGKEY_USERCREATE}
+      - ROUTINGKEY_USERCREATERETURN=${ROUTINGKEY_USERCREATERETURN}
+      - GRPC_PORT=${GRPC_PORT}
+      - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
+      - LOCAL_FILE=${LOCAL_FILE}
+      - COCKROACHDB_PASSWORD=${COCKROACHDB_PASSWORD}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIREDIN=${JWT_EXPIREDIN}
+      - ADMIN_1=${ADMIN_1}
+      - READ_1=${READ_1}
+      - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
+      - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
+      - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
+
+  app-2:
+    container_name: financial-file-manager-2
+    build:
+      context: .
+      dockerfile: ./dockerfile
+      target: financial-file-manager
+    ports:
+      - 8002:8000
     restart: always
     networks:
       - ffm
@@ -92,6 +202,24 @@ services:
     command:
       - memcached
       - -m 64
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/dockerfile
+      target: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - "app-0"
+      - "app-1"
+      - "app-2"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
 networks:
   ffm:
