@@ -79,7 +79,6 @@ func TestVerifyTOTP(t *testing.T) {
 
 		otpSecret, _ := security.Decrypt(user.OtpSecret, aes_key)
 
-		user.OtpVerified = true
 		user.OtpEnabled = true
 
 		token, _ := totp.GenerateCode(otpSecret, time.Now())
