@@ -79,7 +79,7 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	wg.Wait()
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 }
 
 // Authentication godoc
