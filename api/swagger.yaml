@@ -8,9 +8,30 @@ definitions:
       timestamp:
         type: string
     type: object
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.AuthenticationInput:
+    properties:
+      cpf:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput:
     properties:
       access_token:
+        type: string
+    type: object
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPInput:
+    properties:
+      token:
+        type: string
+    type: object
+  github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput:
+    properties:
+      base32:
+        type: string
+      otpauth_url:
         type: string
     type: object
   github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.UserInput:
@@ -40,6 +61,8 @@ definitions:
         type: string
       name:
         type: string
+      otp_enabled:
+        type: boolean
       update_log:
         items:
           $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_domain_entities.UpdateLog'
@@ -83,7 +106,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: Generate a user JWT
+      description: Generate a user JWT. Requires either a CPF or an Email and Password.
+      parameters:
+      - description: Authentication input. Requires either a CPF or an Email and Password.
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.AuthenticationInput'
       produces:
       - application/json
       responses:
@@ -92,10 +122,84 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput'
         "400":
-          description: Bad Request
+          description: Both email and CPF are required for authentication.
+          schema:
+            type: string
         "401":
-          description: Unauthorized
+          description: Unauthorized.
+          schema:
+            type: string
       summary: Generate a user JWT
+      tags:
+      - Authn
+  /totp/disable:
+    patch:
+      description: Disable 2FA.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: otp_disabled
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "500":
+          description: Error response
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Disable 2FA
+      tags:
+      - Authn
+  /totp/generate:
+    get:
+      description: Generate 2FA Secret.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput'
+        "500":
+          description: Error response
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Generate 2FA Secret
+      tags:
+      - Authn
+  /totp/verify/{is_validate}:
+    post:
+      description: Verify 2FA. The isValidate parameter should be "1" for the first
+        validation attempt. For subsequent attempts, any value or an empty string
+        is accepted.
+      parameters:
+      - description: Authentication input. Requires a token and isValidate.
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput'
+        "400":
+          description: Bad Request
+        "500":
+          description: Error response
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Verify 2FA
       tags:
       - Authn
   /user/del:

@@ -142,7 +142,16 @@ func (u *UserHandler) Authentication(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
+// Authentication godoc
+// @Summary      Generate 2FA Secret
+// @Description  Generate 2FA Secret.
+// @Tags         Authn
+// @Produce      json
+// @Success      200  {object}  dto.OTPOutput
+// @Failure 	 500 {object} map[string]string "Error response"
+// @Router       /totp/generate [get]
 func (u *UserHandler) TwoFactorAuthn(w http.ResponseWriter, r *http.Request) {
+	var response dto.OTPOutput
 
 	id, err := u.GetSub(w, r)
 	if err != nil {
@@ -167,11 +176,25 @@ func (u *UserHandler) TwoFactorAuthn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response = dto.OTPOutput{
+		Base32:     otpResponse.Base32,
+		OtpauthUrl: otpResponse.Otpauth_url,
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(otpResponse)
+	json.NewEncoder(w).Encode(response)
 }
 
+// Authentication godoc
+// @Summary      Verify 2FA
+// @Description Verify 2FA. The isValidate parameter should be "1" for the first validation attempt. For subsequent attempts, any value or an empty string is accepted.
+// @Tags         Authn
+// @Produce      json
+// @Param        request     body      dto.OTPInput  true  "Authentication input. Requires a token and isValidate."
+// @Success      200  {object}  dto.OTPOutput
+// @Failure 	 500 {object} map[string]string "Error response"
+// @Failure 	 400
+// @Router       /totp/verify/{is_validate} [post]
 func (u *UserHandler) TwoFactorVerify(w http.ResponseWriter, r *http.Request) {
 	var totpToken dto.OTPInput
 
@@ -195,6 +218,9 @@ func (u *UserHandler) TwoFactorVerify(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isValidate := chi.URLParam(r, "is_validate")
+	if isValidate == "" {
+		isValidate = "false"
+	}
 	err = u.userService.VerifyTOTP(id, totpToken.Token, isValidate)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -210,6 +236,14 @@ func (u *UserHandler) TwoFactorVerify(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]bool{"otp_verified": true})
 }
 
+// Authentication godoc
+// @Summary      Disable 2FA
+// @Description Disable 2FA.
+// @Tags         Authn
+// @Produce      json
+// @Success      200  {object}  map[string]bool "otp_disabled"
+// @Failure 	 500 {object} map[string]string "Error response"
+// @Router       /totp/disable [patch]
 func (u *UserHandler) TwoFactorDisable(w http.ResponseWriter, r *http.Request) {
 	id, err := u.GetSub(w, r)
 	if err != nil {

@@ -11,7 +11,14 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-func (u *UserService) GenerateTOTP(id string) (map[string]string, error) {
+type otpResponseOutput struct {
+	Base32      string
+	Otpauth_url string
+}
+
+func (u *UserService) GenerateTOTP(id string) (*otpResponseOutput, error) {
+
+	var otpResponse *otpResponseOutput
 
 	user, err := u.FindById(id, context.Background())
 	if err != nil {
@@ -37,9 +44,9 @@ func (u *UserService) GenerateTOTP(id string) (map[string]string, error) {
 		return nil, errors.ErrCtx(err, "u.Repository.UpdateOTP")
 	}
 
-	otpResponse := map[string]string{
-		"base32":      key.Secret(),
-		"otpauth_url": key.URL(),
+	otpResponse = &otpResponseOutput{
+		Base32:      key.Secret(),
+		Otpauth_url: key.URL(),
 	}
 	return otpResponse, nil
 }
@@ -55,14 +62,14 @@ func (u *UserService) VerifyTOTP(id, token, isValidate string) error {
 	otpSecret, err := security.Decrypt(user.OtpSecret, aes_key)
 	if err != nil {
 		return errors.ErrCtx(err, "security.Decrypt OtpSecret")
-	}	
+	}
 
 	valid := totp.Validate(token, otpSecret)
 	if !valid {
 		return errors.ErrCtx(fmt.Errorf("token is invalid"), "u.FindById")
 	}
 
-	if isValidate == "1" {		
+	if isValidate == "1" {
 		user.OtpEnabled = true
 	}
 

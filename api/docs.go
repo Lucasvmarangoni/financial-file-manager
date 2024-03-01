@@ -59,7 +59,7 @@ const docTemplate = `{
         },
         "/authn/jwt": {
             "post": {
-                "description": "Generate a user JWT",
+                "description": "Generate a user JWT. Requires either a CPF or an Email and Password.",
                 "consumes": [
                     "application/json"
                 ],
@@ -70,6 +70,17 @@ const docTemplate = `{
                     "Authn"
                 ],
                 "summary": "Generate a user JWT",
+                "parameters": [
+                    {
+                        "description": "Authentication input. Requires either a CPF or an Email and Password.",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.AuthenticationInput"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -78,10 +89,120 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request"
+                        "description": "Both email and CPF are required for authentication.",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/totp/disable": {
+            "patch": {
+                "description": "Disable 2FA.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authn"
+                ],
+                "summary": "Disable 2FA",
+                "responses": {
+                    "200": {
+                        "description": "otp_disabled",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error response",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/totp/generate": {
+            "get": {
+                "description": "Generate 2FA Secret.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authn"
+                ],
+                "summary": "Generate 2FA Secret",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput"
+                        }
+                    },
+                    "500": {
+                        "description": "Error response",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/totp/verify/{is_validate}": {
+            "post": {
+                "description": "Verify 2FA. The isValidate parameter should be \"1\" for the first validation attempt. For subsequent attempts, any value or an empty string is accepted.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authn"
+                ],
+                "summary": "Verify 2FA",
+                "parameters": [
+                    {
+                        "description": "Authentication input. Requires a token and isValidate.",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Error response",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -198,10 +319,43 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.AuthenticationInput": {
+            "type": "object",
+            "properties": {
+                "cpf": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.GetJWTOutput": {
             "type": "object",
             "properties": {
                 "access_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPInput": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Lucasvmarangoni_financial-file-manager_internal_modules_user_http_dto.OTPOutput": {
+            "type": "object",
+            "properties": {
+                "base32": {
+                    "type": "string"
+                },
+                "otpauth_url": {
                     "type": "string"
                 }
             }
@@ -246,6 +400,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "otp_enabled": {
+                    "type": "boolean"
                 },
                 "update_log": {
                     "type": "array",
