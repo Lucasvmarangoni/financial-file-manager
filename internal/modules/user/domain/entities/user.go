@@ -28,7 +28,6 @@ type User struct {
 	Password    string      `json:"password" valid:"required"`
 	OtpSecret   string      `json:"otp_secret" valid:"-"`
 	OtpAuthUrl  string      `json:"otp_auth_url" valid:"-"`
-	OtpVerified bool        `json:"otp_verified" valid:"-"`
 	OtpEnabled  bool        `json:"otp_enabled" valid:"-"`
 	CreatedAt   time.Time   `json:"created_at" valid:"required"`
 	UpdateLog   []UpdateLog `json:"update_log" valid:"-"`

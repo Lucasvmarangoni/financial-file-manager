@@ -62,8 +62,7 @@ func (u *UserService) VerifyTOTP(id, token, isValidate string) error {
 		return errors.ErrCtx(fmt.Errorf("token is invalid"), "u.FindById")
 	}
 
-	if isValidate == "1" {
-		user.OtpVerified = true
+	if isValidate == "1" {		
 		user.OtpEnabled = true
 	}
 
