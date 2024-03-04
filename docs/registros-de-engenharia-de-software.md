@@ -139,3 +139,20 @@ Dessa forma, é gerada uma hash SHA-256 para Email e CPF, que serão persistidas
 #### Desencriptação
 
 Optei por realizar a desencriptação no próprio backend, por razões de implementação no projeto. Assim, quando o cliente solicitar os dados, eles serão enviados já desencriptados.
+
+## Rate Limit
+
+A aplicação possui rate limit por IP e também por usuário, pelo ID.
+
+
+### Rate limite por IP
+
+O rate limit por IP é definido no nível da aplicação, usando middlewares do Go-chi, e também no nginx.
+
+Entretanto possuem objetivos são distintos. No nginx, é aplicado de maneira abrangente, em todas as rotas da aplicação, visando principalmente evitar sobrecargas nos servidores e ataques de DDoS. Para isso, utiliza as diretivas "burst" e "nodelay", definindo um limite por segundo.
+
+Por outro lado, na aplicação, o rate limit tem como principal objetivo a segurança na autenticação. Entretanto, também possui limites estabelecidos para o controle de sobrecarga do servidor, mas com valores específicos para cada rota, definidos por minutos.
+
+É importante destacar que o rate limit da aplicação é individual para cada instância da aplicação (container). Foram configuradas três instâncias, e o balanceador de carga distribui a carga entre elas. Assim, os valores de rate limit foram estabelecidos levando isso em consideração.
+
+Ex: o limite de taxa da rota authn/jwt é de 2 a cada 60 minutos. Portanto, 2 * 3 = 6 a cada 60 minutos.
