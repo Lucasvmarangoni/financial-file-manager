@@ -69,7 +69,7 @@ func (u *UserRouter) InitializeUserRoutes(r chi.Router) {
 		u.Router.Method("POST").Prefix(prefix).InitializeRoute(r, "/create", u.userHandler.Create)
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
-				5,
+				2,
 				60*time.Minute,
 				httprate.WithKeyFuncs(httprate.KeyByRealIP, httprate.KeyByEndpoint),
 				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
@@ -95,8 +95,8 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 	r.Route(prefix, func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
-				10,
-				60*time.Minute,
+				5,
+				30*time.Minute,
 				httprate.WithKeyFuncs(httprate.KeyByRealIP, httprate.KeyByEndpoint),
 				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
@@ -108,7 +108,7 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 
 		r.Group(func(r chi.Router) {
 			r.Use(httprate.Limit(
-				5,
+				1,
 				60*time.Minute,
 				httprate.WithKeyFuncs(httprate.KeyByRealIP, httprate.KeyByEndpoint),
 				httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
