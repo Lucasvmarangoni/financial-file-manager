@@ -45,7 +45,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação funcional</u>.</a>*
 
-⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Resgistros de engenharia de software</u>.</a>* 
+⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Registros de engenharia de software</u>.</a>* 
 
 ⇝ *<a href="./docs/bug-log.md"> <u>Bug Log</u>.</a>* Registro de bugs/problemas e suas soluções.
 
