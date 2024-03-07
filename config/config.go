@@ -17,7 +17,7 @@ type conf struct {
 	storage
 	jwt
 	authz
-	oauth
+	password
 }
 
 func GetEnv(key string) interface{} {

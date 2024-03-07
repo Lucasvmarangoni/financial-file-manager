@@ -113,6 +113,7 @@ func Http(
 		jwtExpiresIn = 50
 		log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
 	}
+	redisPassword := config.GetEnv("password_redis").(string)
 
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
 
@@ -132,12 +133,13 @@ func Http(
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
 
-	userRouter.InitializeUserRoutes(r)
+	userRouter.InitializeUserRoutes(r)		
 
 	r.Route("/", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 		r.Use(mw.Authorizer())
+		r.Use(middlewares.NewUserRateLimit("redis:6379", redisPassword).Handler())
 		userRouter.UserRoutes(r)
 
 	})

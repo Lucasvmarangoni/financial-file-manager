@@ -51,12 +51,6 @@ type security struct {
 	aes_key string `mapstructure:"SECURITY_AES_KEY"`
 }
 
-type oauth struct {
-	gothic_key string `mapstructure:"OAUTH_GOTHIC_kEY"`
-	google
-}
-
-type google struct {
-	client_id string `mapstructure:"OAUTH_GOOGLE_CLIENT_ID"`
-	secret    string `mapstructure:"OAUTH_GOOGLE_SECRET"`
+type password struct {
+	redis    string `mapstructure:"PASSWORD_REDIS"`
 }
