@@ -47,6 +47,7 @@ services:
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+      - PASSWORD_REDIS=${PASSWORD_REDIS}
     volumes:
       - ./api:/app/api
       - ./cmd:/app/cmd
@@ -103,6 +104,7 @@ services:
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+      - PASSWORD_REDIS=${PASSWORD_REDIS}
     volumes:
       - ./api:/app/api
       - ./cmd:/app/cmd
@@ -159,6 +161,7 @@ services:
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
+      - PASSWORD_REDIS=${PASSWORD_REDIS}
     volumes:
       - ./api:/app/api
       - ./cmd:/app/cmd
@@ -205,6 +208,18 @@ services:
     command:
       - memcached
       - -m 64
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"    
+    networks:
+      - ffm
+    restart: always
+    environment:
+      - PASSWORD_REDIS=${PASSWORD_REDIS}
+    command: ["redis-server", "--requirepass", "${PASSWORD_REDIS}"]
+
 
   nginx:
     build:
