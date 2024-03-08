@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"time"
@@ -18,8 +17,7 @@ func SetupRedisRateLimiter(addr, password string) *redisrate.Limiter {
 		Addr:     addr,
 		Password: password,
 		DB:       0,
-	})
-	log.Print(password)
+	})	
 	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
 		errors.PanicErr(err, "SetupRedisRateLimiter")
