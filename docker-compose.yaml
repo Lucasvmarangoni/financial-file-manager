@@ -6,7 +6,7 @@ services:
     container_name: financial-file-manager-0
     build:
       context: .
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
       target: financial-file-manager
     network_mode: bridge
     ports:
@@ -63,7 +63,7 @@ services:
     container_name: financial-file-manager-1
     build:
       context: .
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
       target: financial-file-manager
     network_mode: bridge
     ports:
@@ -120,7 +120,7 @@ services:
     container_name: financial-file-manager-2
     build:
       context: .
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
       target: financial-file-manager
     network_mode: bridge
     ports:
@@ -224,7 +224,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: ./nginx/dockerfile
+      dockerfile: ./nginx/Dockerfile
       target: nginx
     ports:
       - "80:80"
