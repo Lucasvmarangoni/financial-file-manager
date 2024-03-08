@@ -4,6 +4,8 @@
 
 ## Entidades e agregadores
 
+    Ainda será realizada a normalização desses dados; estou aprimorando meu conhecimento em modelagem de dados para aplicá-la com maior maestria assim que chegar nessa etapa do projeto.
+
 ![Alt text](<./img/file-aggregates.png>)
 
 **Legenda**
