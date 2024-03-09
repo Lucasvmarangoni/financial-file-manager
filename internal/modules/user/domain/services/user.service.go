@@ -61,7 +61,7 @@ func (u *UserService) deleteFromMemcache(id string) error {
 }
 
 func (u *UserService) encrypt(user *entities.User) error {
-	aes_key := config.GetEnv("security_aes_key").(string)
+	aes_key := config.GetEnvString("security", "aes_key")
 	var err error
 
 	user.LastName, err = security.Encrypt(user.LastName, aes_key)

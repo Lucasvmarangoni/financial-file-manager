@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
-	"github.com/Lucasvmarangoni/logella/err"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
@@ -29,16 +29,16 @@ type RabbitMQ struct {
 func NewRabbitMQ() *RabbitMQ {
 
 	rabbitMQArgs := amqp.Table{}
-	rabbitMQArgs["x-dead-letter-exchange"] = config.GetEnv("rabbitMQ_dlx").(string)
+	rabbitMQArgs["x-dead-letter-exchange"] = config.GetEnvString("rabbitMQ", "dlx")
 
 	rabbitMQ := RabbitMQ{
-		User:              config.GetEnv("rabbitMQ_user").(string),
-		Password:          config.GetEnv("rabbitMQ_pass").(string),
-		Host:              config.GetEnv("rabbitMQ_host").(string),
-		Port:              config.GetEnv("rabbitMQ_port").(string),
-		Vhost:             config.GetEnv("rabbitMQ_vhost").(string),
-		ConsumerQueueName: config.GetEnv("rabbitMQ_queue").(string),
-		ConsumerName:      config.GetEnv("rabbitMQ_consumer").(string),
+		User:              config.GetEnvString("rabbitMQ", "user"),
+		Password:          config.GetEnvString("rabbitMQ", "pass"),
+		Host:              config.GetEnvString("rabbitMQ", "host"),
+		Port:              config.GetEnvString("rabbitMQ", "port"),
+		Vhost:             config.GetEnvString("rabbitMQ", "vhost"),
+		ConsumerQueueName: config.GetEnvString("rabbitMQ", "queue"),
+		ConsumerName:      config.GetEnvString("rabbitMQ", "consumer"),
 		AutoAck:           true,
 		Args:              rabbitMQArgs,
 	}
@@ -70,7 +70,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 	err = r.Channel.QueueBind(
 		q.Name,
 		routingKey,
-		config.GetEnv("rabbitMQ_exchange").(string),
+		config.GetEnvString("rabbitMQ", "exchange"),
 		false,
 		nil,
 	)
@@ -98,7 +98,7 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 			log.Info().Str("context", "RabbitMQ").Msg("RabbitMQ channel closed gracefully")
 		}
 		close(messageChannel)
-	}()	
+	}()
 }
 
 func (r *RabbitMQ) Publish(message string, contentType string, exchange string, routingKey string) error {

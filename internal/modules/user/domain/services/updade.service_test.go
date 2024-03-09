@@ -22,7 +22,7 @@ func TestUserService_Update(t *testing.T) {
 	userService, mockRepo, _, mockMemcached := prepare(t)
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
-	aes_key := config.GetEnv("security_aes_key").(string)
+	aes_key := config.GetEnvString("security", "aes_key")
 
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
 
@@ -65,7 +65,7 @@ func TestUserService_Update(t *testing.T) {
 			Do(func(user *entities.User, _ context.Context) {
 				assert.Equal(t, updated_user.ID, user.ID)
 				assert.Equal(t, updated_user.Name, user.Name)
-				
+
 				assert.NotEmpty(t, user.LastName)
 				assert.NotEmpty(t, user.CPF)
 				assert.NotEmpty(t, user.Email)

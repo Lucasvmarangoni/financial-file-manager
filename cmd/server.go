@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"time"
 
@@ -25,13 +24,12 @@ import (
 	crdbpgx "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 
 	// "github.com/Lucasvmarangoni/financial-file-manager/internal/rpc"
-    
-	"github.com/go-chi/cors"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5"
-	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -40,11 +38,11 @@ var db database.Config
 func init() {
 	logger.Config()
 
-	db.DbName = config.GetEnv("database_name").(string)
-	db.Port = config.GetEnv("database_port").(string)
-	db.User = config.GetEnv("database_user").(string)
-	db.Password = config.GetEnv("database_password").(string)
-	db.SSLMode = config.GetEnv("database_ssl_mode").(string)
+	db.DbName = config.GetEnvString("database", "name")
+	db.Port = config.GetEnvString("database", "port")
+	db.User = config.GetEnvString("database", "user")
+	db.Password = config.GetEnvString("database", "password")
+	db.SSLMode = config.GetEnvString("database", "ssl_mode")
 }
 
 // @title           Financial File Manager
@@ -78,12 +76,12 @@ func main() {
 	defer ch.Close()
 	Http(conn, r, messageChannel, rabbitMQ, ch, mc)
 
-	err = http.ListenAndServeTLS(":8000","/app/nginx/cert.pem", "/app//nginx/key.pem", r)
+	err = http.ListenAndServeTLS(":8000", "/app/nginx/cert.pem", "/app//nginx/key.pem", r)
 	errors.FailOnErrLog(err, "http.ListenAndServe", "Failed server listen")
 }
 
 func Database(ctx context.Context) (*pgx.Conn, error) {
-	conn, err := db.Connect(ctx)	
+	conn, err := db.Connect(ctx)
 	if err != nil {
 		return nil, errors.ErrCtx(err, "db.Connect")
 	}
@@ -107,13 +105,13 @@ func Http(
 	mc *cache.Memcached[*entities.User],
 ) {
 	tokenAuth := config.GetTokenAuth()
-	jwtExpiresInStr := config.GetEnv("jwt_expiredIn").(string)
-	jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
-	if err != nil {
-		jwtExpiresIn = 50
-		log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
-	}
-	redisPassword := config.GetEnv("password_redis").(string)
+	jwtExpiresIn := config.GetEnvInt("jwt", "expiredIn")
+	// jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
+	// if err != nil {
+	// 	jwtExpiresIn = 50
+	// 	log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
+	// }
+	redisPassword := config.GetEnvString("password", "redis")
 
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
 
@@ -126,14 +124,14 @@ func Http(
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
-		MaxAge:           300, 
-	  }))
+		MaxAge:           300,
+	}))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
 
-	userRouter.InitializeUserRoutes(r)		
+	userRouter.InitializeUserRoutes(r)
 
 	r.Route("/", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))

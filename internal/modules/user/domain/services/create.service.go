@@ -25,7 +25,7 @@ func (u *UserService) Create(name, lastName, cpf, email, password string) error 
 		errors.ErrCtx(err, "json.Marshal")
 	}
 
-	err = u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnv("rabbitMQ_exchange").(string), config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
+	err = u.RabbitMQ.Publish(string(userJSON), "application/json", config.GetEnvString("rabbitMQ", "exchange"), config.GetEnvString("rabbitMQ", "routingkey_userCreate"))
 	if err != nil {
 		return errors.ErrCtx(err, "RabbitMQ.Publish")
 	}

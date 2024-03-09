@@ -4,7 +4,7 @@ type database struct {
 	name     string `mapstructure:"DATABASE_NAME"`
 	user     string `mapstructure:"DATABASE_USER"`
 	password string `mapstructure:"DATABASE_PASSWORD"`
-	sslMode  string `mapstructure:"DATABASE_SSL_MODE"`
+	ssl_mode  string `mapstructure:"DATABASE_SSL_MODE"`
 	port     string `mapstructure:"DATABASE_PORT"`
 }
 
@@ -41,10 +41,10 @@ type storage struct {
 }
 
 type authz struct {
-	max_admin string `mapstructure:"AUTHZ_MAX_ADMIN"`
-	max_read  string `mapstructure:"AUTHZ_MAX_READ"`
-	admin_1   string `mapstructure:"ADMIN_1"`
-	read_1    string `mapstructure:"READ_1"`
+	max_admin int `mapstructure:"AUTHZ_MAX_ADMIN"`
+	max_read  int `mapstructure:"AUTHZ_MAX_READ"`
+	admin_1   string `mapstructure:"AUTHZ_ADMIN_1"`
+	read_1    string `mapstructure:"AUTHZ_READ_1"`
 }
 
 type security struct {

@@ -96,7 +96,7 @@ func (u *UserService) getCache(key string) *entities.User {
 }
 
 func (u *UserService) decrypt(user *entities.User) error {
-	aes_key := config.GetEnv("security_aes_key").(string)
+	aes_key := config.GetEnvString("security", "aes_key")
 	var err error
 
 	user.LastName, err = security.Decrypt(user.LastName, aes_key)
@@ -110,6 +110,6 @@ func (u *UserService) decrypt(user *entities.User) error {
 	user.CPF, err = security.Decrypt(user.CPF, aes_key)
 	if err != nil {
 		return errors.ErrCtx(err, "security.Decrypt CPF")
-	}	
+	}
 	return nil
 }

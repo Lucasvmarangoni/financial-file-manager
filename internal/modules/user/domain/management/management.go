@@ -3,11 +3,12 @@ package management
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/infra/repositories"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
-	"github.com/Lucasvmarangoni/logella/err"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
@@ -26,7 +27,7 @@ func NewManagement(repository *repositories.UserRepositoryDb, rabbitMQ *queue.Ra
 
 func (m *UserManagement) CreateManagement(messageChannel chan amqp.Delivery, returnChannel chan error) {
 
-	m.RabbitMQ.Consume(messageChannel, config.GetEnv("rabbitMQ_routingkey_userCreate").(string))
+	m.RabbitMQ.Consume(messageChannel, config.GetEnvString("rabbitMQ", "routingkey_userCreate"))
 
 	for message := range messageChannel {
 		var user entities.User

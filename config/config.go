@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/Lucasvmarangoni/logella/err"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 	"github.com/spf13/viper"
 )
@@ -20,13 +20,26 @@ type conf struct {
 	password
 }
 
-func GetEnv(key string) interface{} {
+func GetEnvString(strucT, field string) string {
+	key := fmt.Sprintf("%s_%s", strucT, field)
 	errors.PanicBool(viper.IsSet(key), fmt.Sprintf("The key %s is not defined", key))
-	return viper.Get(key)
+	return viper.GetString(key)
+}
+
+func GetEnvInt(strucT, field string) int {
+	key := fmt.Sprintf("%s_%s", strucT, field)
+	errors.PanicBool(viper.IsSet(key), fmt.Sprintf("The key %s is not defined", key))
+	return viper.GetInt(key)
+}
+
+func GetEnvBool(strucT, field string) bool {
+	key := fmt.Sprintf("%s_%s", strucT, field)
+	errors.PanicBool(viper.IsSet(key), fmt.Sprintf("The key %s is not defined", key))
+	return viper.GetBool(key)
 }
 
 func GetTokenAuth() *jwtauth.JWTAuth {
-	tokenAuth := jwtauth.New("HS256", []byte(GetEnv("jwt_secret").(string)), nil)
+	tokenAuth := jwtauth.New("HS256", []byte(GetEnvString("jwt", "secret")), nil)
 	return tokenAuth
 }
 
