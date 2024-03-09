@@ -25,12 +25,12 @@ func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 
 	_, err := r.tx.Exec(ctx, `CREATE TABLE IF NOT EXISTS users (
 			id UUID PRIMARY KEY,
-			name TEXT,
-			last_name TEXT,
+			name VARCHAR(10),
+			last_name VARCHAR(50),
 			cpf TEXT,
-			hash_cpf TEXT UNIQUE,			
+			hash_cpf CHAR(64) UNIQUE,			
 			email TEXT,	
-			hash_email TEXT UNIQUE,		
+			hash_email CHAR(64) UNIQUE,		
 			password TEXT,		
 			otp_secret TEXT,
 			otp_auth_url TEXT,			
