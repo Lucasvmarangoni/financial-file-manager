@@ -24,18 +24,18 @@ func NewTableRepository(db pgx.Tx) *TableRepositoryDb {
 func (r *TableRepositoryDb) initUserTable(ctx context.Context) error {
 
 	_, err := r.tx.Exec(ctx, `CREATE TABLE IF NOT EXISTS users (
-			id UUID PRIMARY KEY,
-			name VARCHAR(10),
-			last_name VARCHAR(50),
-			cpf TEXT,
-			hash_cpf CHAR(64) UNIQUE,			
-			email TEXT,	
-			hash_email CHAR(64) UNIQUE,		
-			password TEXT,		
+			id UUID PRIMARY KEY NOT NULL,
+			name VARCHAR(10) NOT NULL,
+			last_name VARCHAR(50) NOT NULL,
+			cpf TEXT NOT NULL,
+			hash_cpf CHAR(64) UNIQUE NOT NULL,			
+			email TEXT NOT NULL,	
+			hash_email CHAR(64) UNIQUE NOT NULL,		
+			password TEXT NOT NULL,		
 			otp_secret TEXT,
 			otp_auth_url TEXT,			
 			otp_enabled BOOL,
-			created_at TIMESTAMP,
+			created_at TIMESTAMP NOT NULL,
 			update_log JSONB
 		)`)
 	if err != nil {
