@@ -106,11 +106,6 @@ func Http(
 ) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresIn := config.GetEnvInt("jwt", "expiredIn")
-	// jwtExpiresIn, err := strconv.Atoi(jwtExpiresInStr)
-	// if err != nil {
-	// 	jwtExpiresIn = 50
-	// 	log.Warn().Err(errors.ErrCtx(err, "strconv.Atoi")).Str("Source", "server.go").Str("Func", "Rest").Msg("Failed to convert jwtExpiresIn into int. Default value has been applied.")
-	// }
 	redisPassword := config.GetEnvString("password", "redis")
 
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
@@ -118,6 +113,7 @@ func Http(
 	router := router.NewRouter()
 	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
 
+	r.Use(middlewares.WAF())
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://192.168.96.1"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
