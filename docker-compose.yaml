@@ -42,8 +42,8 @@ services:
       - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIREDIN=${JWT_EXPIREDIN}
-      - ADMIN_1=${ADMIN_1}
-      - READ_1=${READ_1}
+      - AUTHZ_ADMIN_1=${AUTHZ_ADMIN_1}
+      - AUTHZ_READ_1=${AUTHZ_READ_1}
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
@@ -99,8 +99,8 @@ services:
       - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIREDIN=${JWT_EXPIREDIN}
-      - ADMIN_1=${ADMIN_1}
-      - READ_1=${READ_1}
+      - AUTHZ_ADMIN_1=${AUTHZ_ADMIN_1}
+      - AUTHZ_READ_1=${AUTHZ_READ_1}
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
@@ -156,8 +156,8 @@ services:
       - DATABASE_SSL_MODE=${DATABASE_SSL_MODE}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIREDIN=${JWT_EXPIREDIN}
-      - ADMIN_1=${ADMIN_1}
-      - READ_1=${READ_1}
+      - AUTHZ_ADMIN_1=${AUTHZ_ADMIN_1}
+      - AUTHZ_READ_1=${AUTHZ_READ_1}
       - AUTHZ_MAX_ADMIN=${AUTHZ_MAX_ADMIN}
       - AUTHZ_MAX_READ=${AUTHZ_MAX_READ}
       - SECURITY_AES_KEY=${SECURITY_AES_KEY}
@@ -219,7 +219,6 @@ services:
     environment:
       - PASSWORD_REDIS=${PASSWORD_REDIS}
     command: ["redis-server", "--requirepass", "${PASSWORD_REDIS}"]
-
 
   nginx:
     build:
