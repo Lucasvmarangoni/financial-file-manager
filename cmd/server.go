@@ -10,14 +10,17 @@ import (
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
-	logger "github.com/Lucasvmarangoni/financial-file-manager/pkg/log"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/metric"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/queue"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	middlewares "github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
+	// observability_routers "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/observability/routers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
-	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
+	user_routers "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
 	errors "github.com/Lucasvmarangoni/logella/err"
+	logger "github.com/Lucasvmarangoni/logella/config/log"
+
 	"github.com/Lucasvmarangoni/logella/router"
 	"github.com/streadway/amqp"
 
@@ -36,7 +39,7 @@ import (
 var db database.Config
 
 func init() {
-	logger.Config()
+	logger.ConfigDefault()
 
 	db.DbName = config.GetEnvString("database", "name")
 	db.Port = config.GetEnvString("database", "port")
@@ -111,8 +114,13 @@ func Http(
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
 
 	router := router.NewRouter()
-	userRouter := routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
+	userRouter := user_routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
+	// ObservabilityRouter := observability_routers.NewObservability(router)
 
+	// metricService := Metric()
+
+	// r.Use(middlewares.Metrics(metricService))
+	// ObservabilityRouter.ObservabilityRoutes(r)
 	r.Use(middlewares.WAF())
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://192.168.96.1"},
@@ -152,3 +160,21 @@ func Cache[T cache.Entity]() *cache.Memcached[T] {
 	mc := cache.NewMemcached[T]("localhost:11211", "localhost:11212")
 	return mc
 }
+
+func Metric() *metric.Service {
+	metricService, err := metric.NewPrometheusService()
+	if err != nil {
+		errors.FailOnErrLog(err, "metric.NewPrometheusService", "")
+	}
+	appMetric := metric.NewCLI("search")
+	appMetric.Started()
+	
+	appMetric.Finished()
+	err = metricService.SaveCLI(appMetric)
+	if err != nil {
+		errors.FailOnErrLog(err, "metricService.SaveCLI", "")
+	}
+
+	return metricService
+}
+
