@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/Lucasvmarangoni/financial-file-manager/api"
 	"github.com/Lucasvmarangoni/financial-file-manager/config"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/cache"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/metric"
@@ -15,11 +16,12 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/infra/database"
 	middlewares "github.com/Lucasvmarangoni/financial-file-manager/internal/middleware"
+
 	// observability_routers "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/observability/routers"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	user_routers "github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/http/routers"
-	errors "github.com/Lucasvmarangoni/logella/err"
 	logger "github.com/Lucasvmarangoni/logella/config/log"
+	errors "github.com/Lucasvmarangoni/logella/err"
 
 	"github.com/Lucasvmarangoni/logella/router"
 	"github.com/streadway/amqp"
@@ -117,19 +119,20 @@ func Http(
 	userRouter := user_routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
 	// ObservabilityRouter := observability_routers.NewObservability(router)
 
-	// metricService := Metric()
+	metricService := Metric()
 
-	// r.Use(middlewares.Metrics(metricService))
-	// ObservabilityRouter.ObservabilityRoutes(r)
-	r.Use(middlewares.WAF())
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://192.168.96.1"},
+		AllowedOrigins:   []string{"https://localhost"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+	r.Use(middlewares.Metrics(metricService))
+	
+	r.Use(middlewares.WAF())
+	
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
@@ -146,6 +149,9 @@ func Http(
 
 	})
 	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
+	router.Method("POST").Prefix("/").InitializeRoute(r, "/metric", func (w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler().ServeHTTP(w, r)
+	})
 }
 
 func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {

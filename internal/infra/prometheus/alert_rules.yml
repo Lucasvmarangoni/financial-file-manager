@@ -1,0 +1,11 @@
+groups:
+- name: example
+ rules:
+ - alert: HighRequestDuration
+    expr: prometheus_http_request_duration_seconds_count{handler="/api/v1/query_range"} > 100
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+      summary: "High request duration on /api/v1/query_range"
+      description: "{{ $labels.instance }} has a high request duration on /api/v1/query_range ({{ $value }}s)"
