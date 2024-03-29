@@ -15,6 +15,8 @@
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
 
 ## <u>EM DESENVOLVIMENTO</u>
+    O projeto enfrentou uma redução no investimento de tempo devido à falta de reconhecimento dos esforços dedicados.
+
 Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>
 
 <br>
