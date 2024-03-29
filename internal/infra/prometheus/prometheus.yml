@@ -11,7 +11,7 @@ rule_files:
   - "alert_rules.yml"
 
 scrape_configs:
-  - job_name: FinancialFileManager
+  - job_name: exporter
     scrape_interval: 10s
     static_configs:
     - targets: ['nginx-prometheus-exporter:9113']

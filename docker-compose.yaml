@@ -212,13 +212,13 @@ services:
   redis:
     image: "redis:latest"
     ports:
-      - "6379:6379"    
+      - "6379:6379"
     networks:
       - ffm
     restart: always
     environment:
       - PASSWORD_REDIS=${PASSWORD_REDIS}
-    command: ["redis-server", "--requirepass", "${PASSWORD_REDIS}"]
+    command: [ "redis-server", "--requirepass", "${PASSWORD_REDIS}" ]
 
   nginx:
     build:
@@ -240,24 +240,24 @@ services:
 
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
-    command: -nginx.scrape-uri=http://nginx:8080/metrics
+    command:
+      - -nginx.scrape-uri=http://nginx/exporter
     ports:
       - "9113:9113"
     networks:
       - ffm
-      
+
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000
-    container_name: bookmark-grafana
+      - 3000:3000    
     networks:
-    - ffm
+      - ffm
     network_mode: "bridge"
     depends_on:
       - prometheus
       - prometheus-pushgateway
-        
+
   prometheus:
     image: prom/prometheus
     ports:
@@ -266,8 +266,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./internal/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./internal/infra/prometheus/alert_rules.yml:/etc/prometheus/prometheus.yml:ro
-    container_name: bookmark-prometheus
+      - ./internal/infra/prometheus/alert_rules.yml:/etc/prometheus/prometheus.yml:ro    
     networks:
       - ffm
     network_mode: "bridge"
@@ -277,19 +276,15 @@ services:
       - "app-2"
 
   prometheus-pushgateway:
-    image: prom/pushgateway
-    container_name: bookmark-pushgateway
+    image: prom/pushgateway    
     expose:
       - 9091
     ports:
       - 9091:9091
     networks:
       - ffm
-    depends_on:
-      - "app-0"
-      - "app-1"
-      - "app-2"
-      - "prometheus"      
+    depends_on:     
+      - "prometheus"
 
 networks:
   ffm:

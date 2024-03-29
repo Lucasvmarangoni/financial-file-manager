@@ -1,29 +1,34 @@
 package metric
 
 import (
+	"sync"
 
-
-    "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
-var pathCounters = make(map[string]*prometheus.CounterVec)
+var (
+	pathCountersMutex sync.Mutex
+	pathCounters      = make(map[string]*prometheus.CounterVec)
+)
 
 func Count(path string) *prometheus.CounterVec {
-    if counter, exists := pathCounters[path]; exists {
-        return counter
-    }
+	pathCountersMutex.Lock()
+	defer pathCountersMutex.Unlock()
 
-    requestCounter := prometheus.NewCounterVec(
-        prometheus.CounterOpts{
-            Name: "authn_create_requests_total",
-            Help: "Total number of requests to " + path,
-        },
-        []string{"method"},
-    )
+	if counter, exists := pathCounters[path]; exists {
+		return counter
+	}
 
-    prometheus.MustRegister(requestCounter)
+	requestCounter := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "go_authn_requests_total",
+			Help: "Total number of requests to " + path,
+		},
+		[]string{"path"},
+	)
 
-    pathCounters[path] = requestCounter
+	prometheus.MustRegister(requestCounter)
+	pathCounters[path] = requestCounter
 
-    return requestCounter
+	return requestCounter
 }

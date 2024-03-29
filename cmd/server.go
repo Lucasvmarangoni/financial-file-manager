@@ -129,12 +129,11 @@ func Http(
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
-	r.Use(middlewares.Metrics(metricService))
-	
+
 	r.Use(middlewares.WAF())
-	
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(middlewares.Metrics(metricService))
 	r.Use(middleware.WithValue("jwt", config.GetTokenAuth()))
 	r.Use(middleware.WithValue("JwtExpiresIn", jwtExpiresIn))
 
@@ -148,10 +147,15 @@ func Http(
 		userRouter.UserRoutes(r)
 
 	})
-	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
-	router.Method("POST").Prefix("/").InitializeRoute(r, "/metric", func (w http.ResponseWriter, r *http.Request) {
+	userRouter.Router.Method("GET").Prefix("").InitializeRoute(r, "/docs/*", httpSwagger.Handler(httpSwagger.URL("https://localhost:443/docs/doc.json")))
+
+	router.Method("POST").Prefix("").InitializeRoute(r, "/metric", func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler().ServeHTTP(w, r)
 	})
+	router.Method("GET").Prefix("").InitializeRoute(r, "/exporter", func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler().ServeHTTP(w, r)
+	})
+
 }
 
 func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
@@ -174,13 +178,13 @@ func Metric() *metric.Service {
 	}
 	appMetric := metric.NewCLI("search")
 	appMetric.Started()
-	
+
 	appMetric.Finished()
 	err = metricService.SaveCLI(appMetric)
 	if err != nil {
 		errors.FailOnErrLog(err, "metricService.SaveCLI", "")
 	}
+	
 
 	return metricService
 }
-
