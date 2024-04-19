@@ -132,9 +132,9 @@ JSON EXAMPLE:
 
 Além da password, que é armazenada como hash do bcrypt, LastName, Email e CPF também serão armazenados criptogrados. Contudo, esses ultimos serão criptografados com AES. 
 
-Email e CPF são utilizandos para login (authn), e consequentemente para busca do usuário no banco de dados. 
+Email e CPF são utilizados para login (authn), e consequentemente para busca do usuário no banco de dados. 
 
-Estando esses dados criptografados se torna impossível a busca. Para solucionar esse problema decidi acrescentar mais dois cambos ao dados de usuário, EmailHash e CPFHash. 
+Estando esses dados criptografados se torna impossível a busca. Para solucionar esse problema decidi acrescentar mais dois campos ao dados de usuário, EmailHash e CPFHash. 
 
 Dessa forma, é gerada uma hash SHA-256 para Email e CPF, que serão persistidas no banco de dados para permitir consultar os dados de usuário. 
 
