@@ -16,7 +16,7 @@
 
 ## <u>EM DESENVOLVIMENTO</u>
     
-  O projeto enfrentou uma redução no investimento de tempo devido à falta de reconhecimento dos esforços dedicados.
+  O projeto esta em uma breve pausa devido a falta de tempo, entretanto eu não parei de desenvolve-lo.
 
 Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>
 
@@ -44,7 +44,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Resiliência**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
 
-⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação funcional</u>.</a>*
+⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação de requisitos</u>.</a>*
 
 ⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Registros de engenharia de software</u>.</a>* 
 
