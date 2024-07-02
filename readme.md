@@ -15,22 +15,18 @@
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
 
 ## <u>EM DESENVOLVIMENTO</u>
-    
-  O projeto esta em uma breve pausa devido a falta de tempo, entretanto eu não parei de desenvolve-lo.
+   
 
-Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>
-
-<br>
-
-**Projeto de portfólio tem como objetivos aprendizado, prática e demonstração das minhas habilidades como desenvolvedor. Portanto, as escolhas no projeto são com esses objetivos.**
+**Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>**
 
 </div>
 
-<br>
-
+**Nota:** O projeto teve uma pausa no desenvolvimento, que durou de 29 Mar 2024 até 02 Jul 2024.
 
 
 ## PROJETO
+
+**Projeto de portfólio, tem como objetivos aprendizado, prática e demonstração das minhas habilidades como desenvolvedor. Portanto, as escolhas no projeto são, principalmente, com esses objetivos.**
 
 Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamento e controle de documentos financeiros. Ele oferece aos clientes e administradores de instituições financeiras a capacidade de fazer upload, gerenciar e recuperar documentos financeiros de forma eficiente.
 
@@ -44,7 +40,7 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 - **Resiliência**: O sistema deve ser projetado para minimizar o impacto de falhas e garantir que as operações possam ser retomadas o mais rápido possível após uma falha.
 
-⇝ *<a href="./docs/doc-funcional.md"> <u>Documentação de requisitos</u>.</a>*
+⇝ *<a href="./docs/doc-de-requisitos.md"> <u>Documentação de requisitos</u>.</a>*
 
 ⇝ *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Registros de engenharia de software</u>.</a>* 
 
