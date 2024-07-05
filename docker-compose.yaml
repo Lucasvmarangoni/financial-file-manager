@@ -1,12 +1,15 @@
 services:
 
-  app-0:
-    container_name: financial-file-manager-0
+  app-image:
+    container_name: image
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: financial-file-manager
-    # network_mode: bridge
+      target: financial-file-manager   
+
+  app-0:
+    container_name: financial-file-manager-0
+    image: financial-file-manager-app-image
     ports:
       - :8000
     restart: always
@@ -59,11 +62,7 @@ services:
 
   app-1:
     container_name: financial-file-manager-1
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      target: financial-file-manager
-    # network_mode: bridge
+    image: financial-file-manager-app-image
     ports:
       - :8000
     restart: always
@@ -116,15 +115,11 @@ services:
 
   app-2:
     container_name: financial-file-manager-2
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      target: financial-file-manager
-    # network_mode: bridge
+    image: financial-file-manager-app-image
     ports:
       - :8000
     restart: always
-    networks:
+    networks:     
       - ffm
     depends_on:
       - rabbit
@@ -251,7 +246,6 @@ services:
       - 3000:3000    
     networks:
       - ffm
-    # network_mode: "bridge"
     depends_on:
       - prometheus
       - prometheus-pushgateway
@@ -267,7 +261,6 @@ services:
       - ./internal/infra/prometheus/alert_rules.yml:/etc/prometheus/prometheus.yml:ro    
     networks:
       - ffm
-    # network_mode: "bridge"
     depends_on:
       - "app-0"
       - "app-1"
@@ -286,4 +279,5 @@ services:
 
 networks:
   ffm:
-    driver: bridge
+    # driver: bridge
+
