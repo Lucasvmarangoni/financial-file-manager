@@ -5,7 +5,6 @@ import (
 	go_err "errors"
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
@@ -29,7 +28,6 @@ import (
 // @Router       /authn/create [post]
 func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user dto.UserInput
-	var wg sync.WaitGroup
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -64,21 +62,16 @@ func (u *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		err := u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status":  "BadRequest",
-				"message": fmt.Sprintf("%v", err),
-			})
-			log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
-			return
-		}
-	}()
-	wg.Wait()
+	err = u.userService.Create(user.Name, user.LastName, user.CPF, user.Email, user.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "BadRequest",
+			"message": fmt.Sprintf("%v", err),
+		})
+		log.Error().Stack().Err(errors.ErrStack()).Msg("Error create user")
+		return
+	}
 	w.WriteHeader(http.StatusCreated)
 }
 

@@ -76,10 +76,12 @@ func main() {
 
 	r := chi.NewRouter()
 	mc := Cache[*entities.User]()
+	mc_1 := Cache[bool]()
 
 	messageChannel, rabbitMQ, ch := Queues()
 	defer ch.Close()
-	Http(conn, r, messageChannel, rabbitMQ, ch, mc)
+
+	Http(conn, r, messageChannel, rabbitMQ, ch, mc, mc_1 )
 
 	err = http.ListenAndServeTLS(":8000", "/app/nginx/cert.pem", "/app//nginx/key.pem", r)
 	errors.FailOnErrLog(err, "http.ListenAndServe", "Failed server listen")
@@ -108,6 +110,7 @@ func Http(
 	rabbitMQ *queue.RabbitMQ,
 	ch *amqp.Channel,
 	mc *cache.Memcached[*entities.User],
+	mc_1 *cache.Memcached[bool],
 ) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresIn := config.GetEnvInt("jwt", "expiredIn")
@@ -116,7 +119,7 @@ func Http(
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
 
 	router := router.NewRouter()
-	userRouter := user_routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc)
+	userRouter := user_routers.NewUserRouter(conn, router, rabbitMQ, messageChannel, mc, mc_1)
 	// ObservabilityRouter := observability_routers.NewObservability(router)
 
 	metricService := Metric()
@@ -167,7 +170,7 @@ func Queues() (chan amqp.Delivery, *queue.RabbitMQ, *amqp.Channel) {
 }
 
 func Cache[T cache.Entity]() *cache.Memcached[T] {
-	mc := cache.NewMemcached[T]("localhost:11211", "localhost:11212")
+	mc := cache.NewMemcached[T]("memcached-1:11211")
 	return mc
 }
 
@@ -184,7 +187,6 @@ func Metric() *metric.Service {
 	if err != nil {
 		errors.FailOnErrLog(err, "metricService.SaveCLI", "")
 	}
-	
 
 	return metricService
 }

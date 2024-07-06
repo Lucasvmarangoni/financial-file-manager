@@ -20,6 +20,8 @@ type UserRepository interface {
 	UpdateOTP(user *entities.User, ctx context.Context) error
 	UpdateOTPVerify(user *entities.User, ctx context.Context) error
 	Delete(id string, ctx context.Context) error
+	CheckIfUserAlreadyExists(hashEmail, hashCPF string, ctx context.Context) (bool, error)
+	GetAllEmailAndCPF() (*entities.UserEmailAndCPF, error)
 }
 
 type UserRepositoryDb struct {
@@ -54,7 +56,6 @@ func (r *UserRepositoryDb) Insert(user *entities.User, ctx context.Context) erro
 			user.CreatedAt,
 			user.UpdateLog,
 		)
-
 		if err != nil {
 			return errors.ErrCtx(err, "r.tx.Exec")
 		}
@@ -72,7 +73,7 @@ func (r *UserRepositoryDb) FindById(id pkg_entities.ID, ctx context.Context) (*e
 	user := &entities.User{}
 	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		row = tx.QueryRow(ctx, sql, id)
-		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.OtpSecret, &user.OtpAuthUrl,&user.OtpEnabled, &user.CreatedAt, &user.UpdateLog)
+		err := row.Scan(&user.ID, &user.Name, &user.LastName, &user.CPF, &user.HashCPF, &user.Email, &user.HashEmail, &user.Password, &user.OtpSecret, &user.OtpAuthUrl, &user.OtpEnabled, &user.CreatedAt, &user.UpdateLog)
 		if err != nil {
 			return errors.ErrCtx(err, "row.Scan")
 		}
@@ -126,10 +127,10 @@ func (r *UserRepositoryDb) Update(user *entities.User, ctx context.Context) erro
 		_, err := tx.Exec(ctx, sql,
 			user.ID,
 			user.Name,
-			user.LastName,			
+			user.LastName,
 			user.Email,
 			user.HashEmail,
-			user.Password,			
+			user.Password,
 			user.UpdateLog,
 		)
 		if err != nil {
@@ -193,4 +194,65 @@ func (r *UserRepositoryDb) Delete(id string, ctx context.Context) error {
 		return errors.ErrCtx(err, "crdbpgx.ExecuteTx")
 	}
 	return nil
+}
+
+func (r *UserRepositoryDb) CheckIfUserAlreadyExists(hashEmail, hashCPF string, ctx context.Context) (bool, error) {
+	sql := `SELECT COUNT(*) FROM users WHERE hash_email = $1 OR hash_cpf = $2`
+	var count int
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		row := tx.QueryRow(ctx, sql, hashEmail, hashCPF)
+		err := row.Scan(&count)
+		if err != nil {
+			return errors.ErrCtx(err, "row.Scan")
+		}
+		return nil
+	})
+	if err != nil {
+		return false, errors.ErrCtx(err, "crdbpgx.ExecuteTx")
+	}
+	return count > 0, nil
+}
+
+
+func (r *UserRepositoryDb) GetAllEmailAndCPF() (*entities.UserEmailAndCPF, error) {
+	ctx := context.Background()
+
+	sql := `SELECT hash_cpf, hash_email FROM users;`
+	var rows pgx.Rows
+	emails := []string{}
+	cpfs := []string{}
+
+	err := crdbpgx.ExecuteTx(ctx, r.conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		var err error
+		rows, err = tx.Query(ctx, sql)
+		if err != nil {
+			return errors.ErrCtx(err, "tx.Query")
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var cpf, email string
+			err := rows.Scan(&cpf, &email)
+			if err != nil {
+				return errors.ErrCtx(err, "rows.Scan")
+			}
+			cpfs = append(cpfs, cpf)
+			emails = append(emails, email)
+		}
+
+		if err := rows.Err(); err != nil {
+			return errors.ErrCtx(err, "rows.Err")
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, errors.ErrCtx(err, "crdbpgx.ExecuteTx")
+	}
+
+	return &entities.UserEmailAndCPF{
+		Emails: emails,
+		CPFs:   cpfs,
+	}, nil
 }

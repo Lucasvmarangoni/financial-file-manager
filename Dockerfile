@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod tidy
+RUN go mod tidy 
 
 FROM alpine:latest
 

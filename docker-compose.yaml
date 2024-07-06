@@ -20,7 +20,7 @@ services:
       - memcached-1
       - memcached-2
     environment:
-      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - CONCURRENCY_CREATE_MANAGEMENT=${CONCURRENCY_CREATE_MANAGEMENT}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
@@ -73,7 +73,7 @@ services:
       - memcached-1
       - memcached-2
     environment:
-      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - CONCURRENCY_CREATE_MANAGEMENT=${CONCURRENCY_CREATE_MANAGEMENT}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
@@ -126,7 +126,7 @@ services:
       - memcached-1
       - memcached-2
     environment:
-      - CONCURRENCY_WORKERS=${CONCURRENCY_WORKERS}
+      - CONCURRENCY_CREATE_MANAGEMENT=${CONCURRENCY_CREATE_MANAGEMENT}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
@@ -191,16 +191,16 @@ services:
       - memcached
       - -m 64
 
-  memcached-2:
-    image: memcached:latest
-    ports:
-      - "11212:11211"
-    restart: always
-    networks:
-      - ffm
-    command:
-      - memcached
-      - -m 64
+  # memcached-2:
+  #   image: memcached:latest
+  #   ports:
+  #     - "11212:11211"
+  #   restart: always
+  #   networks:
+  #     - ffm
+  #   command:
+  #     - memcached
+  #     - -m 64
 
   redis:
     image: "redis:latest"

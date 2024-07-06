@@ -18,6 +18,7 @@ type conf struct {
 	jwt
 	authz
 	password
+	concurrency
 }
 
 func GetEnvString(strucT, field string) string {

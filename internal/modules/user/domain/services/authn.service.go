@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/security"
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
 )
@@ -16,10 +17,10 @@ func (u *UserService) Authn(unique, password string, jwt *jwtauth.JWTAuth, jwtEx
 
 	if strings.Contains(unique, "@") {
 		operation = "FindByEmail"
-		user, err = u.FindByEmail(entities.Hash(unique), nil)
+		user, err = u.FindByEmail(security.HmacHash(unique, u.hmacKey), nil)
 	} else {
 		operation = "FindByCpf"
-		user, err = u.FindByCpf(entities.Hash(unique), nil)
+		user, err = u.FindByCpf(security.HmacHash(unique, u.hmacKey), nil)
 	}
 	if err != nil {
 		return "", errors.ErrCtx(err, operation)

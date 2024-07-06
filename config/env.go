@@ -4,7 +4,7 @@ type database struct {
 	name     string `mapstructure:"DATABASE_NAME"`
 	user     string `mapstructure:"DATABASE_USER"`
 	password string `mapstructure:"DATABASE_PASSWORD"`
-	ssl_mode  string `mapstructure:"DATABASE_SSL_MODE"`
+	ssl_mode string `mapstructure:"DATABASE_SSL_MODE"`
 	port     string `mapstructure:"DATABASE_PORT"`
 }
 
@@ -23,7 +23,12 @@ type rabbitMQ struct {
 	queue    string `mapstructure:"RABBITMQ_QUEUE"`
 	exchange string `mapstructure:"RABBITMQ_EXCHANGE"`
 	dlx      string `mapstructure:"RABBITMQ_DLX"`
+	queues
 	routingKey
+}
+
+type queues struct {
+	queue string `mapstructure:"RABBITMQ_QUEUE_USER"`
 }
 
 type routingKey struct {
@@ -41,16 +46,22 @@ type storage struct {
 }
 
 type authz struct {
-	max_admin int `mapstructure:"AUTHZ_MAX_ADMIN"`
-	max_read  int `mapstructure:"AUTHZ_MAX_READ"`
+	max_admin int    `mapstructure:"AUTHZ_MAX_ADMIN"`
+	max_read  int    `mapstructure:"AUTHZ_MAX_READ"`
 	admin_1   string `mapstructure:"AUTHZ_ADMIN_1"`
 	read_1    string `mapstructure:"AUTHZ_READ_1"`
 }
 
 type security struct {
-	aes_key string `mapstructure:"SECURITY_AES_KEY"`
+	aes_key  string `mapstructure:"SECURITY_AES_KEY"`
+	hmac_key string `mapstructure:"SECURITY_HMAC_KEY"`
 }
 
 type password struct {
-	redis    string `mapstructure:"PASSWORD_REDIS"`
+	redis string `mapstructure:"PASSWORD_REDIS"`
 }
+
+type concurrency struct {
+	create_management string `mapstructure:"CONCURRENCY_CREATE_MANAGEMENT"`
+}
+

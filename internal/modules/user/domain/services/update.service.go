@@ -21,6 +21,11 @@ func (u *UserService) Update(id, name, lastName, email, password, newPassword st
 		return errors.ErrCtx(err, "user.ValidateHashPassword")
 	}
 
+	err = u.deleteCache(id, user.HashEmail, user.HashCPF)
+	if err != nil {
+		return errors.ErrCtx(err, "u.deleteCache")
+	}
+
 	u.updateField(&name, user.Name, name, "Name", &newUpdateValues)
 	u.updateField(&lastName, user.LastName, lastName, "LastName", &newUpdateValues)
 	u.updateField(&email, user.Email, email, "Email", &newUpdateValues)
@@ -48,6 +53,9 @@ func (u *UserService) Update(id, name, lastName, email, password, newPassword st
 	if err != nil {
 		return errors.ErrCtx(err, "Repository.Update")
 	}
+
+	u.Memcached_1.SetUnique(user.HashCPF)
+	u.Memcached_1.SetUnique(user.HashEmail)
 	u.setToMemcacheIfNotNil(user)
 	return nil
 }

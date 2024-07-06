@@ -10,7 +10,7 @@ import (
 )
 
 type Entity interface {
-	*e_user.User | *e_files.Contract | *e_files.Extract | *e_files.Invoice
+	*e_user.User | bool | *e_files.Contract | *e_files.Extract | *e_files.Invoice
 }
 
 type Mencacher[T Entity] interface {
@@ -18,6 +18,7 @@ type Mencacher[T Entity] interface {
 	Get(key string) (*memcache.Item, error)
 	GetMulti(key []string) (map[string]*memcache.Item, error)
 	Delete(key string) error
+	SetUnique(key string) error
 }
 
 type Memcached[T Entity] struct {
@@ -47,6 +48,19 @@ func (m *Memcached[T]) Set(key string, i T) error {
 	return nil
 }
 
+func (m *Memcached[bool]) SetUnique(key string) error {
+
+	item := &memcache.Item{
+		Key: key,
+	}
+
+	err := m.Client.Set(item)
+	if err != nil {
+		return errors.ErrCtx(err, "Error setting cache")
+	}
+	return nil
+}
+
 func (m *Memcached[T]) Get(key string) (*memcache.Item, error) {
 	item, err := m.Client.Get(key)
 
@@ -54,6 +68,15 @@ func (m *Memcached[T]) Get(key string) (*memcache.Item, error) {
 		return nil, errors.ErrCtx(err, "Error get cache")
 	}
 	return item, nil
+}
+
+func (m *Memcached[T]) GetUnique(key string) error {
+	_, err := m.Client.Get(key)
+
+	if err != nil {
+		return errors.ErrCtx(err, "Error get cache")
+	}
+	return nil
 }
 
 func (m *Memcached[T]) GetMulti(key []string) (map[string]*memcache.Item, error) {
@@ -68,7 +91,7 @@ func (m *Memcached[T]) GetMulti(key []string) (map[string]*memcache.Item, error)
 func (m *Memcached[T]) Delete(key string) error {
 	err := m.Client.Delete(key)
 	if err != nil {
-		return errors.ErrCtx(err, "Error to set cache")
+		return errors.ErrCtx(err, "Error to delete cache")
 	}
 	return nil
 }

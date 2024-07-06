@@ -43,13 +43,11 @@ func Decrypt(ciphertext string, key string) (string, error) {
 	if err != nil {
 		return "", errors.ErrCtx(err, "hex.DecodeString")
 	}
-
+	
 	data, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
 		return "", errors.ErrCtx(err, "base64.StdEncoding.DecodeString")
 	}
-
-	data, _ = base64.StdEncoding.DecodeString(ciphertext)
 
 	block, err := aes.NewCipher(keyDecoded)
 	if err != nil {

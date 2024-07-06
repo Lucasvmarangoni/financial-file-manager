@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/entities"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/management"
 	"github.com/Lucasvmarangoni/financial-file-manager/internal/modules/user/domain/services"
@@ -27,6 +28,7 @@ type UserRouter struct {
 	RabbitMQ       *queue.RabbitMQ
 	MessageChannel chan amqp.Delivery
 	Memcached      *cache.Memcached[*entities.User]
+	Memcached_1    *cache.Memcached[bool]
 }
 
 func NewUserRouter(
@@ -35,6 +37,7 @@ func NewUserRouter(
 	rabbitMQ *queue.RabbitMQ,
 	messageChannel chan amqp.Delivery,
 	mencached *cache.Memcached[*entities.User],
+	memcached_1 *cache.Memcached[bool],
 ) *UserRouter {
 	u := &UserRouter{
 		Conn:           conn,
@@ -42,24 +45,22 @@ func NewUserRouter(
 		RabbitMQ:       rabbitMQ,
 		MessageChannel: messageChannel,
 		Memcached:      mencached,
+		Memcached_1:    memcached_1,
 	}
 	u.userHandler = u.init()
 	return u
 }
 
 func (u *UserRouter) init() *handlers.UserHandler {
-	returnChannel := make(chan error)
-
 	userRepository := repositories.NewUserRepository(u.Conn)
-	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel, returnChannel, u.Memcached)
+	userService := services.NewUserService(userRepository, u.RabbitMQ, u.MessageChannel, u.Memcached, *u.Memcached_1)
+	userManagement := management.NewManagement(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
 
-	userManagement := management.NewManagement(userRepository, u.RabbitMQ)
-
-	go func() {
-		userManagement.CreateManagement(u.MessageChannel, returnChannel)
-	}()
-
+	u.RabbitMQ.Consume(u.MessageChannel, config.GetEnvString("rabbitMQ", "routingkey_userCreate"))
+	for i := 0; i < config.GetEnvInt("concurrency", "create_management"); i++ {
+		go userManagement.CreateManagement(u.MessageChannel)
+	}
 	return userHandler
 }
 
@@ -86,7 +87,7 @@ func (u *UserRouter) UserRoutes(r chi.Router) {
 
 	prefix := "/totp"
 	r.Route(prefix, func(r chi.Router) {
-		u.Router.Method("GET").Prefix(prefix).InitializeRoute(r, "/generate", u.userHandler.TwoFactorAuthn)		
+		u.Router.Method("GET").Prefix(prefix).InitializeRoute(r, "/generate", u.userHandler.TwoFactorAuthn)
 		u.Router.Method("POST").Prefix(prefix).InitializeRoute(r, "/verify/{is_validate}", u.userHandler.TwoFactorVerify)
 		u.Router.Method("PATCH").Prefix(prefix).InitializeRoute(r, "/disable", u.userHandler.TwoFactorDisable)
 	})

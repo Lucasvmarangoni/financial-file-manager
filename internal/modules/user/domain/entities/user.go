@@ -1,11 +1,11 @@
 package entities
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"time"
 
+	"github.com/Lucasvmarangoni/financial-file-manager/config"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
+	"github.com/Lucasvmarangoni/financial-file-manager/pkg/security"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/validate"
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
@@ -18,19 +18,19 @@ type UpdateLog struct {
 }
 
 type User struct {
-	ID          entities.ID `json:"id" valid:"required"`
-	Name        string      `json:"name" valid:"length(3|10),matches(^[a-zA-Z ]+$)"`
-	LastName    string      `json:"last_name" valid:"length(3|50),matches(^[a-zA-Z ]+$)"`
-	CPF         string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
-	HashCPF     string      `json:"hash_cpf" valid:"-"`
-	Email       string      `json:"email" valid:"email"`
-	HashEmail   string      `json:"hash_email" valid:"-"`
-	Password    string      `json:"password" valid:"required"`
-	OtpSecret   string      `json:"otp_secret" valid:"-"`
-	OtpAuthUrl  string      `json:"otp_auth_url" valid:"-"`
-	OtpEnabled  bool        `json:"otp_enabled" valid:"-"`
-	CreatedAt   time.Time   `json:"created_at" valid:"required"`
-	UpdateLog   []UpdateLog `json:"update_log" valid:"-"`
+	ID         entities.ID `json:"id" valid:"required"`
+	Name       string      `json:"name" valid:"length(3|10),matches(^[a-zA-Z ]+$)"`
+	LastName   string      `json:"last_name" valid:"length(3|50),matches(^[a-zA-Z ]+$)"`
+	CPF        string      `json:"cpf" valid:"matches(^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$)"`
+	HashCPF    string      `json:"hash_cpf" valid:"-"`
+	Email      string      `json:"email" valid:"email"`
+	HashEmail  string      `json:"hash_email" valid:"-"`
+	Password   string      `json:"password" valid:"required"`
+	OtpSecret  string      `json:"otp_secret" valid:"-"`
+	OtpAuthUrl string      `json:"otp_auth_url" valid:"-"`
+	OtpEnabled bool        `json:"otp_enabled" valid:"-"`
+	CreatedAt  time.Time   `json:"created_at" valid:"required"`
+	UpdateLog  []UpdateLog `json:"update_log" valid:"-"`
 }
 
 func (u *User) Validate() error {
@@ -49,26 +49,22 @@ func (u *User) ValidateHashPassword(password string) error {
 	return nil
 }
 
-func Hash(str string) string {
-	hash := sha256.Sum256([]byte(str))
-	hashString := hex.EncodeToString(hash[:])
-	return hashString
-}
-
 func NewUser(name, lastName, cpf, email, password string) (*User, error) {
 
-	hashPassword, err := PreparePassword(password)
+	hashPassword, err := bcryptHash(password)
 	if err != nil {
 		return nil, errors.ErrCtx(err, "u.PreparePassword")
 	}
+
+	hmac_key := []byte(config.GetEnvString("security", "hmac_key"))
 
 	user := User{
 		Name:      name,
 		LastName:  lastName,
 		CPF:       cpf,
-		HashCPF:   Hash(cpf),
+		HashCPF:   security.HmacHash(cpf, hmac_key),
 		Email:     email,
-		HashEmail: Hash(email),
+		HashEmail: security.HmacHash(email, hmac_key),
 		Password:  hashPassword,
 	}
 	user.prepare()
@@ -98,7 +94,7 @@ func (u *User) Update(oldValues []UpdateLog, name, lastName, email, password str
 	u.LastName = lastName
 	u.Email = email
 
-	hashPassword, err := PreparePassword(password)
+	hashPassword, err := bcryptHash(password)
 	if err != nil {
 		return errors.ErrCtx(err, "u.PreparePassword")
 	}
@@ -106,13 +102,13 @@ func (u *User) Update(oldValues []UpdateLog, name, lastName, email, password str
 	return nil
 }
 
-func PreparePassword(password string) (string, error) {
-	err := validate.ValidatePassword(password)
+func bcryptHash(input string) (string, error) {
+	err := validate.ValidatePassword(input)
 	if err != nil {
 		return "", errors.ErrCtx(err, "validatePassword")
 	}
 
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(input), bcrypt.DefaultCost)
 	if err != nil {
 		return "", errors.ErrCtx(err, "bcrypt.GenerateFromPassword")
 	}
