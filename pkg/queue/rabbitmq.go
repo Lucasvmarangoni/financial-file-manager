@@ -10,7 +10,7 @@ import (
 type IRabbitMQ interface {
 	Connect() *amqp.Channel
 	Consume(messageChannel chan amqp.Delivery, routingKey string)
-	Publish(message string, contentType string, exchange string, routingKey string) error
+	Publish(message string, contentType string, exchange string, queue string, routingKey string) error
 }
 
 type RabbitMQ struct {
@@ -101,15 +101,18 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, routingKey string)
 	}()
 }
 
-func (r *RabbitMQ) Publish(message string, contentType string, exchange string, routingKey string) error {
+func (r *RabbitMQ) Publish(message string, contentType string, exchange string, queue string, routingKey string) error {
+
 	err := r.Channel.Publish(
 		exchange,
 		routingKey,
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: contentType,
-			Body:        []byte(message),
+			ContentType:   contentType,
+			Body:          []byte(message),
+			// CorrelationId: correlationID,
+			ReplyTo:       queue,
 		},
 	)
 	if err != nil {
