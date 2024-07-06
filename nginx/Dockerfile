@@ -1,6 +1,7 @@
 FROM nginx:latest as nginx
 
 EXPOSE 80
+EXPOSE 443
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/cert.pem /etc/nginx/cert.pem
