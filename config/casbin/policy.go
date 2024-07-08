@@ -31,15 +31,15 @@ func (p *Policy) SetPolicy() {
 		{"READ", "/user/*", "GET"},
 	}
 
-	maxAdmins := config.GetEnvInt("authz", "max_admin")
-	maxReads := config.GetEnvInt("authz", "max_read")
+	maxAdmins := config.ReadSecretInt(config.GetEnvString("authz", "max_admin"))
+	maxReads := config.ReadSecretInt(config.GetEnvString("authz", "max_read"))
 
 	for i := 0; i < maxAdmins; i++ {
-		p.Admin = append(p.Admin, config.GetEnvString("authz", "admin_"+strconv.Itoa(i+1)))
+		p.Admin = append(p.Admin, config.ReadSecretString(config.GetEnvString("authz", "admin_"+strconv.Itoa(i+1))))
 	}
 
 	for i := 0; i < maxReads; i++ {
-		p.Read = append(p.Read, config.GetEnvString("authz", "read_"+strconv.Itoa(i+1)))
+		p.Read = append(p.Read, config.ReadSecretString(config.GetEnvString("authz", "read_"+strconv.Itoa(i+1))))
 	}
 
 	p.Groups = [][]string{}

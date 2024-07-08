@@ -38,7 +38,7 @@ func NewUserService(
 		MessageChannel: messageChannel,
 		Memcached:      memcached,
 		Memcached_1:    memcached_1,
-		aesKey:         config.GetEnvString("security", "aes_key"),
+		aesKey:         config.ReadSecretString(config.GetEnvString("security", "aes_key")),
 		hmacKey:        []byte(config.GetEnvString("security", "hmac_key")),
 	}
 	return UserService

@@ -1,19 +1,32 @@
-FROM golang:1.22.0-alpine as financial-file-manager
+FROM golang:1.22.0-alpine AS build
+
+RUN apk add --no-cache git
 
 WORKDIR /app
 
-COPY . .
+COPY api/ ./api
+COPY cmd/ ./cmd
+COPY config/ ./config
+COPY internal/ ./internal
+COPY pkg/ ./pkg
+COPY test/ ./test
+COPY go.mod .
+COPY go.sum .
 
 RUN go mod tidy 
 
-FROM alpine:latest
+WORKDIR /app/cmd
+
+RUN go build -o /server 
+
+FROM gcr.io/distroless/base-debian12:latest
 
 WORKDIR /app
 
-RUN go build -o financial-file-manager
-
-COPY --from=builder /app/financial-file-manager /app/financial-file-manager
+COPY --from=build /server /server
 
 EXPOSE  8000
 
-CMD ["./financial-file-manager"]
+USER nonroot:nonroot
+
+ENTRYPOINT ["/server"]

@@ -42,7 +42,7 @@ type grpc struct {
 
 type storage struct {
 	localPath string `mapstructure:"LOCAL_STORAGE_PATH"`
-	localFile string `mapstructure:"LOCAL_FILE"`
+	localFile string `mapstructure:"LOCAL"`
 }
 
 type authz struct {

@@ -46,7 +46,7 @@ func init() {
 	db.DbName = config.GetEnvString("database", "name")
 	db.Port = config.GetEnvString("database", "port")
 	db.User = config.GetEnvString("database", "user")
-	db.Password = config.GetEnvString("database", "password")
+	db.Password = config.ReadSecretString(config.GetEnvString("database", "password"))
 	db.SSLMode = config.GetEnvString("database", "ssl_mode")
 }
 
@@ -70,6 +70,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	
 	conn, err := Database(ctx)
 	errors.FailOnErrLog(err, "Database(ctx)", "Failed exec Database")
 	// rpc.Connect()
@@ -81,9 +82,11 @@ func main() {
 	messageChannel, rabbitMQ, ch := Queues()
 	defer ch.Close()
 
-	Http(conn, r, messageChannel, rabbitMQ, ch, mc, mc_1 )
+	Http(conn, r, messageChannel, rabbitMQ, ch, mc, mc_1)
 
-	err = http.ListenAndServeTLS(":8000", "/app/nginx/cert.pem", "/app//nginx/key.pem", r)
+	certFile, keyFile := "/run/secrets/cert.pem", "/run/secrets/key.pem"
+
+	err = http.ListenAndServeTLS(":8000", certFile, keyFile, r)
 	errors.FailOnErrLog(err, "http.ListenAndServe", "Failed server listen")
 }
 
@@ -114,7 +117,7 @@ func Http(
 ) {
 	tokenAuth := config.GetTokenAuth()
 	jwtExpiresIn := config.GetEnvInt("jwt", "expiredIn")
-	redisPassword := config.GetEnvString("password", "redis")
+	redisPassword := config.ReadSecretString(config.GetEnvString("password", "redis"))
 
 	mw := middlewares.NewAuthorization("config/casbin/policy.csv", "config/casbin/model.conf")
 

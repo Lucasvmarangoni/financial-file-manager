@@ -2,8 +2,12 @@ package config
 
 import (
 	"fmt"
-	"path/filepath"
-	"runtime"
+	"os"
+	"strconv"
+	"strings"
+
+	// "path/filepath"
+	// "runtime"
 
 	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/go-chi/jwtauth"
@@ -40,27 +44,35 @@ func GetEnvBool(strucT, field string) bool {
 }
 
 func GetTokenAuth() *jwtauth.JWTAuth {
-	tokenAuth := jwtauth.New("HS256", []byte(GetEnvString("jwt", "secret")), nil)
+	tokenAuth := jwtauth.New("HS256", []byte(ReadSecretString(GetEnvString("jwt", "secret"))), nil)
 	return tokenAuth
 }
 
 func init() {
-
-	cfg := &conf{}
-
-	_, filename, _, ok := runtime.Caller(0)
-	errors.PanicBool(ok, "It was not possible to obtain the path to the config.go file")
-
-	dir := filepath.Dir(filename)
-	envPath := filepath.Join(dir, "../.env")
-
-	viper.SetConfigName("app_config")
-	viper.SetConfigType("env")
-	viper.SetConfigFile(envPath)
 	viper.AutomaticEnv()
-	err := viper.ReadInConfig()
-	errors.PanicErr(err, "viper.ReadInConfig")
-
-	err = viper.Unmarshal(&cfg)
+	cfg := &conf{}
+	err := viper.Unmarshal(&cfg)
 	errors.PanicErr(err, "viper.Unmarshal")
+}
+
+func ReadSecretString(secretPath string) (string) {
+	content, err := os.ReadFile(secretPath)
+	if err != nil {
+		errors.PanicErr(err, "os.ReadFile")
+	}
+	secret := strings.TrimSpace(string(content))
+	return secret
+}
+
+func ReadSecretInt(secretPath string) (int) {
+	content, err := os.ReadFile(secretPath)
+	if err != nil {
+		errors.PanicErr(err, "os.ReadFile")
+	}
+	secretStr := strings.TrimSpace(string(content))
+	secretInt, err := strconv.Atoi(secretStr)
+	if err != nil {
+		errors.PanicErr(err, "strconv.Atoi")
+	}
+	return secretInt
 }

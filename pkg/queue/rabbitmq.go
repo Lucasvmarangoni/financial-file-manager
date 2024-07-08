@@ -33,7 +33,7 @@ func NewRabbitMQ() *RabbitMQ {
 
 	rabbitMQ := RabbitMQ{
 		User:              config.GetEnvString("rabbitMQ", "user"),
-		Password:          config.GetEnvString("rabbitMQ", "pass"),
+		Password:          config.ReadSecretString(config.GetEnvString("rabbitMQ", "pass")),
 		Host:              config.GetEnvString("rabbitMQ", "host"),
 		Port:              config.GetEnvString("rabbitMQ", "port"),
 		Vhost:             config.GetEnvString("rabbitMQ", "vhost"),
@@ -109,10 +109,10 @@ func (r *RabbitMQ) Publish(message string, contentType string, exchange string, 
 		false,
 		false,
 		amqp.Publishing{
-			ContentType:   contentType,
-			Body:          []byte(message),
+			ContentType: contentType,
+			Body:        []byte(message),
 			// CorrelationId: correlationID,
-			ReplyTo:       queue,
+			ReplyTo: queue,
 		},
 	)
 	if err != nil {

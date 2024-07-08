@@ -1,0 +1,354 @@
+services:
+
+  app-0:
+    container_name: ffm-0
+    image: app-img
+    ports:
+      - :8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      # - memcached-2
+    environment:
+      CONCURRENCY_CREATE_MANAGEMENT: 3
+      RABBITMQ_USER: rabbitmq
+      RABBITMQ_HOST: rabbit
+      RABBITMQ_PORT: 5672
+      RABBITMQ_VHOST: /
+      RABBITMQ_CONSUMER: app-name
+      RABBITMQ_QUEUE: user
+      RABBITMQ_EXCHANGE: amq.direct
+      RABBITMQ_DLX: dlx
+      RABBITMQ_QUEUE_USER: user-queue
+      RABBITMQ_ROUTINGKEY_USERCREATE: user
+      RABBITMQ_ROUTINGKEY_USERCREATERETURN: user_return
+      GRPC_PORT: 9000
+      DATABASE_USER: lucas
+      DATABASE_PORT: 26257
+      DATABASE_NAME: defaultdb
+      DATABASE_SSL_MODE: verify-full
+      JWT_EXPIREDIN: 99999
+      LOCAL_STORAGE_PATH: /tmp
+      LOCAL: ../security/
+      JWT_SECRET: /run/secrets/jwt_secret
+      AUTHZ_ADMIN_1: /run/secrets/authz_admin_1
+      AUTHZ_READ_1: /run/secrets/authz_read_1
+      AUTHZ_MAX_ADMIN: /run/secrets/authz_max_admin
+      AUTHZ_MAX_READ: /run/secrets/authz_max_read
+      RABBITMQ_PASS: /run/secrets/rabbitmq_pass
+      DATABASE_PASSWORD: /run/secrets/database_password
+      SECURITY_AES_KEY: /run/secrets/security_aes_key
+      SECURITY_HMAC_KEY: /run/secrets/security_hmac_key
+      PASSWORD_REDIS: /run/secrets/password_redis
+    secrets:
+      - rabbitmq_pass
+      - database_password
+      - jwt_secret
+      - authz_admin_1
+      - authz_read_1
+      - authz_max_admin
+      - authz_max_read
+      - security_aes_key
+      - password_redis
+      - cert.pem
+      - key.pem
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
+
+  app-1:
+    container_name: ffm-1
+    image: app-img
+    ports:
+      - :8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      # - memcached-2
+    environment:
+      CONCURRENCY_CREATE_MANAGEMENT: 3
+      RABBITMQ_USER: rabbitmq
+      RABBITMQ_HOST: rabbit
+      RABBITMQ_PORT: 5672
+      RABBITMQ_VHOST: /
+      RABBITMQ_CONSUMER: app-name
+      RABBITMQ_QUEUE: user
+      RABBITMQ_EXCHANGE: amq.direct
+      RABBITMQ_DLX: dlx
+      RABBITMQ_QUEUE_USER: user-queue
+      RABBITMQ_ROUTINGKEY_USERCREATE: user
+      RABBITMQ_ROUTINGKEY_USERCREATERETURN: user_return
+      GRPC_PORT: 9000
+      DATABASE_USER: lucas
+      DATABASE_PORT: 26257
+      DATABASE_NAME: defaultdb
+      DATABASE_SSL_MODE: verify-full
+      JWT_EXPIREDIN: 99999
+      LOCAL_STORAGE_PATH: /tmp
+      LOCAL: ../security/
+      JWT_SECRET: /run/secrets/jwt_secret
+      AUTHZ_ADMIN_1: /run/secrets/authz_admin_1
+      AUTHZ_READ_1: /run/secrets/authz_read_1
+      AUTHZ_MAX_ADMIN: /run/secrets/authz_max_admin
+      AUTHZ_MAX_READ: /run/secrets/authz_max_read
+      RABBITMQ_PASS: /run/secrets/rabbitmq_pass
+      DATABASE_PASSWORD: /run/secrets/database_password
+      SECURITY_AES_KEY: /run/secrets/security_aes_key
+      SECURITY_HMAC_KEY: /run/secrets/security_hmac_key
+      PASSWORD_REDIS: /run/secrets/password_redis
+    secrets:
+      - rabbitmq_pass
+      - database_password
+      - jwt_secret
+      - authz_admin_1
+      - authz_read_1
+      - authz_max_admin
+      - authz_max_read
+      - security_aes_key
+      - password_redis
+      - cert.pem
+      - key.pem
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
+
+  app-2:
+    container_name: ffm-2
+    image: app-img
+    ports:
+      - :8000
+    restart: always
+    networks:
+      - ffm
+    depends_on:
+      - rabbit
+      - memcached-1
+      # - memcached-2
+    environment:
+      CONCURRENCY_CREATE_MANAGEMENT: 3
+      RABBITMQ_USER: rabbitmq
+      RABBITMQ_HOST: rabbit
+      RABBITMQ_PORT: 5672
+      RABBITMQ_VHOST: /
+      RABBITMQ_CONSUMER: app-name
+      RABBITMQ_QUEUE: user
+      RABBITMQ_EXCHANGE: amq.direct
+      RABBITMQ_DLX: dlx
+      RABBITMQ_QUEUE_USER: user-queue
+      RABBITMQ_ROUTINGKEY_USERCREATE: user
+      RABBITMQ_ROUTINGKEY_USERCREATERETURN: user_return
+      GRPC_PORT: 9000
+      DATABASE_USER: lucas
+      DATABASE_PORT: 26257
+      DATABASE_NAME: defaultdb
+      DATABASE_SSL_MODE: verify-full
+      JWT_EXPIREDIN: 99999
+      LOCAL_STORAGE_PATH: /tmp
+      LOCAL: ../security/
+      JWT_SECRET: /run/secrets/jwt_secret
+      AUTHZ_ADMIN_1: /run/secrets/authz_admin_1
+      AUTHZ_READ_1: /run/secrets/authz_read_1
+      AUTHZ_MAX_ADMIN: /run/secrets/authz_max_admin
+      AUTHZ_MAX_READ: /run/secrets/authz_max_read
+      RABBITMQ_PASS: /run/secrets/rabbitmq_pass
+      DATABASE_PASSWORD: /run/secrets/database_password
+      SECURITY_AES_KEY: /run/secrets/security_aes_key
+      SECURITY_HMAC_KEY: /run/secrets/security_hmac_key
+      PASSWORD_REDIS: /run/secrets/password_redis
+    secrets:
+      - rabbitmq_pass
+      - database_password
+      - jwt_secret
+      - authz_admin_1
+      - authz_read_1
+      - authz_max_admin
+      - authz_max_read
+      - security_aes_key
+      - password_redis
+      - cert.pem
+      - key.pem
+    volumes:
+      - ./api:/app/api
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./config:/app/config
+      - ./pkg:/app/pkg
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+    command: go run cmd/server.go
+
+  rabbit:
+    image: "rabbitmq:3-management"
+    # build: 
+    #   context: ./docker/rabbitmq/
+    #   dockerfile: Dockerfile
+    environment:      
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_VHOST}
+    secrets:
+      - rabbitmq_erlang_cookie
+      - rabbitmq_pass
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    restart: always
+    networks:
+      - ffm   
+
+  memcached-1:
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+    restart: always
+    networks:
+      - ffm
+    command:
+      - memcached
+      - -m 64
+
+  # memcached-2:
+  #   image: memcached:latest
+  #   ports:
+  #     - "11212:11211"
+  #   restart: always
+  #   networks:
+  #     - ffm
+  #   command:
+  #     - memcached
+  #     - -m 64
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    networks:
+      - ffm
+    restart: always
+    environment:
+      PASSWORD_REDIS: /run/secrets/password_redis
+    secrets:
+      - password_redis
+    command: [ "redis-server", "--requirepass", "${PASSWORD_REDIS}" ]
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+      target: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    secrets:
+      - cert.pem
+      - key.pem
+      - ca.crt
+    networks:
+      - ffm
+    depends_on:
+      - "app-0"
+      - "app-1"
+      - "app-2"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.
+
+  nginx-prometheus-exporter:
+    image: nginx/nginx-prometheus-exporter:1.1.0
+    command:
+      - -nginx.scrape-uri=http://nginx/exporter
+    ports:
+      - "9113:9113"
+    networks:
+      - ffm
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - ffm
+    depends_on:
+      - prometheus
+      - prometheus-pushgateway
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./internal/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./internal/infra/prometheus/alert_rules.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - ffm
+    depends_on:
+      - "app-0"
+      - "app-1"
+      - "app-2"
+
+  prometheus-pushgateway:
+    image: prom/pushgateway
+    expose:
+      - 9091
+    ports:
+      - 9091:9091
+    networks:
+      - ffm
+    depends_on:
+      - "prometheus"
+
+networks:
+  ffm:
+    # driver: bridge
+
+secrets:
+  rabbitmq_pass:
+    file: ./secrets/rabbitmq_pass.txt
+  rabbitmq_erlang_cookie:
+    file: ./secrets/rabbitmq_erlang_cookie.txt
+  database_password:
+    file: ./secrets/database_password.txt
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
+  authz_admin_1:
+    file: ./secrets/authz_admin_1.txt
+  authz_read_1:
+    file: ./secrets/authz_read_1.txt
+  authz_max_admin:
+    file: ./secrets/authz_max_admin.txt
+  authz_max_read:
+    file: ./secrets/authz_max_read.txt
+  security_aes_key:
+    file: ./secrets/security_aes_key.txt
+  password_redis:
+    file: ./secrets/password_redis.txt
+  cert.pem:
+    file: ./nginx/cert.pem
+  key.pem:
+    file: ./nginx/key.pem
+  ca.crt: 
+    file: ./nginx/certs/ca.crt
