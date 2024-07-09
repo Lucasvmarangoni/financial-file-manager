@@ -8,6 +8,10 @@ services:
     restart: always
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - rabbit
       - memcached-1
@@ -62,7 +66,7 @@ services:
       - ./config:/app/config
       - ./pkg:/app/pkg
       - ./test:/app/test
-      - ./logs:/app/logs
+      # - ./logs:/app/logs
       - ./go.mod:/app/go.mod
       - ./go.sum:/app/go.sum
     command: go run cmd/server.go
@@ -75,6 +79,10 @@ services:
     restart: always
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - rabbit
       - memcached-1
@@ -129,7 +137,7 @@ services:
       - ./config:/app/config
       - ./pkg:/app/pkg
       - ./test:/app/test
-      - ./logs:/app/logs
+      # - ./logs:/app/logs
       - ./go.mod:/app/go.mod
       - ./go.sum:/app/go.sum
     command: go run cmd/server.go
@@ -142,6 +150,10 @@ services:
     restart: always
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - rabbit
       - memcached-1
@@ -202,7 +214,7 @@ services:
     command: go run cmd/server.go
 
   rabbit:
-    image: "rabbitmq:3-management"
+    image: rabbitmq:3-management@sha256:75eb36982d09f096ca59360379cbc193cf488d0a5580dcb12c49df0450cd7199
     # build: 
     #   context: ./docker/rabbitmq/
     #   dockerfile: Dockerfile
@@ -219,15 +231,22 @@ services:
       - "5672:5672"
     restart: always
     networks:
-      - ffm   
+      - ffm
+    security_opt:
+      - no-new-privileges
+   
 
   memcached-1:
-    image: memcached:latest
+    image: memcached@sha256:1a3bf68d60a62d1f1d0f1308c28d46fe243598b94f73f526e339e3fa16f3c957
     ports:
       - "11211:11211"
     restart: always
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     command:
       - memcached
       - -m 64
@@ -244,11 +263,13 @@ services:
   #     - -m 64
 
   redis:
-    image: "redis:latest"
+    image: redis@sha256:fb534a36ac2034a6374933467d971fbcbfa5d213805507f560d564851a720355
     ports:
       - "6379:6379"
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
     restart: always
     environment:
       PASSWORD_REDIS: /run/secrets/password_redis
@@ -271,6 +292,8 @@ services:
       - ca.crt
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
     depends_on:
       - "app-0"
       - "app-1"
@@ -279,26 +302,34 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.
 
   nginx-prometheus-exporter:
-    image: nginx/nginx-prometheus-exporter:1.1.0
+    image: nginx/nginx-prometheus-exporter:1.1.0@sha256:17eeec335ed40afae0a13a0fa4164260b11de02739cf5edf0bb649548cb04a61
     command:
       - -nginx.scrape-uri=http://nginx/exporter
     ports:
       - "9113:9113"
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana@sha256:079600c9517b678c10cda6006b4487d3174512fd4c6cface37df7822756ed7a5
     ports:
       - 3000:3000
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - prometheus
       - prometheus-pushgateway
 
   prometheus:
-    image: prom/prometheus
+    image: bitnami/prometheus@sha256:6902f71e1e2cc6fa341062ab5b1a7854a409a970efbad80c119f4a0959eb15d6
     ports:
       - 9090:9090
     command:
@@ -308,19 +339,27 @@ services:
       - ./internal/infra/prometheus/alert_rules.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - "app-0"
       - "app-1"
       - "app-2"
 
   prometheus-pushgateway:
-    image: prom/pushgateway
+    image: bitnami/pushgateway@sha256:76fde682973b7bdf148f3291d13a61a818dfec28ab08c4ec7378476c42a8c5c2
     expose:
       - 9091
     ports:
       - 9091:9091
     networks:
       - ffm
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - all
     depends_on:
       - "prometheus"
 
