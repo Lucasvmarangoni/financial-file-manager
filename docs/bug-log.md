@@ -118,7 +118,7 @@ antes:
 
 ## Problema no return da response da criação de usuário
 
-Problema: Em algumas requests, o channel não esta recebendo os payloads. Isso faz com que a response não retorne. 
+Problema: Em algumas requests o channel não esta recebendo os payloads. Isso faz com que a response não retorne. 
 
 algumas vezes (Na maioria funciona normal) "err = <- u.ReturnChannel" não recebe o valor e isso impede o codigo de proseguir e retornar a response.
 
