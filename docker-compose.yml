@@ -66,7 +66,7 @@ services:
       - ./config:/app/config
       - ./pkg:/app/pkg
       - ./test:/app/test
-      # - ./logs:/app/logs
+      - ./logs:/app/logs
       - ./go.mod:/app/go.mod
       - ./go.sum:/app/go.sum
     command: go run cmd/server.go
@@ -137,7 +137,7 @@ services:
       - ./config:/app/config
       - ./pkg:/app/pkg
       - ./test:/app/test
-      # - ./logs:/app/logs
+      - ./logs:/app/logs
       - ./go.mod:/app/go.mod
       - ./go.sum:/app/go.sum
     command: go run cmd/server.go
