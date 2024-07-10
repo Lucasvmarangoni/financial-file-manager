@@ -4,7 +4,10 @@
   </a> 
  <a href="#tecnologias">
      <img align="center" src="https://img.shields.io/badge/-Tecnologias-05122A?style=flat&logo=Tecnologias" alt=""/>  
-</a>       
+</a>   
+ <a href="#execução">
+     <img align="center" src="https://img.shields.io/badge/-Execução-05122A?style=flat&logo=Execução" alt=""/>  
+</a>     
 </div>
 
 <br>
@@ -64,6 +67,53 @@ Bibliotecas e pacotes que criei em razão desse projeto.
 
 
 <br>
+
+## EXECUÇÃO 
+
+Para iniciar o projeto nasta executar o comando:
+
+    bash bash scripts/start.sh
+
+Antes disso é necessário realizar as configurações do ambiente.
+
+### Configurações
+
+#### Permissões
+
+De permissão para o container escrever na pasta logs. Isso é necessário para que o sistema possa salvar os arquivos de logs na pasta logs, localizada na raiz do projeto.
+
+Inicialmente pode ser necessário dar permissão de read and writer (5) para others. Isso apenas para poder verificar quem é o usuário do container no host. Antes de executar o programa execute:
+
+    chmod -R 775 logs
+
+Em seguida pode iniciar o programa. Ele vai criar os arquivos de log na pasta logs.
+
+Para identificar o usuário do container no host pode verificar qual usuário escreveu os arquivos de log:
+
+    ls -lt logs
+
+A saida será algo assim:
+
+    $ ls -lt logs
+    total 0
+    -rw-r--r-- 1 65532 65532 0 Jul  9 21:28 modsec_audit.log
+    -rw-r--r-- 1 65532 65532 0 Jul  9 21:28 modsec_debug.log
+
+Identificado o usuário e grupo, basta dar a permissão, no meu caso eu dei permissão de owner e mantive o grrupo do meu usuário.
+
+    sudo chown 65532:<myusergroup> logs
+
+Pronto, as permissões para escrever logs no volume do host já esta feita.
+
+#### Variáveis e Secrets
+
+Configure o arquivo .env. As variáveis necessárias estão no arquivo example.env, aqui nesse repositório.
+
+<a href="https://github.com/Lucasvmarangoni/financial-file-manager/blob/main/example.env">example.env</a>
+
+Configure as secrets, elas estão no diretório "secrets", aqui nesse repositório.
+
+<a href="https://github.com/Lucasvmarangoni/financial-file-manager/tree/main/secrets">secrets</a>
 
 
 ## TECNOLOGIAS
