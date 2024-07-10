@@ -88,7 +88,7 @@ Inicialmente pode ser necessário dar permissão de read and writer (5) para oth
 
 Em seguida pode iniciar o programa. Ele vai criar os arquivos de log na pasta logs.
 
-Para identificar o usuário do container no host pode verificar qual usuário escreveu os arquivos de log:
+Para identificar o usuário do container no host basta verificar qual usuário escreveu os arquivos de log:
 
     ls -lt logs
 
@@ -99,11 +99,11 @@ A saida será algo assim:
     -rw-r--r-- 1 65532 65532 0 Jul  9 21:28 modsec_audit.log
     -rw-r--r-- 1 65532 65532 0 Jul  9 21:28 modsec_debug.log
 
-Identificado o usuário e grupo, basta dar a permissão, no meu caso eu dei permissão de owner e mantive o grrupo do meu usuário.
+Identificado o usuário e grupo, basta dar a permissão. Eu escolhi dar permissão de owner e mantive o grupo do meu usuário.
 
     sudo chown 65532:<myusergroup> logs
 
-Pronto, as permissões para escrever logs no volume do host já esta feita.
+Pronto. As permissões necessárias estão prontas.
 
 #### Variáveis e Secrets
 
