@@ -52,7 +52,7 @@ func (u *UserService) GenerateTOTP(id string) (*otpResponseOutput, error) {
 }
 
 func (u *UserService) VerifyTOTP(id, token, isValidate string) error {
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 	user, err := u.FindById(id, context.Background())
 	if err != nil {
@@ -96,7 +96,7 @@ func (u *UserService) DisableOTP(id string) error {
 }
 
 func (u *UserService) encryptTOTP(user *entities.User, otpSecret, otpAuthUrl string) error {
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 	var err error
 
 	user.OtpSecret, err = security.Encrypt(otpSecret, aes_key)

@@ -22,7 +22,7 @@ func TestUserService_Update(t *testing.T) {
 	userService, mockRepo, _, mockMemcached := prepare(t)
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 	t.Run("Should updated user when valid params is provided", func(t *testing.T) {
 

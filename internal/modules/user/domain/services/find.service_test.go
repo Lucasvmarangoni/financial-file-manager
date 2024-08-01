@@ -89,7 +89,7 @@ func TestUserService_FindById(t *testing.T) {
 	t.Run("Should returned a valid user when valid and existing ID is provided", func(t *testing.T) {
 
 		user, err := entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", "hgGFHJ654*")
-		aes_key := config.GetEnvString("security", "aes_key")
+		aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 		encryptedEmail, _ := security.Encrypt(user.Email, aes_key)
 		encryptedCPF, _ := security.Encrypt(user.CPF, aes_key)

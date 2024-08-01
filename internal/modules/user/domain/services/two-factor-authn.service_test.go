@@ -18,7 +18,7 @@ func TestGenerateTOTP(t *testing.T) {
 
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 	t.Run("Should return base32 secret and otpauth_url", func(t *testing.T) {
 		user, _ := entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", password)
@@ -55,7 +55,7 @@ func TestVerifyTOTP(t *testing.T) {
 	user, _ := entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", password)
 
 	userService, mockRepo, _, mockMemcached := prepare(t)
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 	mockMemcached.EXPECT().Set(gomock.Any(), gomock.Any()).AnyTimes()
 	mockMemcached.EXPECT().Get(gomock.Any()).AnyTimes()
@@ -92,7 +92,7 @@ func TestVerifyTOTP(t *testing.T) {
 
 func TestDisableOTP(t *testing.T) {
 	user, _ := entities.NewUser("John", "Doe", "123.356.229-00", "john.doe@example.com", password)
-	aes_key := config.GetEnvString("security", "aes_key")
+	aes_key := config.ReadSecretString(config.GetEnvString("security", "aes_key"))
 
 	userService, mockRepo, _, mockMemcached := prepare(t)
 
