@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Lucasvmarangoni/logella/err"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
-	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
 	"github.com/asaskevich/govalidator"
 )
@@ -24,13 +24,13 @@ func (i *Invoice) Validate() error {
 	method := consts.Method()
 
 	if i.Value <= 0 {
-		return pkg_errors.IsRequiredError("Value", "It needs to be greater than 0")
+		return errors.IsRequiredError("Value", "It needs to be greater than 0")
 	}
 	if i.DueDate.IsZero() {
-		return pkg_errors.IsRequiredError("DueDate", "")
+		return errors.IsRequiredError("DueDate", "")
 	}
 	if !lib.MapVerifyString(method[:], i.Method) {
-		return pkg_errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
+		return errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
 	}
 
 	_, err := govalidator.ValidateStruct(i)

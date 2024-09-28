@@ -214,11 +214,11 @@ services:
     command: go run cmd/server.go
 
   rabbit:
-    image: rabbitmq:3-management@sha256:75eb36982d09f096ca59360379cbc193cf488d0a5580dcb12c49df0450cd7199
+    image: rabbitmq:3-management@sha256:6f4ecd26acdac1e58d50928d12926e6a04f0dccb76d772f278243d85fb57e7a9
     # build: 
     #   context: ./docker/rabbitmq/
-    #   dockerfile: Dockerfile
-    environment:      
+    #   dockerfile: Dockerfile    
+    environment:
       - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
@@ -234,10 +234,12 @@ services:
       - ffm
     security_opt:
       - no-new-privileges
-   
 
   memcached-1:
-    image: memcached@sha256:1a3bf68d60a62d1f1d0f1308c28d46fe243598b94f73f526e339e3fa16f3c957
+    # image: memcached@sha256:1a3bf68d60a62d1f1d0f1308c28d46fe243598b94f73f526e339e3fa16f3c957
+    build:
+      context: ./docker/memcached/
+      dockerfile: Dockerfile
     ports:
       - "11211:11211"
     restart: always
@@ -280,7 +282,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: ./nginx/Dockerfile
+      dockerfile: ./docker/nginx/Dockerfile
       target: nginx
     ports:
       - "80:80"
@@ -365,7 +367,7 @@ services:
 
 networks:
   ffm:
-    # driver: bridge
+    driver: bridge
 
 secrets:
   rabbitmq_pass:
@@ -392,5 +394,5 @@ secrets:
     file: ./nginx/cert.pem
   key.pem:
     file: ./nginx/key.pem
-  ca.crt: 
+  ca.crt:
     file: ./nginx/certs/ca.crt

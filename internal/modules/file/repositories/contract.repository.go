@@ -33,7 +33,6 @@ func (r *ContractRepositoryDb) Insert(contract *entities.Contract, ctx context.C
 		contract.File.ID,
 		contract.File.Type,
 		contract.File.CreatedAt,
-		contract.File.Customer,
 		contract.Title,
 		contract.Parties,
 		contract.Object,

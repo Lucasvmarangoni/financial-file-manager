@@ -6,8 +6,8 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
-	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -27,16 +27,16 @@ func (e *Extract) Validate() error {
 	payment := consts.Payment()
 
 	if e.Account == 0 {
-		return pkg_errors.IsInvalidError("Account", "Needs to be greater than 0")
+		return errors.IsInvalidError("Account", "Needs to be greater than 0")
 	}
 	if e.Value == 0 {
-		return pkg_errors.IsInvalidError("Value", "Needs to be greater than 0")
+		return errors.IsInvalidError("Value", "Needs to be greater than 0")
 	}
 	if !lib.MapVerifyString(payment[:], strings.ToLower(e.Category)) {
-		return pkg_errors.IsInvalidError("Category", fmt.Sprintf("It need to be a one of those: %v", payment))
+		return errors.IsInvalidError("Category", fmt.Sprintf("It need to be a one of those: %v", payment))
 	}
 	if !lib.MapVerifyString(method[:], strings.ToLower(e.Method)) {
-		return pkg_errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
+		return errors.IsInvalidError("Method", fmt.Sprintf("It need to be a one of those: %v", method))
 	}
 
 	_, err := govalidator.ValidateStruct(e)

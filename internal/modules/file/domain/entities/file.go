@@ -7,8 +7,8 @@ import (
 
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/const"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/entities"
-	pkg_errors "github.com/Lucasvmarangoni/financial-file-manager/pkg/errors"
 	"github.com/Lucasvmarangoni/financial-file-manager/pkg/lib"
+	errors "github.com/Lucasvmarangoni/logella/err"
 	"github.com/asaskevich/govalidator"
 )
 
@@ -27,26 +27,26 @@ func (f *File) Validate() error {
 	fileTypes := consts.FileTypes()
 
 	if _, err := entities.ParseID(f.ID.String()); err != nil {
-		pkg_errors.IsInvalidError("ID", "Must be google uuid")
+		errors.IsInvalidError("ID", "Must be google uuid")
 	}
 
 	if _, err := entities.ParseID(f.User.String()); err != nil {
-		pkg_errors.IsInvalidError("Customer", "Must be google uuid")
+		errors.IsInvalidError("Customer", "Must be google uuid")
 	}
 
 	if !lib.MapVerifyString(fileTypes[:], strings.ToLower(f.Type)) {
-		return pkg_errors.IsInvalidError("Type", fmt.Sprintf("Must be: %v", fileTypes))
+		return errors.IsInvalidError("Type", fmt.Sprintf("Must be: %v", fileTypes))
 	}
 
 	for _, versionID := range f.Versions {
 		if _, err := entities.ParseID(versionID.String()); err != nil {
-			return pkg_errors.IsInvalidError("Versions", "Each ID must be a google uuid")
+			return errors.IsInvalidError("Versions", "Each ID must be a google uuid")
 		}
 	}
 
 	for _, authorizedID := range f.Authorized {
 		if _, err := entities.ParseID(authorizedID.String()); err != nil {
-			return pkg_errors.IsInvalidError("Authorized", "Each ID must be a google uuid")
+			return errors.IsInvalidError("Authorized", "Each ID must be a google uuid")
 		}
 	}
 
