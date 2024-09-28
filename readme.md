@@ -17,7 +17,7 @@
 # Financial file manager
 ## Sistema de Armazenamento e Controle de Documentos Financeiros
 
-## <u>EM DESENVOLVIMENTO</u>
+## <u>PROJETO PARADO</u>
    
 
 **Acompanhe: <a href="https://github.com/users/Lucasvmarangoni/projects/11"> Project Board</a>**
@@ -25,6 +25,7 @@
 </div>
 
 **Nota:** O projeto teve uma pausa no desenvolvimento, que durou de 29 Mar 2024 até 02 Jul 2024.
+**Nota:** O desenvolvimento do projeto foi pausado, pois estou me decicando a outro projeto, desenvolvido com código fechado.
 
 
 ## PROJETO
