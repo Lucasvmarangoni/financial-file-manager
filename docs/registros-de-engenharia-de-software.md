@@ -142,10 +142,6 @@ Estando esses dados criptografados se torna impossível a busca. Para solucionar
 
 Dessa forma, é gerada uma hash SHA-256 para Email e CPF, que serão persistidas no banco de dados para permitir consultar os dados de usuário. 
 
-#### Desencriptação
-
-Optei por realizar a desencriptação no próprio backend, por razões de implementação no projeto. Assim, quando o cliente solicitar os dados, eles serão enviados já desencriptados.
-
 ## Rate Limit
 
 A aplicação possui rate limit por IP e também por usuário, pelo ID.
