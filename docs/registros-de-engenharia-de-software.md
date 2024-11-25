@@ -131,7 +131,7 @@ JSON EXAMPLE:
 ### User
 
 
-**PostgreSQL possui uma função para criptografar os dados chamada pgcrypt. Eu tive conhecimento dessa opção apenas após a interrupção desse projeto e enquanto desenvolvia outro. Por essa razão, considero que a abordagem adotada, explicada abaixo, foi inadequada.** 
+**PostgreSQL possui uma função para criptografar os dados chamada pgcrypt, que foi implementada no CockroachDB na versão 23.2.0-alpha.1. Eu tive conhecimento dessa opção apenas após a interrupção desse projeto e enquanto desenvolvia outro. Por essa razão, considero que a abordagem adotada, explicada abaixo, foi inadequada.** 
 
 
 Além da password, que é armazenada como hash do bcrypt, LastName, Email e CPF também serão armazenados criptogrados. Contudo, esses ultimos serão criptografados com AES. 
