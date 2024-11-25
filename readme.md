@@ -24,8 +24,8 @@
 
 </div>
 
-**Nota:** O projeto teve uma pausa no desenvolvimento, que durou de 29 Mar 2024 até 02 Jul 2024.
-**Nota:** O desenvolvimento do projeto foi pausado, pois estou me decicando a outro projeto, desenvolvido com código fechado.
+**Nota:** O projeto teve uma pausa no desenvolvimento, que durou de 29 Mar 2024 até 02 Jul 2024.  
+**Nota:** O desenvolvimento do projeto foi pausado, pois estou me decicando a outro projeto, desenvolvido com código fechado. Nesse momento, não tenho intenção de modificar o código desse projeto, contudo posso fazer atualizações nos *<a href="./docs/registros-de-engenharia-de-software.md"> <u>Registros de engenharia de software</u>.</a>*, fazendo correções a erros que tive na engenharia do projeto.   
 
 
 ## PROJETO
