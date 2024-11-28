@@ -130,9 +130,14 @@ JSON EXAMPLE:
 
 ### User
 
+------
 
-**PostgreSQL possui uma função para criptografar os dados chamada pgcrypt, que foi implementada no CockroachDB na versão 23.2.0-alpha.1. Eu tive conhecimento dessa opção apenas após a interrupção desse projeto e enquanto desenvolvia outro. Por essa razão, considero que a abordagem adotada, explicada abaixo, foi inadequada.** 
+**Alterações após interrupção do projeto**  
+PostgreSQL possui uma função para criptografar os dados chamada pgcrypt, que foi implementada no CockroachDB na versão 23.2.0-alpha.1. Eu tive conhecimento dessa opção apenas após a interrupção desse projeto e enquanto desenvolvia outro. Por essa razão, considero que a abordagem adotada, explicada abaixo, foi inadequada. 
 
+Eu mudaria a estrutura dos dados removendo o campo "update_log" e transferindo ele para uma tabela própria, pois não é uma informação que precisa ser carregada junto dos dados dos usuários. Além disso, também  consideraria repensar a forma de armazenar essas informações, talvez manteria o tipo JSON, ou criaria uma tabela com todas as colunas dos campos que pudessem ser alterados, ou ainda, teria uma abordagem hibrida, deixando campos que precisem ser acessados com frequência, como a password (para verificações de senha igual a anterior) em colunas e dados que precisam ser acessados com menos frequência no JSON.
+
+------
 
 Além da password, que é armazenada como hash do bcrypt, LastName, Email e CPF também serão armazenados criptogrados. Contudo, esses ultimos serão criptografados com AES. 
 
