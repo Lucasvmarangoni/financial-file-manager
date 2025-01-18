@@ -50,16 +50,6 @@ Este projeto tem como objetivo desenvolver um sistema robusto para o armazenamen
 
 ⇝ *<a href="./docs/bug-log.md"> <u>Bug Log</u>.</a>* Registro de bugs/problemas e suas soluções.
 
-
-
-### Artigos e conteúdo
-
-Tenho o hábito de criar meu próprio material durante o estudo. A partir deste projeto, decidi publicá-los.
-
-⇝ *<a href="https://medium.com/@lucasvm.ti/desenvolvimento-voltado-para-a-auditoria-em-software-0d15c56bf99c"> <u>Desenvolvimento voltado para a auditoria em Software</u>.</a>*
-
-⇝ *<a href="https://medium.com/@lucasvm.ti/erros-e-logs-4e1fcd79a937"> <u>Como configurar erros e logs corretamente</u>.</a>*
-
 ### Bibliotecas 
 
 Bibliotecas e pacotes que criei em razão desse projeto.
