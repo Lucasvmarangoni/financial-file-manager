@@ -241,6 +241,11 @@ Essa abordagem foi necessária pois o sistema de cache já criado utiliza como k
 
 Agora quando um novo usuário tenta se registrar é feita a consulta ao cache para verificar se existe um usuário com aquele email ou CPF. Caso exista é retornado erro.
 
+
+**Atualmente, consegui resolver o problema. Em um projeto recente que estou desenvolvendo, decidi fazer toda a injeção de dependências na main, incluindo repositórios e serviços, algo que eu não havia feito neste projeto. Isso resolveu o problema. Acredito que a causa do erro foi o local onde instanciei o método que processava as mensagens da fila, que deveria ser instanciado na main.
+
+Para ser mais preciso, neste novo projeto, em vez de criar funções auxiliares diretamente no arquivo da main (server.go), criei uma subpasta dentro de cmd, chamada components (talvez eu troque esse nome), e movi todas essas funções para lá, utilizando o padrão factory com structs. Isso inclui a função Queue, onde o método que consome as mensagens da fila é instanciado como uma goroutine.**
+
 ```go
 errD.New("duplicate key value violates unique constraint")
 ```
