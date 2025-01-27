@@ -163,3 +163,11 @@ Por outro lado, na aplicação, o rate limit tem como principal objetivo a segur
 É importante destacar que o rate limit da aplicação é individual para cada instância da aplicação (container). Foram configuradas três instâncias, e o balanceador de carga distribui a carga entre elas. Assim, os valores de rate limit foram estabelecidos levando isso em consideração.
 
 Ex: o limite de taxa da rota authn/jwt é de 2 a cada 60 minutos. Portanto, 2 * 3 = 6 a cada 60 minutos.
+
+### Autenticação
+**Alterações após interrupção do projeto**  
+
+Nesse projeto eu não me atentei a dinamica de autenticação com 2fa, apenas criando os endpoints isolados. No projeto que estou desenvolvendo atualmente eu corrigi isso. A imagem abaixo ilustra como esta funcionando. 
+
+![image](https://github.com/user-attachments/assets/a637fcde-8799-4a3e-9e3d-297f6aa5b08d)
+
