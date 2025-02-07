@@ -169,5 +169,5 @@ Ex: o limite de taxa da rota authn/jwt é de 2 a cada 60 minutos. Portanto, 2 * 
 
 Nesse projeto eu não me atentei a dinamica de autenticação com 2fa, apenas criando os endpoints isolados. No projeto que estou desenvolvendo atualmente eu corrigi isso. A imagem abaixo ilustra como esta funcionando. 
 
-![image](https://github.com/user-attachments/assets/cc630f2b-647e-4d8e-8b8c-f58b630b0026)
+![image](https://github.com/user-attachments/assets/7635b909-f387-46e8-9852-b6ef6968664c)
 
